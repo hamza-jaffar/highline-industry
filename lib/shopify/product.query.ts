@@ -48,15 +48,16 @@ export async function getProducts({
   after?: string;
   first?: number;
 }): Promise<ShopifyProductsData> {
+  const useCollectionQuery = collection && !searchQuery;
   let query = "";
-  let variables = {};
+  let variables: any = {};
 
-  if (collection) {
+  if (useCollectionQuery) {
     // Fetch products within a specific collection
     query = `
-      query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $after: String, $query: String) {
+      query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $after: String) {
         collection(handle: $handle) {
-          products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after, query: $query) {
+          products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after) {
             pageInfo {
               hasNextPage
               endCursor
@@ -91,10 +92,9 @@ export async function getProducts({
       sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
       reverse,
       after,
-      query: searchQuery,
     };
   } else {
-    // Fetch all products
+    // Fetch all products (global search if searchQuery is present)
     query = `
       query getProducts($first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean, $after: String, $query: String) {
         products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after, query: $query) {
@@ -125,18 +125,22 @@ export async function getProducts({
         }
       }
     `;
+    
+    // If collection is present but ignored because of search, try to append it as a tag filter
+    const finalQuery = (collection && searchQuery) ? `${searchQuery} tag:${collection}` : searchQuery;
+
     variables = {
       first,
       sortKey,
       reverse,
       after,
-      query: searchQuery,
+      query: finalQuery,
     };
   }
 
   const data = await shopifyFetch(query, variables);
 
-  if (collection) {
+  if (useCollectionQuery) {
     return data?.data?.collection?.products || { edges: [], pageInfo: { hasNextPage: false, endCursor: null } };
   } else {
     return data?.data?.products || { edges: [], pageInfo: { hasNextPage: false, endCursor: null } };
