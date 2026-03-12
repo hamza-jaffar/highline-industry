@@ -127,7 +127,7 @@ export async function getProducts({
     `;
     
     // If collection is present but ignored because of search, try to append it as a tag filter
-    const finalQuery = (collection && searchQuery) ? `${searchQuery} tag:${collection}` : searchQuery;
+    const finalQuery = (collection && searchQuery) ? `${searchQuery} tag:"${collection}"` : searchQuery;
 
     variables = {
       first,
