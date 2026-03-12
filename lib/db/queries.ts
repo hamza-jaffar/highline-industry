@@ -10,7 +10,7 @@ export async function getUserRole(userId: string) {
       .where(eq(userRoles.userId, userId))
       .limit(1);
 
-    return roleRecord?.role || 'user'; // Default to user if not found/syncing
+    return roleRecord?.role || 'user';
   } catch (error) {
     console.error('Error fetching user role:', error);
     return 'user';
