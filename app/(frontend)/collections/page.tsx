@@ -1,59 +1,82 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { getCollections } from "@/lib/shopify/collection.query";
 
-const COLLECTIONS = [
-  { id: "fw25", name: "FW25 Heavyweight Drop", desc: "Engineered for harsh climates. 400gsm fleece and technical outerwear.", img: "H" },
-  { id: "essentials", name: "Core Essentials", desc: "The foundation of any brand. Perfect fit blanks in high-quality jersey.", img: "C" },
-  { id: "utility", name: "Industrial Utility", desc: "Workwear-inspired bottoms and jackets with reinforced stitching.", img: "U" },
-];
+export default async function CollectionsPage() {
+  const collections = await getCollections();
 
-export default function CollectionsPage() {
   return (
-    <div className="min-h-screen bg-white pt-32 pb-24 px-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-16 max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-sora font-semibold text-[#111] tracking-tight mb-4">Curated Systems</h1>
-          <p className="text-lg text-[#737373] font-inter leading-relaxed">
-            Explore our pre-configured garment systems, designed to launch capsule collections with zero friction.
+    <div className="min-h-screen bg-[#fafafa]">
+      {/* Page Header */}
+      <div className="pt-32 px-6 md:px-16 max-w-screen-xl mx-auto">
+        <div className="border-b border-black/10 pb-8 mb-14">
+          <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-[#737373] mb-2">
+            Highline Industry
           </p>
+          <h1 className="text-4xl md:text-5xl font-sora font-semibold text-[#0a0a0a] tracking-tight">
+            Collections
+          </h1>
         </div>
+      </div>
 
-        {/* Collections Stack */}
-        <div className="space-y-12">
-          {COLLECTIONS.map((collection, i) => (
-            <Link 
-              key={collection.id} 
-              href={`/shop?collection=${collection.id}`}
-              className="group flex flex-col md:flex-row bg-[#fafafa] border border-black/10 rounded-2xl overflow-hidden hover:shadow-elevated transition-all"
-            >
-              {/* Image abstract */}
-              <div className="md:w-1/2 aspect-[4/3] md:aspect-auto bg-white border-b md:border-b-0 md:border-r border-black/5 relative flex items-center justify-center overflow-hidden">
-                 <div className="text-[15rem] font-black text-black/5 group-hover:scale-105 transition-transform duration-700 pointer-events-none select-none">
-                  {collection.img}
-                 </div>
-                 <div className="absolute top-6 left-6">
-                    <span className="px-3 py-1.5 bg-black text-white text-xs font-semibold rounded shadow-sm">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                 </div>
-              </div>
+      {/* Collection List — Tapstitch-style row layout */}
+      <div className="px-6 md:px-16 pb-32 max-w-screen-xl mx-auto">
+        {collections && collections.length > 0 ? (
+          <div className="divide-y divide-black/8">
+            {collections.map((collection: any, i: number) => (
+              <Link
+                key={collection.id}
+                href={`/shop?collection=${collection.handle}`}
+                className="group flex items-center gap-8 py-8 hover:bg-white hover:px-6 hover:rounded-2xl hover:shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] transition-all duration-300 -mx-0 hover:-mx-6"
+              >
+                {/* Collection Index */}
+                <span className="hidden md:block text-[11px] font-bold tracking-[0.2em] text-[#c0c0c0] w-8 flex-shrink-0">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
 
-              {/* Content */}
-              <div className="md:w-1/2 p-10 md:p-16 flex flex-col justify-center">
-                <h2 className="text-3xl font-sora font-semibold text-[#111] mb-4">{collection.name}</h2>
-                <p className="text-base text-[#737373] font-inter leading-relaxed mb-8 max-w-md">
-                  {collection.desc}
-                </p>
-                
-                <div className="flex items-center gap-2 text-sm font-semibold text-black group-hover:text-black/70 transition-colors">
-                  Explore System
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {/* Thumbnail */}
+                <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-[#ebebeb]">
+                  {collection.image?.url ? (
+                    <img
+                      src={collection.image.url}
+                      alt={collection.image.altText ?? collection.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-3xl font-black text-black/15">
+                        {collection.title.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+
+                {/* Text */}
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg md:text-xl font-sora font-semibold text-[#0a0a0a] mb-1 group-hover:translate-x-1 transition-transform duration-300">
+                    {collection.title}
+                  </h2>
+                  {collection.description && (
+                    <p className="text-sm text-[#737373] leading-relaxed line-clamp-1 max-w-lg">
+                      {collection.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Arrow */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-full border border-black/10 flex items-center justify-center group-hover:bg-[#111] group-hover:border-[#111] transition-all duration-300">
+                  <ArrowUpRight className="w-4 h-4 text-[#737373] group-hover:text-white transition-colors duration-300" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-40 text-center">
+            <p className="text-[#737373] text-sm">
+              No collections found. Make sure your Shopify credentials are configured.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

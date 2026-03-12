@@ -11,14 +11,26 @@ function getEnvVariables() {
 
 export async function shopifyFetch(query: string, variables = {}) {
     const { domain, storefrontAccessToken } = getEnvVariables();
-    const response = await fetch(`https://${domain}/api/2024-01/graphql.json`, {
+    const url = `https://${domain}/api/2026-01/graphql.json`;
+
+    // console.log(storefrontAccessToken);
+
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-Shopify-Storefront-Access-Token": storefrontAccessToken,
+            // "X-Shopify-Storefront-Access-Token": storefrontAccessToken,
         },
         body: JSON.stringify({ query, variables }),
-    })
+        cache: "no-store"
+    });
 
-    return response.json()
+    const json = await response.json();
+
+    if (json.errors) {
+        console.error("Shopify GraphQL Error:", json.errors);
+        throw new Error("Shopify query failed");
+    }
+
+    return json;
 }

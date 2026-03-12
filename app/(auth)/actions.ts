@@ -58,8 +58,9 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
          userId: data.user.id,
          role: 'user', // Default role for all new signups
        });
-    } catch (dbError) {
+    } catch (dbError: any) {
        console.error("Failed to insert user role:", dbError);
+       return { success: false, message: `Failed to create user role: ${dbError.message || 'Unknown database error'}` };
     }
   }
 
