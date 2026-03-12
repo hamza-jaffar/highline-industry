@@ -9,7 +9,7 @@ function getEnvVariables() {
     return { domain, storefrontAccessToken };
 }
 
-export async function shopifyFetch(query: string, variables = {}) {
+export async function shopifyFetch(query: string, variables = {}, secure = false) {
     const { domain, storefrontAccessToken } = getEnvVariables();
     const url = `https://${domain}/api/2026-01/graphql.json`;
 
@@ -19,7 +19,7 @@ export async function shopifyFetch(query: string, variables = {}) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // "X-Shopify-Storefront-Access-Token": storefrontAccessToken,
+            "X-Shopify-Storefront-Access-Token": secure ? storefrontAccessToken : '',
         },
         body: JSON.stringify({ query, variables }),
         cache: "no-store"
