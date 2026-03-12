@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,6 +31,15 @@ export default function RootLayout({
         className={`${inter.variable} ${sora.variable} font-sans antialiased bg-[#fafafa] text-[#111] min-h-screen selection:bg-black selection:text-white relative`}
       >
         {children}
+        <Toaster position="top-center" toastOptions={{
+          style: {
+            background: 'white',
+            color: '#111',
+            border: '1px solid rgba(0,0,0,0.1)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            fontFamily: 'var(--font-inter)',
+          }
+        }} />
       </body>
     </html>
   );

@@ -1,12 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
+import { signup, type FormState } from "@/app/(auth)/actions";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+
+const initialState: FormState = {
+  success: true,
+  message: "",
+};
 
 export default function SignupPage() {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [state, formAction, isPending] = useActionState(signup, initialState);
+
+  // Trigger toast on error
+  useEffect(() => {
+    if (!state.success && state.message) {
+      toast.error(state.message);
+    }
+  }, [state]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 selection:bg-black selection:text-white py-12">
@@ -30,7 +43,7 @@ export default function SignupPage() {
         </div>
 
         {/* Form */}
-        <form className="w-full space-y-5">
+        <form action={formAction} className="w-full space-y-5">
           <div className="space-y-1.5">
             <label 
               htmlFor="name" 
@@ -40,12 +53,12 @@ export default function SignupPage() {
             </label>
             <input
               id="name"
+              name="name"
               type="text"
               placeholder="John Doe"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
               className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
+              disabled={isPending}
             />
           </div>
 
@@ -58,12 +71,12 @@ export default function SignupPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               placeholder="name@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
+              disabled={isPending}
             />
           </div>
 
@@ -76,20 +89,28 @@ export default function SignupPage() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
+              disabled={isPending}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 mt-4 bg-[#111] text-white text-sm font-semibold rounded-md hover:bg-black transition-colors shadow-sm"
+            disabled={isPending}
+            className="w-full py-3 mt-4 bg-[#111] text-white text-sm font-semibold rounded-md hover:bg-black transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Create Account
+            {isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating Account...
+              </>
+            ) : (
+             "Create Account"
+            )}
           </button>
         </form>
 

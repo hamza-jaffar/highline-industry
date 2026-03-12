@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, User, X, Menu } from "lucide-react";
+import { Search, User, X, Menu, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { signout } from "@/app/(auth)/actions";
 
-const NavBar = () => {
+export default function NavBar({ user }: { user?: any }) {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -57,13 +58,25 @@ const NavBar = () => {
               <Search className="w-[18px] h-[18px]" />
             </button>
             
-            <Link 
-              href="/login"
-              className="hidden md:flex text-black/60 hover:text-black transition-colors"
-              aria-label="Account"
-            >
-              <User className="w-[18px] h-[18px]" />
-            </Link>
+            {user ? (
+              <form action={signout} className="hidden md:flex">
+                <button 
+                  type="submit" 
+                  className="text-black/60 hover:text-black transition-colors flex items-center gap-2"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-[18px] h-[18px]" />
+                </button>
+              </form>
+            ) : (
+              <Link 
+                href="/login"
+                className="hidden md:flex text-black/60 hover:text-black transition-colors"
+                aria-label="Account"
+              >
+                <User className="w-[18px] h-[18px]" />
+              </Link>
+            )}
 
             <Link 
               href="/shop"
@@ -96,12 +109,24 @@ const NavBar = () => {
               </Link>
             ))}
             <div className="h-[1px] w-full bg-black/5 my-2" />
-            <Link 
-              href="/login"
-              className="text-sm font-medium text-black/80 hover:text-black flex items-center gap-2"
-            >
-              <User className="w-4 h-4" /> Account
-            </Link>
+            
+            {user ? (
+               <form action={signout}>
+                 <button 
+                   type="submit" 
+                   className="text-sm font-medium text-black/80 hover:text-black flex items-center gap-2 w-full text-left"
+                 >
+                   <LogOut className="w-4 h-4" /> Sign Out
+                 </button>
+               </form>
+            ) : (
+               <Link 
+                 href="/login"
+                 className="text-sm font-medium text-black/80 hover:text-black flex items-center gap-2"
+               >
+                 <User className="w-4 h-4" /> Account
+               </Link>
+            )}
           </div>
         )}
       </nav>
@@ -141,6 +166,4 @@ const NavBar = () => {
       </div>
     </>
   );
-};
-
-export default NavBar;
+}
