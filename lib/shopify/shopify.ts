@@ -28,8 +28,8 @@ export async function shopifyFetch(query: string, variables = {}) {
     const json = await response.json();
 
     if (json.errors) {
-        console.error("Shopify GraphQL Error:", json.errors);
-        throw new Error("Shopify query failed");
+        console.error("Shopify GraphQL Error:", JSON.stringify(json.errors, null, 2));
+        throw new Error(`Shopify query failed: ${json.errors[0]?.message || 'Unknown error'}`);
     }
 
     return json;
