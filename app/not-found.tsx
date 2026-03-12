@@ -2,11 +2,15 @@ import Link from "next/link";
 import { MoveRight } from "lucide-react";
 import NavBar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
+import { createServerClient } from "@/lib/supabase/server-client";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const supabase = await createServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <div className="flex flex-col min-h-screen">
-      <NavBar />
+      <NavBar user={user} />
       <div className="flex-grow flex flex-col items-center justify-center px-6 selection:bg-black selection:text-white py-32">
         <div className="max-w-xl text-center space-y-8">
           {/* 404 Typography */}
