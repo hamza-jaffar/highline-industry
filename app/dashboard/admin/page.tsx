@@ -1,7 +1,8 @@
 import { createServerClient } from '@/lib/supabase/server-client';
 import { getUserRole } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
-import { Settings, Users, Package, Activity } from 'lucide-react';
+import { Settings, Users, Package, Activity, FolderTree } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function AdminDashboard() {
   const supabase = await createServerClient();
@@ -44,10 +45,42 @@ export default async function AdminDashboard() {
           ))}
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Link href="/dashboard/admin/products" className="group p-8 bg-white border border-black/10 rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <div className="flex justify-between items-start mb-6">
+              <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                <Package className="w-6 h-6" />
+              </div>
+              <Activity className="w-4 h-4 text-black/20" />
+            </div>
+            <h3 className="text-xl font-sora font-semibold text-[#111]">Product Management</h3>
+            <p className="text-[#737373] text-sm mt-1">Create, update and track inventory across all variations.</p>
+          </Link>
+
+          <Link href="/dashboard/admin/collections" className="group p-8 bg-white border border-black/10 rounded-2xl shadow-sm hover:shadow-md transition-all">
+            <div className="flex justify-between items-start mb-6">
+              <div className="w-12 h-12 bg-black/5 rounded-xl flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                <FolderTree className="w-6 h-6" />
+              </div>
+              <Activity className="w-4 h-4 text-black/20" />
+            </div>
+            <h3 className="text-xl font-sora font-semibold text-[#111]">Collection Management</h3>
+            <p className="text-[#737373] text-sm mt-1">Group products into meaningful categories and sets.</p>
+          </Link>
+        </div>
+
         <div className="p-8 bg-white border border-black/10 rounded-xl shadow-sm">
-            <h2 className="text-xl font-sora font-semibold text-[#111] mb-6">Recent Escalations</h2>
-            <div className="text-center py-12 border-2 border-dashed border-black/5 rounded-lg">
-                <p className="text-[#737373] text-sm">No active escalations. Infrastructure is stable.</p>
+            <h2 className="text-xl font-sora font-semibold text-[#111] mb-6">Recent Activity</h2>
+            <div className="space-y-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex items-center justify-between py-4 border-b border-black/5 last:border-0">
+                  <div className="flex items-center gap-4">
+                    <div className="w-2 h-2 rounded-full bg-black/10" />
+                    <p className="text-sm text-[#111]">System ready for global operations.</p>
+                  </div>
+                  <span className="text-[10px] font-bold text-[#737373] uppercase tracking-wider">SECURE</span>
+                </div>
+              ))}
             </div>
         </div>
 
