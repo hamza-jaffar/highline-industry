@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server-client'
+import { db } from '@/db'
+import { userRoles } from '@/db/schemas/user-roles.schema'
 
 export type FormState = {
   success: boolean;
@@ -25,7 +27,7 @@ export async function login(prevState: FormState, formData: FormData): Promise<F
   }
 
   revalidatePath('/', 'layout')
-  redirect('/shop')
+  redirect('/dashboard/user')
 }
 
 export async function signup(prevState: FormState, formData: FormData): Promise<FormState> {
@@ -35,7 +37,7 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
 
   const supabase = await createServerClient()
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -49,8 +51,20 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
     return { success: false, message: error.message };
   }
 
+  // Insert the authenticated user into our custom roles table
+  if (data?.user) {
+    try {
+       await db.insert(userRoles).values({
+         userId: data.user.id,
+         role: 'user', // Default role for all new signups
+       });
+    } catch (dbError) {
+       console.error("Failed to insert user role:", dbError);
+    }
+  }
+
   revalidatePath('/', 'layout')
-  redirect('/shop')
+  redirect('/dashboard/user')
 }
 
 export async function signout() {
