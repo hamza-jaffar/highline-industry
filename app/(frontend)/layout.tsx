@@ -1,6 +1,6 @@
 import React from "react";
-import NavBar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
+import NavBar from "@/components/navbar";
+import Footer from "@/components/footer";
 import { createServerClient } from "@/lib/supabase/server-client";
 
 const FrontendLayout = async ({ children }: { children: React.ReactNode }) => {

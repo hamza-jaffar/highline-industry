@@ -135,7 +135,7 @@ export default function CollectionDetailPage() {
         </div>
       </div>
 
-      <ConfirmDialog 
+      <ConfirmDialog
         isOpen={showDeleteDialog}
         isLoading={isDeleting}
         title="Delete Collection"

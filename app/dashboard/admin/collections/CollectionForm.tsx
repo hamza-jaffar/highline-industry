@@ -72,9 +72,9 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     let submissionData = { ...formData };
-    
+
     if (selectedFile) {
       const base64 = await toBase64(selectedFile);
       submissionData = {
@@ -84,7 +84,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
         imageName: selectedFile.name
       };
     }
-    
+
     onSubmit(submissionData);
   };
 
@@ -109,7 +109,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="text-sm font-medium text-[#111]">Handle (URL Friendly)</label>
                 <input
                   type="text"
@@ -118,7 +118,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                   placeholder="e.g. winter-essentials"
                   className="w-full px-4 py-3 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all font-mono"
                 />
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#111]">Description</label>
@@ -139,8 +139,8 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#111]">Upload Image</label>
                 <div className="relative group/upload">
-                  <input 
-                    type="file" 
+                  <input
+                    type="file"
                     accept="image/*"
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"

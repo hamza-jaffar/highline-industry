@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MoveRight } from "lucide-react";
-import NavBar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
+import NavBar from "@/components/navbar";
+import Footer from "@/components/footer";
 import { createServerClient } from "@/lib/supabase/server-client";
 
 export default async function NotFound() {
@@ -17,7 +17,7 @@ export default async function NotFound() {
           <h1 className="text-[8rem] md:text-[12rem] font-sora font-semibold text-[#111] leading-none tracking-tighter">
             404
           </h1>
-          
+
           <div className="space-y-4">
             <h2 className="text-2xl font-sora font-semibold text-[#111]">
               Page Not Found
@@ -29,8 +29,8 @@ export default async function NotFound() {
 
           {/* Action */}
           <div className="pt-8">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="inline-flex items-center gap-3 px-8 py-3.5 bg-[#111] text-white text-sm font-semibold rounded-md shadow-premium hover:bg-black transition-colors group"
             >
               Return to HQ
