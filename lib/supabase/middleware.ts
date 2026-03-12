@@ -1,21 +1,22 @@
-import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { getUserRole } from '@/lib/db/queries'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -24,19 +25,36 @@ export async function updateSession(request: NextRequest) {
           )
         },
       },
-    }
-  )
+  })
 
-  // refreshing the auth token
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protect Auth Routes: If the user is already logged in, they shouldn't access login/signup
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup');
+  const pathname = request.nextUrl.pathname;
+  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup');
+  const isDashboardRoute = pathname.startsWith('/dashboard');
   
   if (user && isAuthRoute) {
+    const role = await getUserRole(user.id);
     const url = request.nextUrl.clone();
-    url.pathname = '/shop';
+    url.pathname = `/dashboard/${role}`;
     return NextResponse.redirect(url);
+  }
+
+  if (!user && isDashboardRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isDashboardRoute) {
+    const role = await getUserRole(user.id);
+    const allowedPrefix = `/dashboard/${role}`;
+    
+    if (!pathname.startsWith(allowedPrefix)) {
+        const url = request.nextUrl.clone();
+        url.pathname = allowedPrefix;
+        return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse
