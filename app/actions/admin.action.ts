@@ -5,7 +5,7 @@
 import { adminShopifyFetch, getPrimaryLocationId } from "@/lib/shopify/admin";
 import { revalidatePath } from "next/cache";
 
-export async function createProduct(formData: any, id?: string) {
+export async function saveProduct(formData: any, id?: string) {
   const mutation = `
     mutation productSet($input: ProductSetInput!) {
       productSet(input: $input) {
@@ -28,9 +28,44 @@ export async function createProduct(formData: any, id?: string) {
       return { success: false, error: "Primary location ID not found. Please check your Shopify settings." };
     }
 
+    // Handle Multiple Image Uploads
+    const uploadedImages = [];
+    if (formData.images && formData.images.length > 0) {
+      for (const image of formData.images) {
+        if (image.base64 && image.type && image.name) {
+          // Use the refined staged upload logic
+          const extension = image.name.split('.').pop();
+          const sanitizedBase = image.name
+            .split('.')[0]
+            .replace(/[^a-z0-9]/gi, '_')
+            .toLowerCase();
+          const uniqueFilename = `${sanitizedBase}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${extension}`;
+
+          const staged = await getStagedUploadUrl(uniqueFilename, image.type);
+          if (staged.success) {
+            const { url, parameters, resourceUrl } = staged.target;
+            const uploadFormData = new FormData();
+            parameters.forEach((p: any) => uploadFormData.append(p.name, p.value));
+            
+            const buffer = Buffer.from(image.base64, 'base64');
+            const blob = new Blob([buffer], { type: image.type });
+            uploadFormData.append("file", blob, uniqueFilename);
+
+            const uploadResult = await fetch(url, { method: "POST", body: uploadFormData });
+
+            if (uploadResult.ok) {
+              uploadedImages.push({ src: resourceUrl, altText: formData.title });
+            }
+          }
+        } else if (image.url) {
+          // Maintain existing images
+          uploadedImages.push({ src: image.url, altText: image.altText || formData.title });
+        }
+      }
+    }
+
     // Map options to ProductOptionSetInput
     const productOptions = formData.options.map((optionName: string) => {
-      // Collect all unique values for this option across all variants
       const values = Array.from(new Set(formData.variants.map((v: any) => {
         const opt = v.options.find((o: any) => o.name === optionName);
         return opt ? opt.value : "";
@@ -44,13 +79,17 @@ export async function createProduct(formData: any, id?: string) {
 
     const variables = {
       input: {
-        id: id, // If ID is provided, it updates the existing product
+        id: id,
         title: formData.title,
         descriptionHtml: formData.description,
-        vendor: "Highline Industry",
+        vendor: formData.vendor || "Highline Industry",
         productType: formData.category,
+        status: formData.status || "ACTIVE",
         productOptions: productOptions,
+        files: uploadedImages.map(img => ({ altText: img.altText, contentType: "IMAGE", url: img.src })),
+        collectionsToJoin: formData.collections || [],
         variants: formData.variants.map((v: any) => ({
+          id: v.id, // Include ID if updating variant
           price: v.price,
           sku: v.sku,
           inventoryQuantities: [
@@ -71,8 +110,8 @@ export async function createProduct(formData: any, id?: string) {
     const result = await adminShopifyFetch(mutation, variables);
     const data = result.data.productSet;
 
-    if (data.userErrors.length > 0) {
-      return { success: false, errors: data.userErrors };
+    if (data.userErrors && data.userErrors.length > 0) {
+      return { success: false, error: data.userErrors.map((e: any) => e.message).join(", ") };
     }
 
     revalidatePath("/shop");
@@ -82,6 +121,36 @@ export async function createProduct(formData: any, id?: string) {
     return { success: true, product: data.product };
   } catch (error: any) {
     console.error("Error saving product:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteProduct(id: string) {
+  const mutation = `
+    mutation productDelete($input: ProductDeleteInput!) {
+      productDelete(input: $input) {
+        deletedProductId
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `;
+
+  try {
+    const result = await adminShopifyFetch(mutation, { input: { id } });
+    const data = result.data.productDelete;
+
+    if (data.userErrors && data.userErrors.length > 0) {
+      return { success: false, error: data.userErrors.map((e: any) => e.message).join(", ") };
+    }
+
+    revalidatePath("/shop");
+    revalidatePath("/dashboard/admin/products");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting product:", error);
     return { success: false, error: error.message };
   }
 }

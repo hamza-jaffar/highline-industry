@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { getAdminProduct, createProduct } from "@/app/actions/admin.action";
+import { getAdminProduct, saveProduct } from "@/app/actions/admin.action";
 import ProductForm from "../../ProductForm";
 
 export default function EditProductPage() {
@@ -27,16 +27,15 @@ export default function EditProductPage() {
     if (result.success) {
       // Transform Shopify data back into the format the form expects
       const transformedData = {
+        id: result.data.id,
         title: result.data.title,
-        description: result.data.descriptionHtml,
-        category: result.data.productType || "Apparel",
-        options: result.data.options.map((o: any) => o.name),
-        variants: result.data.variants.edges.map(({ node }: any) => ({
-          price: node.price,
-          sku: node.sku || "",
-          quantity: node.inventoryQuantity.toString(),
-          options: node.selectedOptions.map((so: any) => ({ name: so.name, value: so.value }))
-        }))
+        descriptionHtml: result.data.descriptionHtml,
+        status: result.data.status,
+        productType: result.data.productType || "",
+        vendor: result.data.vendor || "Highline Industry",
+        options: result.data.options,
+        variants: result.data.variants,
+        images: result.data.images
       };
       setProduct(transformedData);
     } else {
@@ -50,7 +49,7 @@ export default function EditProductPage() {
     setError(null);
 
     const fullId = `gid://shopify/Product/${id}`;
-    const result = await createProduct(formData, fullId);
+    const result = await saveProduct(formData, fullId);
     
     if (result.success) {
       router.push(`/dashboard/admin/products/${id}`);

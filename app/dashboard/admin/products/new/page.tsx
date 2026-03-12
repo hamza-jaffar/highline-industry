@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createProduct } from "@/app/actions/admin.action";
+import { saveProduct } from "@/app/actions/admin.action";
 import ProductForm from "../ProductForm";
 
 export default function NewProductPage() {
@@ -16,7 +16,7 @@ export default function NewProductPage() {
     setIsLoading(true);
     setError(null);
 
-    const result = await createProduct(formData);
+    const result = await saveProduct(formData);
     
     if (result.success) {
       router.push("/dashboard/admin/products");

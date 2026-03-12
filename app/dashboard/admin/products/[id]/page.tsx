@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, Package, Tag, Layers, Settings, ExternalLink, AlertCircle } from "lucide-react";
+import { ArrowLeft, Loader2, Package, Tag, Layers, Settings, ExternalLink, AlertCircle, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { getAdminProduct } from "@/app/actions/admin.action";
+import { getAdminProduct, deleteProduct } from "@/app/actions/admin.action";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,6 +32,21 @@ export default function ProductDetailPage() {
       setError(result.error);
     }
     setIsLoading(false);
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    const fullId = `gid://shopify/Product/${id}`;
+    const result = await deleteProduct(fullId);
+    
+    if (result.success) {
+      router.push("/dashboard/admin/products");
+      router.refresh();
+    } else {
+      setError(result.error || "Failed to delete product from industrial records.");
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   if (isLoading) {
@@ -81,6 +99,13 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button 
+            disabled={isDeleting}
+            onClick={() => setShowDeleteDialog(true)}
+            className="p-2 text-[#737373] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
           <a 
             href={`/product/${product.handle}`} 
             target="_blank"
@@ -97,6 +122,16 @@ export default function ProductDetailPage() {
           </Link>
         </div>
       </div>
+
+      <ConfirmDialog 
+        isOpen={showDeleteDialog}
+        isLoading={isDeleting}
+        title="Delete Product"
+        message={`This action cannot be undone. Are you sure you want to permanently delete "${product.title}"?`}
+        confirmLabel="Decommission"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Details */}
