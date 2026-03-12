@@ -37,12 +37,14 @@ export async function getProducts({
   collection,
   sortKey = "CREATED_AT",
   reverse = true,
+  query: searchQuery,
   after,
   first = 12,
 }: {
   collection?: string;
   sortKey?: string;
   reverse?: boolean;
+  query?: string;
   after?: string;
   first?: number;
 }): Promise<ShopifyProductsData> {
@@ -52,9 +54,9 @@ export async function getProducts({
   if (collection) {
     // Fetch products within a specific collection
     query = `
-      query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $after: String) {
+      query getCollectionProducts($handle: String!, $first: Int!, $sortKey: ProductCollectionSortKeys, $reverse: Boolean, $after: String, $query: String) {
         collection(handle: $handle) {
-          products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after) {
+          products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after, query: $query) {
             pageInfo {
               hasNextPage
               endCursor
@@ -89,12 +91,13 @@ export async function getProducts({
       sortKey: sortKey === "CREATED_AT" ? "CREATED" : sortKey,
       reverse,
       after,
+      query: searchQuery,
     };
   } else {
     // Fetch all products
     query = `
-      query getProducts($first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean, $after: String) {
-        products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after) {
+      query getProducts($first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean, $after: String, $query: String) {
+        products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after, query: $query) {
           pageInfo {
             hasNextPage
             endCursor
@@ -127,6 +130,7 @@ export async function getProducts({
       sortKey,
       reverse,
       after,
+      query: searchQuery,
     };
   }
 

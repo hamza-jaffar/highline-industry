@@ -12,9 +12,11 @@ export default async function ShopPage(props: {
   const searchParams = await props.searchParams;
   const collection = searchParams.collection;
   const sort = searchParams.sort;
+  const q = searchParams.q;
 
   const collectionParam = typeof collection === 'string' ? collection : undefined;
   const sortParam = typeof sort === 'string' ? sort : undefined;
+  const queryParam = typeof q === 'string' ? q : undefined;
 
   let sortKey = "BEST_SELLING";
   let reverse = false;
@@ -34,6 +36,7 @@ export default async function ShopPage(props: {
     collection: collectionParam,
     sortKey,
     reverse,
+    query: queryParam,
     first: 12,
   });
 
@@ -43,6 +46,7 @@ export default async function ShopPage(props: {
       initialPageInfo={pageInfo}
       collectionParam={collectionParam}
       sortParam={sortParam}
+      queryParam={queryParam}
     />
   );
 }

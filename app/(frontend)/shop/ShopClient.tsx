@@ -30,9 +30,10 @@ interface ShopClientProps {
   initialPageInfo: { hasNextPage: boolean; endCursor: string | null };
   collectionParam?: string;
   sortParam?: string;
+  queryParam?: string;
 }
 
-export default function ShopClient({ initialProducts, initialPageInfo, collectionParam, sortParam }: ShopClientProps) {
+export default function ShopClient({ initialProducts, initialPageInfo, collectionParam, sortParam, queryParam }: ShopClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -55,9 +56,17 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
   const activeCategory = collectionParam || "";
   const activeSortValue = sortParam || "featured";
   const activeSortLabel = SORT_OPTIONS.find(o => o.value === activeSortValue)?.label || "Featured";
+  const activeQuery = queryParam || "";
+
+  const [searchValue, setSearchValue] = useState(activeQuery);
+
+  // Sync input value with URL changes (e.g., navigating back)
+  useEffect(() => {
+    setSearchValue(activeQuery);
+  }, [activeQuery]);
 
   // Handle URL updates for filtering and sorting
-  const updateUrlParams = (key: string, value: string) => {
+  const updateUrlParams = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
       params.set(key, value);
@@ -65,7 +74,17 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
       params.delete(key);
     }
     router.push(`/shop?${params.toString()}`, { scroll: false });
-  };
+  }, [searchParams, router]);
+
+  // Debounced real-time search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchValue !== activeQuery) {
+        updateUrlParams("q", searchValue);
+      }
+    }, 400); // 400ms debounce
+    return () => clearTimeout(timer);
+  }, [searchValue, activeQuery, updateUrlParams]);
 
   const isCatActive = (cat: any) => {
     if (cat.type === "sort") {
@@ -141,6 +160,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
       activeCategory || undefined,
       sortKey,
       reverse,
+      activeQuery || undefined,
       pageInfo.endCursor
     );
 
@@ -180,6 +200,28 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Search Input */}
+            <div className="relative hidden md:block w-64">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="w-full pl-4 pr-10 py-2 border border-black/10 rounded-md text-sm text-[#111] bg-white placeholder:text-[#737373] focus:outline-none focus:border-black transition-colors shadow-sm"
+              />
+              {searchValue && (
+                <button 
+                  onClick={() => {
+                    setSearchValue('');
+                    updateUrlParams('q', '');
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-black p-1"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
             <button
               onClick={() => setIsFilterOpen(true)}
               className="flex items-center gap-2 px-4 py-2 border border-black/10 rounded-md text-sm font-medium text-black bg-white hover:bg-black/5 transition-colors shadow-sm"

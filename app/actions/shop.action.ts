@@ -6,6 +6,7 @@ export async function loadMoreProducts(
   collection: string | undefined,
   sortKey: string | undefined,
   reverse: boolean | undefined,
+  query: string | undefined,
   after: string
 ) {
   try {
@@ -13,6 +14,7 @@ export async function loadMoreProducts(
       collection,
       sortKey,
       reverse,
+      query,
       after,
       first: 12,
     });

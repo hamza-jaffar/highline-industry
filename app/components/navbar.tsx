@@ -3,18 +3,34 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, User, X, Menu, LogOut } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/(auth)/actions";
 
 export default function NavBar({ user }: { user?: any }) {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     setOpen(false);
     setSearchOpen(false);
+    setSearchTerm("");
   }, [pathname]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/shop?q=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchOpen(false);
+    }
+  };
+
+  const handleSuggestionClick = (term: string) => {
+    router.push(`/shop?q=${encodeURIComponent(term)}`);
+    setSearchOpen(false);
+  };
 
   const links = [
     { name: "New Arrivals", href: "/shop?sort=new" },
@@ -145,11 +161,13 @@ export default function NavBar({ user }: { user?: any }) {
         </button>
         
         <div className="w-full max-w-2xl space-y-6">
-          <form className="relative w-full flex items-center border-b border-black/10 pb-4" onSubmit={(e) => { e.preventDefault(); setSearchOpen(false); }}>
+          <form className="relative w-full flex items-center border-b border-black/10 pb-4" onSubmit={handleSearchSubmit}>
             <Search className="w-6 h-6 text-black/40 mr-4" />
             <input 
               type="text" 
               placeholder="Search products..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-transparent text-2xl font-inter font-medium text-black focus:outline-none placeholder:text-black/20"
               autoFocus={searchOpen}
             />
@@ -157,7 +175,11 @@ export default function NavBar({ user }: { user?: any }) {
           <div className="flex gap-4 pt-4">
             <span className="text-xs font-semibold text-black/40 uppercase tracking-wider">Suggestions:</span>
             {["T-Shirts", "Outerwear", "Heavyweight", "Accessories"].map(term => (
-              <button key={term} className="text-xs font-medium text-black/60 hover:text-black transition-colors">
+              <button 
+                key={term} 
+                onClick={() => handleSuggestionClick(term)}
+                className="text-xs font-medium text-black/60 hover:text-black transition-colors"
+              >
                 {term}
               </button>
             ))}
