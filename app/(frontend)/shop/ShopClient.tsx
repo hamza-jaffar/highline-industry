@@ -31,9 +31,11 @@ interface ShopClientProps {
   collectionParam?: string;
   sortParam?: string;
   queryParam?: string;
+  subCollections?: any[];
+  currentCollection?: any;
 }
 
-export default function ShopClient({ initialProducts, initialPageInfo, collectionParam, sortParam, queryParam }: ShopClientProps) {
+export default function ShopClient({ initialProducts, initialPageInfo, collectionParam, sortParam, queryParam, subCollections = [], currentCollection }: ShopClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -142,7 +144,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
 
     setIsLoadingMore(true);
 
-    let sortKey = "BEST_SELLING";
+    let sortKey = "RELEVANCE";
     let reverse = false;
 
     if (activeSortValue === "new") {
@@ -170,7 +172,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
     }
 
     setIsLoadingMore(false);
-  }, [pageInfo, isLoadingMore, activeCategory, activeSortValue]);
+  }, [pageInfo, isLoadingMore, activeCategory, activeSortValue, activeQuery]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -194,9 +196,22 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
       <div className="flex flex-col w-full min-h-screen pt-24 pb-20 px-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 mt-12">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-sora font-semibold text-[#111] tracking-tight">The Catalog</h1>
-            <p className="text-[#737373] text-sm">Engineered garments for modern brands.</p>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#c0c0c0]">
+              <Link href="/shop" className="hover:text-black transition-colors">Catalog</Link>
+              {currentCollection && (
+                <>
+                  <span className="text-black/20">/</span>
+                  <span className="text-black">{currentCollection.title}</span>
+                </>
+              )}
+            </div>
+            <h1 className="text-3xl font-sora font-semibold text-[#111] tracking-tight">
+              {currentCollection?.title || "The Catalog"}
+            </h1>
+            <p className="text-[#737373] text-sm">
+              {currentCollection?.description || "Engineered garments for modern brands."}
+            </p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -210,7 +225,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
                 className="w-full pl-4 pr-10 py-2 border border-black/10 rounded-md text-sm text-[#111] bg-white placeholder:text-[#737373] focus:outline-none focus:border-black transition-colors shadow-sm"
               />
               {searchValue && (
-                <button 
+                <button
                   onClick={() => {
                     setSearchValue('');
                     updateUrlParams('q', '');
@@ -261,20 +276,46 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
           </div>
         </div>
 
-        {/* Categories Desktop & Mobile */}
+        {/* Categories / Sub-collections */}
         <div className="flex overflow-x-auto pb-4 mb-8 no-scrollbar gap-2 border-b border-black/5">
-          {FILTER_CATEGORIES.map((cat) => (
-            <button
-              key={cat.label}
-              onClick={() => handleCatClick(cat)}
-              className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${isCatActive(cat)
-                ? "bg-black text-white"
-                : "text-[#737373] hover:text-black hover:bg-black/5"
-                }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {(!currentCollection || subCollections.length === 0) ? (
+            FILTER_CATEGORIES.map((cat) => (
+              <button
+                key={cat.label}
+                onClick={() => handleCatClick(cat)}
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${isCatActive(cat)
+                  ? "bg-black text-white"
+                  : "text-[#737373] hover:text-black hover:bg-black/5"
+                  }`}
+              >
+                {cat.label}
+              </button>
+            ))
+          ) : (
+            <>
+              <button
+                onClick={() => updateUrlParams("collection", currentCollection.handle)}
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === currentCollection.handle
+                  ? "bg-black text-white"
+                  : "text-[#737373] hover:text-black hover:bg-black/5"
+                  }`}
+              >
+                All {currentCollection.title}
+              </button>
+              {subCollections.map((sub) => (
+                <button
+                  key={sub.id}
+                  onClick={() => updateUrlParams("collection", sub.handle)}
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === sub.handle
+                    ? "bg-black text-white"
+                    : "text-[#737373] hover:text-black hover:bg-black/5"
+                    }`}
+                >
+                  {sub.title}
+                </button>
+              ))}
+            </>
+          )}
         </div>
 
         {/* Grid */}
@@ -316,7 +357,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
                   </h3>
                 </div>
                 <p className="font-semibold text-sm text-[#111]">
-                  ${product.priceRange?.minVariantPrice?.amount || '0.00'}
+                  {product.priceRange?.minVariantPrice?.amount || '0.00'} {product.priceRange?.minVariantPrice?.currencyCode}
                 </p>
               </div>
             </div>

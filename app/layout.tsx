@@ -29,6 +29,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body
         className={`${inter.variable} ${sora.variable} font-sans antialiased bg-[#fafafa] text-[#111] min-h-screen selection:bg-black selection:text-white relative`}
+        suppressHydrationWarning
       >
         {children}
         <Toaster position="top-center" toastOptions={{

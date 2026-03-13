@@ -18,7 +18,7 @@ export default async function ShopPage(props: {
   const sortParam = typeof sort === 'string' ? sort : undefined;
   const queryParam = typeof q === 'string' ? q : undefined;
 
-  let sortKey = "BEST_SELLING";
+  let sortKey = "RELEVANCE";
   let reverse = false;
 
   if (sortParam === "new" || sortParam === "newest") {
@@ -30,6 +30,18 @@ export default async function ShopPage(props: {
   } else if (sortParam === "price-desc") {
     sortKey = "PRICE";
     reverse = true;
+  }
+
+  const { getCollectionByHandle, getSubCollections } = await import("@/lib/shopify/collection.query");
+  
+  let currentCollection = null;
+  let subCollections: any[] = [];
+  
+  if (collectionParam) {
+    currentCollection = await getCollectionByHandle(collectionParam);
+    if (currentCollection) {
+      subCollections = await getSubCollections(currentCollection.id);
+    }
   }
 
   const { edges, pageInfo } = await getProducts({
@@ -47,6 +59,8 @@ export default async function ShopPage(props: {
       collectionParam={collectionParam}
       sortParam={sortParam}
       queryParam={queryParam}
+      subCollections={subCollections}
+      currentCollection={currentCollection}
     />
   );
 }
