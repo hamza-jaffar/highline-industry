@@ -1,8 +1,8 @@
 import { createServerClient } from '@/lib/supabase/server-client';
-import { getUserRole } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
 import { Box, MapPin, CreditCard } from 'lucide-react';
 import Link from 'next/link';
+import { getUserRole } from '@/lib/queries/userRole';
 
 export default async function UserDashboard() {
   const supabase = await createServerClient();

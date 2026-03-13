@@ -3,9 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server-client'
-import { db } from '@/db'
-import { userRoles } from '@/db/schemas/user-roles.schema'
-import { getUserRole } from '@/lib/db/queries'
+import { getUserRole } from '@/lib/queries/userRole';
 
 export type FormState = {
   success: boolean;

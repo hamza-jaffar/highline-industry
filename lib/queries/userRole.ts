@@ -10,7 +10,10 @@ export async function getUserRole(userId: string) {
       .where(eq(userRoles.userId, userId))
       .limit(1);
 
+      console.log("ROLE:", roleRecord.role);
+
     return roleRecord?.role || 'user';
+
   } catch (error) {
     console.error('Error fetching user role:', error);
     return 'user';
