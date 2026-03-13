@@ -31,9 +31,6 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
               <h1 className="text-3xl md:text-5xl font-sora font-semibold text-[#0a0a0a] tracking-tight">
                 {product.title}
               </h1>
-              <p className="text-xl font-semibold text-[#111]">
-                {product.priceRange.minVariantPrice.amount} {product.priceRange.minVariantPrice.currencyCode}
-              </p>
             </div>
 
             <div className="py-8 border-b border-black/5">
