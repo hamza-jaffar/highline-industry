@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Package, FolderTree, LayoutDashboard, Settings, X } from "lucide-react";
+import Image from "next/image";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,11 +26,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             key={item.href}
             href={item.href}
             onClick={() => mobile && setMobileMenuOpen(false)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              isActive 
-                ? "bg-black text-white shadow-shadow-sm" 
-                : "text-[#737373] hover:text-black hover:bg-black/5"
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive
+              ? "bg-black text-white shadow-shadow-sm"
+              : "text-[#737373] hover:text-black hover:bg-black/5"
+              }`}
           >
             <item.icon className="w-4 h-4" />
             {item.label}
@@ -45,7 +45,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-black/5 z-40 hidden lg:block">
         <div className="p-8">
           <Link href="/" className="text-xl font-sora font-bold tracking-tight text-black flex items-center gap-2">
-            <div className="w-8 h-8 bg-black rounded-lg" />
+            {/* <div className="w-8 h-8 bg-black rounded-lg" /> */}
+            <Image src="/logo.png" alt="Logo" width={28} height={28} />
             HIGHLINE
           </Link>
         </div>
@@ -58,7 +59,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="w-6 h-6 bg-black rounded-lg" />
           HIGHLINE
         </Link>
-        <button 
+        <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-2 text-black/60 hover:text-black transition-colors"
         >

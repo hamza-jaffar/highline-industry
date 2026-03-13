@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, User, X, Menu, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/actions/signup.actions";
+import Image from "next/image";
 
 export default function NavBar({ user }: { user?: any }) {
   const [open, setOpen] = useState(false);
@@ -46,8 +47,9 @@ export default function NavBar({ user }: { user?: any }) {
           {/* Logo */}
           <Link
             href="/"
-            className="text-lg font-sora font-bold tracking-tight text-black flex items-center"
+            className="text-lg font-sora font-bold tracking-tight text-black flex gap-2 items-center"
           >
+            <Image src="/logo.png" alt="Logo" width={18} height={18} />
             HIGHLINE
           </Link>
 
