@@ -239,22 +239,22 @@ function ProductsAdminPageInner() {
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-lg bg-black/5 shrink-0" />
                             <div className="space-y-2">
-                              <div className="h-4 w-40 bg-black/5 rounded" />
-                              <div className="h-3 w-24 bg-black/5 rounded" />
+                              <div className="h-4 w-40 bg-black/20 rounded" />
+                              <div className="h-3 w-24 bg-black/20 rounded" />
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="h-4 w-12 bg-black/5 rounded mx-auto" />
+                          <div className="h-4 w-12 bg-black/20 rounded mx-auto" />
                         </td>
                         <td className="px-6 py-4">
-                          <div className="h-5 w-16 bg-black/5 rounded-full mx-auto" />
+                          <div className="h-5 w-16 bg-black/20 rounded-full mx-auto" />
                         </td>
                         <td className="px-6 py-4">
-                          <div className="h-4 w-20 bg-black/5 rounded mx-auto" />
+                          <div className="h-4 w-20 bg-black/20 rounded mx-auto" />
                         </td>
                         <td className="px-6 py-4">
-                          <div className="h-8 w-8 bg-black/5 rounded-lg ml-auto" />
+                          <div className="h-8 w-8 bg-black/20 rounded-lg ml-auto" />
                         </td>
                       </tr>
                     ))
