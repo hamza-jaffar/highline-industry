@@ -32,7 +32,7 @@ export default function LoginPage() {
       </Link>
 
       {/* Card */}
-      <div className="w-full max-w-[400px] bg-white border border-black/10 shadow-elevated rounded-2xl p-8">
+      <div className="w-full max-w-100 bg-white border border-black/10 shadow-elevated rounded-2xl p-8">
 
         {/* Header */}
         <div className="text-center mb-8">

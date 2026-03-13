@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { getUserRole } from '@/lib/db/queries'
+import { getUserRole } from '../queries/userRole';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

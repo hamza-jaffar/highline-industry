@@ -1,7 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server-client';
-import { getUserRole } from '@/lib/db/queries';
-import { redirect } from 'next/navigation';
-import { Settings, Users, Package, Activity, FolderTree, TrendingUp, Shield, Zap } from 'lucide-react';
+import { Users, Package, Activity, FolderTree, TrendingUp, Shield, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminDashboard() {

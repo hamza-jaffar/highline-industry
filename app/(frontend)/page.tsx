@@ -41,9 +41,9 @@ export default function HomePage() {
 
         {/* Hero Abstract Graphic (Subtle) */}
         <div className="absolute right-0 top-32 -z-10 hidden lg:block opacity-40">
-          <div className="w-150 h-[600px] border border-black/5 rounded-full absolute -right-40 -top-40" />
-          <div className="w-[400px] w-100 border border-black/10 rounded-full absolute -right-20 -top-20" />
-          <div className="w-[200px] h-[200px] border border-black/20 rounded-full absolute right-0 top-0 bg-surface" />
+          <div className="w-150 h-150 border border-black/5 rounded-full absolute -right-40 -top-40" />
+          <div className="w-100 border border-black/10 rounded-full absolute -right-20 -top-20" />
+          <div className="w-50 h-50 border border-black/20 rounded-full absolute right-0 top-0 bg-surface" />
         </div>
       </section>
 
@@ -95,7 +95,7 @@ export default function HomePage() {
             { tag: "Utility", title: "Industrial Denim", img: "D" }
           ].map((cat, i) => (
             <Link key={i} href="/shop" className="group block">
-              <div className="w-full aspect-[4/5] bg-white border border-black/10 rounded-xl mb-4 flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-elevated group-hover:border-black/20">
+              <div className="w-full aspect-4/5 bg-white border border-black/10 rounded-xl mb-4 flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-elevated group-hover:border-black/20">
                 <div className="text-[10rem] font-black text-black/5 group-hover:text-black/10 transition-colors pointer-events-none select-none">
                   {cat.img}
                 </div>

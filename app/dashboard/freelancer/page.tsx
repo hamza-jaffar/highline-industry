@@ -1,7 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server-client';
-import { getUserRole } from '@/lib/db/queries';
 import { redirect } from 'next/navigation';
 import { ExternalLink, ShoppingBag, BarChart3 } from 'lucide-react';
+import { getUserRole } from '@/lib/queries/userRole';
 
 export default async function FreelancerDashboard() {
   const supabase = await createServerClient();
