@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server-client'
 import { db } from '@/db'
 import { userRoles } from '@/db/schemas/user-roles.schema'
+import { getUserRole } from '@/lib/db/queries'
 
 export type FormState = {
   success: boolean;
@@ -17,13 +18,27 @@ export async function login(prevState: FormState, formData: FormData): Promise<F
 
   const supabase = await createServerClient()
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
   if (error) {
     return { success: false, message: error.message };
+  }
+
+  // Get user role and redirect to appropriate dashboard
+  if (data?.user) {
+    try {
+      const role = await getUserRole(data.user.id);
+      revalidatePath('/', 'layout')
+      redirect(`/dashboard/${role}`)
+    } catch (error) {
+      console.error('Error getting user role after login:', error);
+      // Fallback to user dashboard
+      revalidatePath('/', 'layout')
+      redirect('/dashboard/user')
+    }
   }
 
   revalidatePath('/', 'layout')
@@ -51,21 +66,12 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
     return { success: false, message: error.message };
   }
 
-  // Insert the authenticated user into our custom roles table
-  if (data?.user) {
-    try {
-       await db.insert(userRoles).values({
-         userId: data.user.id,
-         role: 'user', // Default role for all new signups
-       });
-    } catch (dbError: any) {
-       console.error("Failed to insert user role:", dbError);
-       return { success: false, message: `Failed to create user role: ${dbError.message || 'Unknown database error'}` };
-    }
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/dashboard/user')
+  // Always assume email confirmation is required for security
+  // Role will be created in the callback route after email verification
+  return {
+    success: true,
+    message: "Registration successful! Please check your email and click the verification link to complete your account setup."
+  };
 }
 
 export async function signout() {
