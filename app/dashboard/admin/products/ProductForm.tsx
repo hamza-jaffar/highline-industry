@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Plus, X, Loader2, Image as ImageIcon, Upload, Trash2, Layers, Tag, Settings, Package, ChevronDown, Monitor, Globe } from "lucide-react";
 import Link from "next/link";
 import { getAdminCollections } from "@/app/actions/admin.action";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 interface ProductFormProps {
   initialData?: any;
@@ -148,12 +149,11 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
                 <label className="text-sm font-bold text-[#111] uppercase tracking-wider flex items-center gap-2">
                   <Monitor className="w-4 h-4 text-[#737373]" /> Description
                 </label>
-                <textarea 
-                  rows={8}
+                <RichTextEditor
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(html) => setFormData({...formData, description: html})}
                   placeholder="Tell your customers about this product..."
-                  className="w-full px-4 py-3 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all resize-none leading-relaxed"
+                  minHeight={220}
                 />
               </div>
             </div>
