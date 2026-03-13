@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { getAdminCollections, deleteCollection } from "@/app/actions/admin.action";
 import { toast } from "sonner";
@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
-export default function CollectionsAdminPage() {
+function CollectionsAdminPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -367,5 +367,13 @@ export default function CollectionsAdminPage() {
         isLoading={isDeleting}
       />
     </div>
+  );
+}
+
+export default function CollectionsAdminPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-sm text-[#737373]">Loading...</div>}>
+      <CollectionsAdminPageInner />
+    </Suspense>
   );
 }

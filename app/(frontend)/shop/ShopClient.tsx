@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { SlidersHorizontal, ChevronDown, X, Check, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShopifyProductEdge } from "@/lib/shopify/product.query";
@@ -27,7 +27,7 @@ interface ShopClientProps {
   allCollections?: any[];
 }
 
-export default function ShopClient({ 
+function ShopClientInner({ 
   initialProducts, 
   initialPageInfo, 
   collectionParam, 
@@ -469,5 +469,13 @@ export default function ShopClient({
         </div>
       </div>
     </>
+  );
+}
+
+export default function ShopClient(props: ShopClientProps) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-black/20 border-t-black rounded-full animate-spin" /></div>}>
+      <ShopClientInner {...props} />
+    </Suspense>
   );
 }
