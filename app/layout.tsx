@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${sora.variable} font-sans antialiased bg-[#fafafa] text-[#111] min-h-screen selection:bg-black selection:text-white relative`}
+        className={`${inter.variable} ${sora.variable} font-sans antialiased bg-surface text-[#111] min-h-screen selection:bg-black selection:text-white relative`}
         suppressHydrationWarning
       >
         {children}

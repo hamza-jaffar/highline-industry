@@ -34,7 +34,7 @@ export default function NewProductPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-sora font-semibold text-[#111]">New Product</h1>
-          <p className="text-[#737373] text-sm">Create a new item in your catalog.</p>
+          <p className="text-muted text-sm">Create a new item in your catalog.</p>
         </div>
       </div>
 

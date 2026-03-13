@@ -15,7 +15,7 @@ export default function AboutPage() {
           <h1 className="text-5xl md:text-7xl font-sora font-semibold text-[#111] leading-[1.1] mb-8">
             Factory as a Service.
           </h1>
-          <p className="text-xl md:text-2xl text-[#737373] font-inter leading-relaxed max-w-2xl">
+          <p className="text-xl md:text-2xl text-muted font-inter leading-relaxed max-w-2xl">
             We are building the digital infrastructure for the next generation of apparel brands. Highline removes the friction of physical production so you can focus on what matters: design and community.
           </p>
         </section>
@@ -39,12 +39,12 @@ export default function AboutPage() {
               desc: "No minimum order quantities. Test a design with 5 units, scale a hit to 50,000 units the next week without changing suppliers.",
             }
           ].map((feature, i) => (
-            <div key={i} className="p-10 rounded-2xl bg-[#fafafa] border border-black/5 hover:shadow-elevated transition-shadow">
+            <div key={i} className="p-10 rounded-2xl bg-surface border border-black/5 hover:shadow-elevated transition-shadow">
                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-black/10 flex items-center justify-center mb-8">
                   <feature.icon className="w-6 h-6 text-black" />
                </div>
                <h3 className="text-lg font-sora font-semibold text-[#111] mb-4">{feature.title}</h3>
-               <p className="text-[#737373] font-inter leading-relaxed text-sm">
+               <p className="text-muted font-inter leading-relaxed text-sm">
                  {feature.desc}
                </p>
             </div>
@@ -69,7 +69,7 @@ export default function AboutPage() {
                  </div>
                  <div className="flex-1 pb-12 border-b border-black/5 group-hover:border-black/20 transition-colors">
                     <h3 className="text-xl font-sora font-semibold text-[#111] mb-3">{step.title}</h3>
-                    <p className="text-[#737373] text-base leading-relaxed max-w-xl">{step.text}</p>
+                    <p className="text-muted text-base leading-relaxed max-w-xl">{step.text}</p>
                  </div>
                </div>
              ))}
@@ -77,9 +77,9 @@ export default function AboutPage() {
         </section>
 
         {/* Call to Action */}
-        <section className="bg-[#fafafa] rounded-3xl p-12 md:p-24 border border-black/5 flex flex-col items-center text-center">
+        <section className="bg-surface rounded-3xl p-12 md:p-24 border border-black/5 flex flex-col items-center text-center">
           <h2 className="text-4xl font-sora font-semibold text-[#111] mb-6">Build the physical world.</h2>
-          <p className="text-[#737373] mb-10 max-w-lg">Join the platform powering the fastest growing modern apparel brands.</p>
+          <p className="text-muted mb-10 max-w-lg">Join the platform powering the fastest growing modern apparel brands.</p>
           <Link 
             href="/signup" 
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#111] text-white text-sm font-semibold rounded-md shadow-premium hover:bg-black transition-colors group"

@@ -140,7 +140,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-bold text-[#111] uppercase tracking-wider flex items-center gap-2">
-                  <Tag className="w-4 h-4 text-[#737373]" /> Title
+                  <Tag className="w-4 h-4 text-muted" /> Title
                 </label>
                 <input 
                   required
@@ -148,13 +148,13 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   placeholder="Short Sleeve T-Shirt"
-                  className="w-full px-4 py-3 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all font-medium"
+                  className="w-full px-4 py-3 bg-surface border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all font-medium"
                 />
               </div>
               
               <div className="space-y-2">
                 <label className="text-sm font-bold text-[#111] uppercase tracking-wider flex items-center gap-2">
-                  <Monitor className="w-4 h-4 text-[#737373]" /> Description
+                  <Monitor className="w-4 h-4 text-muted" /> Description
                 </label>
                 <RichTextEditor
                   value={formData.description}
@@ -169,7 +169,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
           {/* Media Manager */}
           <div className="bg-white border border-black/10 rounded-2xl p-8 space-y-6 shadow-sm">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+              <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
                 <ImageIcon className="w-4 h-4" /> Media Manager
               </h3>
               <input 
@@ -191,7 +191,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {previews.map((img, index) => (
-                <div key={index} className="relative aspect-square rounded-xl border border-black/5 overflow-hidden bg-[#fafafa] group">
+                <div key={index} className="relative aspect-square rounded-xl border border-black/5 overflow-hidden bg-surface group">
                   <img 
                     src={img.preview || img.url} 
                     alt="Preview" 
@@ -215,7 +215,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
               ))}
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="aspect-square rounded-xl border-2 border-dashed border-black/5 bg-[#fafafa] hover:border-black/20 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-[#737373]"
+                className="aspect-square rounded-xl border-2 border-dashed border-black/5 bg-surface hover:border-black/20 transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-muted"
               >
                 <div className="p-2 bg-white rounded-full shadow-sm border border-black/5 group-hover:scale-110 transition-transform">
                   <Plus className="w-5 h-5 text-black/40" />
@@ -227,8 +227,8 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
 
           {/* Variants Table */}
           <div className="bg-white border border-black/10 rounded-2xl overflow-hidden shadow-sm">
-            <div className="p-8 border-b border-black/5 flex items-center justify-between bg-[#fafafa]/50">
-              <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+            <div className="p-8 border-b border-black/5 flex items-center justify-between bg-surface/50">
+              <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
                 <Layers className="w-4 h-4" /> Variant Matrix
               </h3>
               <button 
@@ -241,24 +241,24 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-[600px]">
+              <table className="w-full text-left min-w-150">
                 <thead>
-                  <tr className="border-b border-black/5 bg-[#fafafa]/30">
-                    <th className="px-8 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider">Appearance</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center">Price</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center">Inventory</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center">SKU</th>
+                  <tr className="border-b border-black/5 bg-surface/30">
+                    <th className="px-8 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Appearance</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Price</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Inventory</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">SKU</th>
                     <th className="px-8 py-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/5">
                   {formData.variants.map((v: any, vIndex: number) => (
-                    <tr key={vIndex} className="group hover:bg-[#fafafa]/50 transition-colors">
+                    <tr key={vIndex} className="group hover:bg-surface/50 transition-colors">
                       <td className="px-8 py-6">
                         <div className="flex flex-col gap-2">
                           {v.options.map((opt: any, oIndex: number) => (
                             <div key={oIndex} className="flex items-center gap-3">
-                              <span className="text-[10px] font-bold text-[#737373] w-12">{opt.name}:</span>
+                              <span className="text-[10px] font-bold text-muted w-12">{opt.name}:</span>
                               <input 
                                 type="text"
                                 value={opt.value}
@@ -272,7 +272,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
                       </td>
                       <td className="px-6 py-6 text-center">
                         <div className="relative inline-block w-24">
-                          <span className="absolute left-3 top-2 text-[10px] text-[#737373]">$</span>
+                          <span className="absolute left-3 top-2 text-[10px] text-muted">$</span>
                           <input 
                             type="text"
                             value={v.price}
@@ -303,7 +303,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
                           <button 
                             type="button"
                             onClick={() => handleRemoveVariant(vIndex)}
-                            className="p-2 text-[#737373] hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            className="p-2 text-muted hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -322,18 +322,18 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
           
           {/* Status and Visibility */}
           <div className="bg-white border border-black/10 rounded-2xl p-8 space-y-6 shadow-sm">
-            <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
               <Settings className="w-4 h-4" /> Production Status
             </h3>
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-[#737373] uppercase tracking-wider">Product status</label>
+                <label className="text-xs font-bold text-muted uppercase tracking-wider">Product status</label>
                 <div className="relative group/select">
                   <select 
                     value={formData.status}
                     onChange={(e) => setFormData({...formData, status: e.target.value})}
-                    className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 appearance-none font-semibold"
+                    className="w-full px-4 py-2.5 bg-surface border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 appearance-none font-semibold"
                   >
                     <option value="ACTIVE">Active (Live)</option>
                     <option value="DRAFT">Draft (Hidden)</option>
@@ -345,11 +345,11 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
 
               <div className="pt-4 border-t border-black/5 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#737373] flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Market availability</span>
+                  <span className="text-muted flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Market availability</span>
                   <span className="font-bold text-green-500">Live</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#737373] flex items-center gap-2"><Settings className="w-3.5 h-3.5" /> Shopify sync</span>
+                  <span className="text-muted flex items-center gap-2"><Settings className="w-3.5 h-3.5" /> Shopify sync</span>
                   <span className="font-bold text-blue-500">Connected</span>
                 </div>
               </div>
@@ -358,13 +358,13 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
 
           {/* Organization */}
           <div className="bg-white border border-black/10 rounded-2xl p-8 space-y-6 shadow-sm">
-            <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
               <Package className="w-4 h-4" /> Organization
             </h3>
 
             <div className="space-y-4 font-inter">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-[#737373] uppercase tracking-wider text-[9px]">Category / Selection</label>
+                <label className="text-xs font-bold text-muted uppercase tracking-wider text-[9px]">Category / Selection</label>
                 <CollectionSelector 
                   collections={collections}
                   selectedId={formData.collections[0]}
@@ -380,13 +380,13 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-[#737373] uppercase tracking-wider text-[9px]">Industrial Vendor</label>
+                <label className="text-xs font-bold text-muted uppercase tracking-wider text-[9px]">Industrial Vendor</label>
                 <input 
                   type="text" 
                   value={formData.vendor}
                   onChange={(e) => setFormData({...formData, vendor: e.target.value})}
                   placeholder="Brand / Merchant"
-                  className="w-full px-4 py-2 bg-[#fafafa] border border-black/5 rounded-lg text-sm focus:outline-none focus:border-black/20 transition-all font-semibold"
+                  className="w-full px-4 py-2 bg-surface border border-black/5 rounded-lg text-sm focus:outline-none focus:border-black/20 transition-all font-semibold"
                 />
               </div>
             </div>
@@ -394,7 +394,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
 
           {/* Strategic Info */}
           <div className="bg-black text-white rounded-2xl p-8 shadow-xl space-y-4">
-            <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-wider tracking-[0.2em]">Product Analytics</h4>
+            <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Product Analytics</h4>
             <p className="text-xs leading-relaxed opacity-80">
               Every detail is synchronized across the global inventory fabric. Highline Industry ensures each variation is processed with real-time operational transparency.
             </p>
@@ -411,7 +411,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
         <div className="max-w-6xl mx-auto flex justify-end gap-3 px-4">
           <Link 
             href="/dashboard/admin/products"
-            className="px-6 py-2.5 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-[#fafafa] transition-all"
+            className="px-6 py-2.5 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-surface transition-all"
           >
             Discard
           </Link>
@@ -468,9 +468,9 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={isLoading}
-        className="w-full flex items-center justify-between px-4 py-2 bg-[#fafafa] border border-black/5 rounded-lg text-sm focus:outline-none hover:border-black/20 transition-all group"
+        className="w-full flex items-center justify-between px-4 py-2 bg-surface border border-black/5 rounded-lg text-sm focus:outline-none hover:border-black/20 transition-all group"
       >
-        <span className={selectedCollection ? "font-semibold text-[#111]" : "text-[#737373]"}>
+        <span className={selectedCollection ? "font-semibold text-[#111]" : "text-muted"}>
           {isLoading ? "Fetching infra..." : (selectedCollection?.title || "Select Collection")}
         </span>
         <ChevronDown className={`w-3.5 h-3.5 text-black/20 group-hover:text-black transition-all ${isOpen ? 'rotate-180' : ''}`} />
@@ -478,7 +478,7 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
 
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 bg-white border border-black/10 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 origin-top">
-          <div className="p-2 border-b border-black/5 bg-[#fafafa]/50">
+          <div className="p-2 border-b border-black/5 bg-surface/50">
             <input
               autoFocus
               type="text"
@@ -489,13 +489,13 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
             />
           </div>
 
-          <div className="max-h-[250px] overflow-y-auto p-1 space-y-0.5">
+          <div className="max-h-62.5 overflow-y-auto p-1 space-y-0.5">
             {!search ? (
               <>
                 <button
                   type="button"
                   onClick={() => { onSelect(null); setIsOpen(false); }}
-                  className="w-full text-left px-3 py-2 text-xs font-bold text-[#737373] hover:bg-[#fafafa] rounded-md transition-all"
+                  className="w-full text-left px-3 py-2 text-xs font-bold text-muted hover:bg-surface rounded-md transition-all"
                 >
                   NONE
                 </button>
@@ -505,7 +505,7 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
                       type="button"
                       onClick={() => { onSelect(root); setIsOpen(false); }}
                       className={`w-full text-left px-3 py-2 text-xs rounded-md transition-all flex items-center gap-2 ${
-                        selectedId === root.id ? 'bg-black text-white font-bold' : 'hover:bg-[#fafafa] text-[#111] font-semibold'
+                        selectedId === root.id ? 'bg-black text-white font-bold' : 'hover:bg-surface text-[#111] font-semibold'
                       }`}
                     >
                       <Layers className={`w-3 h-3 ${selectedId === root.id ? 'text-white' : 'text-blue-500'}`} />
@@ -517,7 +517,7 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
                         type="button"
                         onClick={() => { onSelect(child); setIsOpen(false); }}
                         className={`w-full text-left px-3 py-2 text-xs rounded-md transition-all flex items-center gap-2 pl-7 relative ${
-                          selectedId === child.id ? 'bg-black text-white font-bold' : 'hover:bg-[#fafafa] text-[#737373] font-medium'
+                          selectedId === child.id ? 'bg-black text-white font-bold' : 'hover:bg-surface text-muted font-medium'
                         }`}
                       >
                         <div className="absolute left-4 top-0 bottom-1/2 w-px bg-black/10" />
@@ -537,7 +537,7 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
                       type="button"
                       onClick={() => { onSelect(c); setIsOpen(false); }}
                       className={`w-full text-left px-3 py-2 text-xs rounded-md transition-all flex items-center gap-2 ${
-                        selectedId === c.id ? 'bg-black text-white font-bold' : 'hover:bg-[#fafafa] text-[#111] font-medium'
+                        selectedId === c.id ? 'bg-black text-white font-bold' : 'hover:bg-surface text-[#111] font-medium'
                       }`}
                     >
                       {c.title}
@@ -545,7 +545,7 @@ function CollectionSelector({ collections, selectedId, onSelect, isLoading }: {
                   ))
                 ) : (
                   <div className="px-3 py-4 text-center">
-                    <p className="text-[10px] font-bold text-[#737373] uppercase tracking-widest">No matching records</p>
+                    <p className="text-[10px] font-bold text-muted uppercase tracking-widest">No matching records</p>
                   </div>
                 )}
               </div>

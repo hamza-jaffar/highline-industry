@@ -53,7 +53,7 @@ export default function ProductDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-black/20" />
-        <p className="text-sm text-[#737373] mt-4">Retrieving product core data...</p>
+        <p className="text-sm text-muted mt-4">Retrieving product core data...</p>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function ProductDetailPage() {
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
         <h2 className="text-2xl font-sora font-semibold text-[#111]">Product Not Found</h2>
-        <p className="text-[#737373]">{error || "The requested product infrastructure could not be located."}</p>
+        <p className="text-muted">{error || "The requested product infrastructure could not be located."}</p>
         <Link 
           href="/dashboard/admin/products"
           className="inline-flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-black/80 transition-all"
@@ -94,7 +94,7 @@ export default function ProductDetailPage() {
                 {product.status}
               </span>
             </div>
-            <p className="text-[#737373] text-sm font-mono">{product.id.split('/').pop()}</p>
+            <p className="text-muted text-sm font-mono">{product.id.split('/').pop()}</p>
           </div>
         </div>
 
@@ -102,14 +102,14 @@ export default function ProductDetailPage() {
           <button 
             disabled={isDeleting}
             onClick={() => setShowDeleteDialog(true)}
-            className="p-2 text-[#737373] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+            className="p-2 text-muted hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
           >
             <Trash2 className="w-5 h-5" />
           </button>
           <a 
             href={`/product/${product.handle}`} 
             target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-[#fafafa] transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-surface transition-all"
           >
             <ExternalLink className="w-4 h-4" />
             View Live
@@ -138,18 +138,18 @@ export default function ProductDetailPage() {
         <div className="lg:col-span-2 space-y-8">
           {/* Images */}
           <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm overflow-hidden">
-             <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider mb-6 flex items-center gap-2">
+             <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-6 flex items-center gap-2">
                <Package className="w-4 h-4" /> Gallery Details
              </h3>
              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                {product.images.edges.map(({ node }: any, i: number) => (
-                 <div key={i} className="aspect-square rounded-xl border border-black/5 overflow-hidden bg-[#fafafa]">
+                 <div key={i} className="aspect-square rounded-xl border border-black/5 overflow-hidden bg-surface">
                    <img src={node.url} alt={node.altText} className="w-full h-full object-cover" />
                  </div>
                ))}
                {product.images.edges.length === 0 && (
                  <div className="col-span-full py-12 text-center border-2 border-dashed border-black/5 rounded-xl">
-                    <p className="text-xs text-[#737373]">No industrial assets uploaded.</p>
+                    <p className="text-xs text-muted">No industrial assets uploaded.</p>
                  </div>
                )}
              </div>
@@ -157,7 +157,7 @@ export default function ProductDetailPage() {
 
           {/* Description */}
           <div className="bg-white border border-black/10 rounded-2xl p-8 shadow-sm">
-            <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider mb-6 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-6 flex items-center gap-2">
               <Settings className="w-4 h-4" /> Description
             </h3>
             <div 
@@ -168,25 +168,25 @@ export default function ProductDetailPage() {
 
           {/* Variants Table */}
           <div className="bg-white border border-black/10 rounded-2xl overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-black/5 bg-[#fafafa]/50">
-              <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+            <div className="p-6 border-b border-black/5 bg-surface/50">
+              <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
                 <Layers className="w-4 h-4" /> Variant Matrix
               </h3>
             </div>
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-black/5">
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider">Title</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider">SKU</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider">Price</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-right">Inventory</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Title</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">SKU</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Price</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-right">Inventory</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5">
                 {product.variants.edges.map(({ node }: any) => (
-                  <tr key={node.id} className="hover:bg-[#fafafa] transition-colors">
+                  <tr key={node.id} className="hover:bg-surface transition-colors">
                     <td className="px-6 py-4 text-sm font-medium text-[#111]">{node.title}</td>
-                    <td className="px-6 py-4 text-xs font-mono text-[#737373]">{node.sku || 'N/A'}</td>
+                    <td className="px-6 py-4 text-xs font-mono text-muted">{node.sku || 'N/A'}</td>
                     <td className="px-6 py-4 text-sm font-semibold text-[#111]">{node.price}</td>
                     <td className="px-6 py-4 text-right">
                       <span className={`text-xs font-bold ${node.inventoryQuantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -204,25 +204,25 @@ export default function ProductDetailPage() {
         <div className="space-y-8">
            <div className="bg-white border border-black/10 rounded-2xl p-8 shadow-sm space-y-6">
               <div>
-                <h4 className="text-[10px] font-bold text-[#737373] uppercase tracking-wider mb-2">Organization</h4>
+                <h4 className="text-[10px] font-bold text-muted uppercase tracking-wider mb-2">Organization</h4>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-[#737373]">Vendor</span>
+                    <span className="text-muted">Vendor</span>
                     <span className="font-semibold">{product.vendor}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-[#737373]">Type</span>
+                    <span className="text-muted">Type</span>
                     <span className="font-semibold">{product.productType || 'Uncategorized'}</span>
                   </div>
                 </div>
               </div>
 
               <div className="pt-6 border-t border-black/5">
-                <h4 className="text-[10px] font-bold text-[#737373] uppercase tracking-wider mb-2">Options</h4>
+                <h4 className="text-[10px] font-bold text-muted uppercase tracking-wider mb-2">Options</h4>
                 <div className="flex flex-wrap gap-2">
                   {product.options.map((opt: any, i: number) => (
-                    <div key={i} className="px-3 py-1 bg-[#fafafa] border border-black/5 rounded-lg">
-                      <p className="text-[10px] font-bold text-[#737373]">{opt.name}</p>
+                    <div key={i} className="px-3 py-1 bg-surface border border-black/5 rounded-lg">
+                      <p className="text-[10px] font-bold text-muted">{opt.name}</p>
                       <p className="text-xs font-semibold">{opt.values.join(', ')}</p>
                     </div>
                   ))}

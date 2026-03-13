@@ -106,7 +106,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g. Winter Essentials"
-                  className="w-full px-4 py-3 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all"
+                  className="w-full px-4 py-3 bg-surface border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all"
                 />
               </div>
 
@@ -117,7 +117,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                   value={formData.handle}
                   onChange={(e) => setFormData({ ...formData, handle: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
                   placeholder="e.g. winter-essentials"
-                  className="w-full px-4 py-3 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all font-mono"
+                  className="w-full px-4 py-3 bg-surface border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all font-mono"
                 />
               </div> */}
 
@@ -145,19 +145,19 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="w-full border-2 border-dashed border-black/5 rounded-xl p-8 flex flex-col items-center justify-center gap-3 bg-[#fafafa] group-hover/upload:border-black/20 transition-all">
+                  <div className="w-full border-2 border-dashed border-black/5 rounded-xl p-8 flex flex-col items-center justify-center gap-3 bg-surface group-hover/upload:border-black/20 transition-all">
                     <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-black/5">
                       <ImageIcon className="w-5 h-5 text-black/40" />
                     </div>
                     <div className="text-center">
                       <p className="text-xs font-semibold text-[#111]">Click to upload or drag and drop</p>
-                      <p className="text-[10px] text-[#737373] mt-1">PNG, JPG or GIF (max. 2MB)</p>
+                      <p className="text-[10px] text-muted mt-1">PNG, JPG or GIF (max. 2MB)</p>
                     </div>
                   </div>
                 </div>
               </div>
               {previewUrl && (
-                <div className="relative aspect-video rounded-xl border border-black/5 overflow-hidden bg-[#fafafa] group/preview">
+                <div className="relative aspect-video rounded-xl border border-black/5 overflow-hidden bg-surface group/preview">
                   <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-all flex items-center justify-center">
                     <button
@@ -181,7 +181,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
         {/* Sidebar */}
         <div className="space-y-8">
           <div className="bg-white border border-black/10 rounded-2xl p-8 space-y-6 shadow-sm">
-            <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
               <FolderOpen className="w-4 h-4" /> Organization
             </h3>
 
@@ -190,11 +190,11 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                 <label className="text-sm font-medium text-[#111]">Parent Collection</label>
                 <div className="relative group/dropdown">
                   <div className="relative">
-                    <Search className="absolute left-3 top-3 w-3.5 h-3.5 text-[#737373]" />
+                    <Search className="absolute left-3 top-3 w-3.5 h-3.5 text-muted" />
                     <input
                       type="text"
                       placeholder="Search parents..."
-                      className="w-full pl-9 pr-4 py-2 bg-[#fafafa] border border-black/5 rounded-t-xl text-xs focus:outline-none focus:border-black/20 transition-all border-b-0"
+                      className="w-full pl-9 pr-4 py-2 bg-surface border border-black/5 rounded-t-xl text-xs focus:outline-none focus:border-black/20 transition-all border-b-0"
                       onChange={(e) => {
                         const val = e.target.value.toLowerCase();
                         setParentSearch(val);
@@ -204,13 +204,13 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                   </div>
 
                   {isDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 bg-white border border-black/10 rounded-b-xl shadow-xl z-50 max-h-[300px] overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 bg-white border border-black/10 rounded-b-xl shadow-xl z-50 max-h-75 overflow-y-auto">
                       <div
                         onClick={() => {
                           setFormData({ ...formData, parentId: "" });
                           setIsDropdownOpen(false);
                         }}
-                        className={`px-4 py-3 text-xs cursor-pointer hover:bg-[#fafafa] transition-all flex items-center gap-2 ${!formData.parentId ? 'bg-black/5 font-bold' : ''}`}
+                        className={`px-4 py-3 text-xs cursor-pointer hover:bg-surface transition-all flex items-center gap-2 ${!formData.parentId ? 'bg-black/5 font-bold' : ''}`}
                       >
                         <FolderOpen className="w-3 h-3 opacity-40" />
                         None (Top Level)
@@ -226,7 +226,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                               setFormData({ ...formData, parentId: node.id });
                               setIsDropdownOpen(false);
                             }}
-                            className={`px-4 py-3 text-xs cursor-pointer hover:bg-[#fafafa] transition-all flex items-center justify-between group ${formData.parentId === node.id ? 'bg-black/5 font-bold' : ''}`}
+                            className={`px-4 py-3 text-xs cursor-pointer hover:bg-surface transition-all flex items-center justify-between group ${formData.parentId === node.id ? 'bg-black/5 font-bold' : ''}`}
                           >
                             <div className="flex items-center gap-2">
                               {node.image?.url ? (
@@ -241,7 +241,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                         ))}
 
                       {collections.filter(({ node }) => node.title.toLowerCase().includes(parentSearch)).length === 0 && (
-                        <div className="px-4 py-8 text-center text-[10px] text-[#737373] italic">
+                        <div className="px-4 py-8 text-center text-[10px] text-muted italic">
                           No matching collections found.
                         </div>
                       )}
@@ -273,7 +273,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
                   </div>
                 )}
 
-                <p className="text-[10px] text-[#737373]">
+                <p className="text-[10px] text-muted">
                   Select a parent to create a collection hierarchy.
                 </p>
               </div>
@@ -293,7 +293,7 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
         <div className="max-w-6xl mx-auto flex justify-end gap-3">
           <Link
             href="/dashboard/admin/collections"
-            className="px-6 py-2.5 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-[#fafafa] transition-all"
+            className="px-6 py-2.5 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-surface transition-all"
           >
             Discard
           </Link>

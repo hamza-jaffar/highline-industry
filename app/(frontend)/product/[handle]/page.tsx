@@ -15,7 +15,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
   const images = product.images.edges.map((edge: any) => edge.node);
 
   return (
-    <div className="min-h-screen pt-32 pb-24 px-6 bg-[#fafafa]">
+    <div className="min-h-screen pt-32 pb-24 px-6 bg-surface">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
 
@@ -25,7 +25,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
           {/* Right Column - Details */}
           <div className="lg:py-8">
             <div className="space-y-4 border-b border-black/5 pb-8">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase text-[#737373]">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase text-muted">
                 Highline Industry
               </p>
               <h1 className="text-3xl md:text-5xl font-sora font-semibold text-[#0a0a0a] tracking-tight">
@@ -35,7 +35,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
 
             <div className="py-8 border-b border-black/5">
               <div
-                className="prose prose-sm md:prose-base text-[#737373] leading-relaxed"
+                className="prose prose-sm md:prose-base text-muted leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
               />
             </div>

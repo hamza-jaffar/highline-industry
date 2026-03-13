@@ -139,7 +139,7 @@ export default function ProductForm({ product }: { product: any }) {
           <div key={optionName} className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-semibold text-[#111]">{optionName}</span>
-              <span className="text-xs text-[#737373]">
+              <span className="text-xs text-muted">
                 {selectedOptions[optionName]}
               </span>
             </div>
@@ -156,8 +156,8 @@ export default function ProductForm({ product }: { product: any }) {
                       isActive
                         ? "border-black bg-black text-white shadow-sm"
                         : isAvailable
-                        ? "border-black/10 bg-white text-[#111] hover:border-black/30 hover:bg-[#fafafa]"
-                        : "border-black/5 bg-[#fafafa] text-black/20 cursor-not-allowed line-through"
+                        ? "border-black/10 bg-white text-[#111] hover:border-black/30 hover:bg-surface"
+                        : "border-black/5 bg-surface text-black/20 cursor-not-allowed line-through"
                     }`}
                   >
                     {value}
@@ -175,7 +175,7 @@ export default function ProductForm({ product }: { product: any }) {
         className={`w-full py-4 rounded-xl text-sm font-semibold transition-all shadow-sm ${
           isInStock
             ? "bg-[#111] text-white hover:bg-black"
-            : "bg-black/5 text-[#737373] cursor-not-allowed"
+            : "bg-black/5 text-muted cursor-not-allowed"
         }`}
       >
         {!selectedVariant

@@ -8,7 +8,7 @@ export default function ImageGallery({ images }: { images: { url: string; altTex
   if (!images || images.length === 0) {
     return (
       <div className="w-full aspect-[4/5] bg-black/5 rounded-2xl flex items-center justify-center">
-        <span className="text-sm font-semibold text-[#737373]">No Image</span>
+        <span className="text-sm font-semibold text-muted">No Image</span>
       </div>
     );
   }

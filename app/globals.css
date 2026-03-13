@@ -21,7 +21,7 @@
 
 @layer base {
   body {
-    @apply bg-[#fafafa] text-[#111] font-inter;
+    @apply bg-surface text-[#111] font-inter;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -93,4 +93,4 @@
   height: 0;
   pointer-events: none;
 }
-
+

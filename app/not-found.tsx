@@ -22,7 +22,7 @@ export default async function NotFound() {
             <h2 className="text-2xl font-sora font-semibold text-[#111]">
               Page Not Found
             </h2>
-            <p className="text-base text-[#737373] font-inter max-w-sm mx-auto leading-relaxed">
+            <p className="text-base text-muted font-inter max-w-sm mx-auto leading-relaxed">
               The infrastructure you are looking for has been moved, deleted, or does not exist.
             </p>
           </div>

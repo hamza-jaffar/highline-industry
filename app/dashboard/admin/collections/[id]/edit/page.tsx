@@ -60,7 +60,7 @@ export default function EditCollectionPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-black/20" />
-        <p className="text-sm text-[#737373] mt-4">Retrieving collection metadata...</p>
+        <p className="text-sm text-muted mt-4">Retrieving collection metadata...</p>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function EditCollectionPage() {
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
         <h2 className="text-2xl font-sora font-semibold text-[#111]">Collection Not Found</h2>
-        <p className="text-[#737373]">{error || "The collection you are trying to edit could not be found."}</p>
+        <p className="text-muted">{error || "The collection you are trying to edit could not be found."}</p>
         <Link 
           href="/dashboard/admin/collections"
           className="inline-flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-black/80 transition-all"
@@ -92,7 +92,7 @@ export default function EditCollectionPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-sora font-semibold text-[#111]">Edit Collection</h1>
-          <p className="text-[#737373] text-sm">Modify the structure and content of this group.</p>
+          <p className="text-muted text-sm">Modify the structure and content of this group.</p>
         </div>
       </div>
 
