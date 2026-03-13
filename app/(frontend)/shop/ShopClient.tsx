@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect, useCallback, Suspense } from "react";
-import { SlidersHorizontal, ChevronDown, X, Check, Loader2 } from "lucide-react";
+import {
+  SlidersHorizontal,
+  ChevronDown,
+  X,
+  Check,
+  Loader2,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ShopifyProductEdge } from "@/lib/shopify/product.query";
 import { loadMoreProducts } from "@/app/actions/shop.action";
@@ -11,7 +17,7 @@ const SORT_OPTIONS = [
   { label: "Featured", value: "featured" },
   { label: "Newest Arrivals", value: "new" },
   { label: "Price: Low to High", value: "price-asc" },
-  { label: "Price: High to Low", value: "price-desc" }
+  { label: "Price: High to Low", value: "price-desc" },
 ];
 
 const FILTER_CATEGORIES = []; // Removed in favor of dynamic categories
@@ -27,15 +33,15 @@ interface ShopClientProps {
   allCollections?: any[];
 }
 
-function ShopClientInner({ 
-  initialProducts, 
-  initialPageInfo, 
-  collectionParam, 
-  sortParam, 
-  queryParam, 
-  subCollections = [], 
+function ShopClientInner({
+  initialProducts,
+  initialPageInfo,
+  collectionParam,
+  sortParam,
+  queryParam,
+  subCollections = [],
   currentCollection,
-  allCollections = []
+  allCollections = [],
 }: ShopClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -58,17 +64,18 @@ function ShopClientInner({
 
   const activeCategory = collectionParam || "";
   const activeSortValue = sortParam || "featured";
-  const activeSortLabel = SORT_OPTIONS.find(o => o.value === activeSortValue)?.label || "Featured";
+  const activeSortLabel =
+    SORT_OPTIONS.find((o) => o.value === activeSortValue)?.label || "Featured";
   const activeQuery = queryParam || "";
 
   const dynamicCategories = [
     { label: "All", value: "", type: "collection" },
     { label: "New Arrivals", value: "new", type: "sort" },
-    ...allCollections.map(col => ({
+    ...allCollections.map((col) => ({
       label: col.title,
       value: col.handle,
-      type: "collection"
-    }))
+      type: "collection",
+    })),
   ];
 
   const [searchValue, setSearchValue] = useState(activeQuery);
@@ -79,15 +86,18 @@ function ShopClientInner({
   }, [activeQuery]);
 
   // Handle URL updates for filtering and sorting
-  const updateUrlParams = useCallback((key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    router.push(`/shop?${params.toString()}`, { scroll: false });
-  }, [searchParams, router]);
+  const updateUrlParams = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      router.push(`/shop?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
+  );
 
   // Debounced real-time search
   useEffect(() => {
@@ -146,7 +156,9 @@ function ShopClientInner({
     } else {
       document.body.style.overflow = "unset";
     }
-    return () => { document.body.style.overflow = "unset"; };
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [isFilterOpen]);
 
   // Infinite Scroll Logic
@@ -174,11 +186,11 @@ function ShopClientInner({
       sortKey,
       reverse,
       activeQuery || undefined,
-      pageInfo.endCursor
+      pageInfo.endCursor,
     );
 
     if (data) {
-      setProducts(prev => [...prev, ...data.edges]);
+      setProducts((prev) => [...prev, ...data.edges]);
       setPageInfo(data.pageInfo);
     }
 
@@ -192,7 +204,7 @@ function ShopClientInner({
           handleLoadMore();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (observerTarget.current) {
@@ -209,7 +221,9 @@ function ShopClientInner({
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 mt-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#c0c0c0]">
-              <Link href="/shop" className="hover:text-black transition-colors">Catalog</Link>
+              <Link href="/shop" className="hover:text-black transition-colors">
+                Catalog
+              </Link>
               {currentCollection && (
                 <>
                   <span className="text-black/20">/</span>
@@ -221,7 +235,8 @@ function ShopClientInner({
               {currentCollection?.title || "The Catalog"}
             </h1>
             <p className="text-muted text-sm">
-              {currentCollection?.description || "Engineered garments for modern brands."}
+              {currentCollection?.description ||
+                "Engineered garments for modern brands."}
             </p>
           </div>
 
@@ -238,8 +253,8 @@ function ShopClientInner({
               {searchValue && (
                 <button
                   onClick={() => {
-                    setSearchValue('');
-                    updateUrlParams('q', '');
+                    setSearchValue("");
+                    updateUrlParams("q", "");
                   }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-black p-1"
                 >
@@ -261,8 +276,10 @@ function ShopClientInner({
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className="flex items-center gap-2 px-4 py-2 border border-black/10 rounded-md text-sm font-medium text-black bg-white hover:bg-black/5 transition-colors shadow-sm"
               >
-                Sort by: {activeSortLabel.split(':')[0]}
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`} />
+                Sort by: {activeSortLabel.split(":")[0]}
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`}
+                />
               </button>
 
               {/* Sort Dropdown */}
@@ -278,7 +295,9 @@ function ShopClientInner({
                       className="w-full text-left px-4 py-2 text-sm text-[#111] hover:bg-surface flex items-center justify-between"
                     >
                       {option.label}
-                      {activeSortValue === option.value && <Check className="w-4 h-4 text-black" />}
+                      {activeSortValue === option.value && (
+                        <Check className="w-4 h-4 text-black" />
+                      )}
                     </button>
                   ))}
                 </div>
@@ -289,15 +308,16 @@ function ShopClientInner({
 
         {/* Categories / Sub-collections */}
         <div className="flex overflow-x-auto pb-4 mb-8 no-scrollbar gap-2 border-b border-black/5">
-          {(!currentCollection || subCollections.length === 0) ? (
+          {!currentCollection || subCollections.length === 0 ? (
             dynamicCategories.map((cat) => (
               <button
                 key={cat.label}
                 onClick={() => handleCatClick(cat)}
-                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${isCatActive(cat)
-                  ? "bg-black text-white"
-                  : "text-muted hover:text-black hover:bg-black/5"
-                  }`}
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
+                  isCatActive(cat)
+                    ? "bg-black text-white"
+                    : "text-muted hover:text-black hover:bg-black/5"
+                }`}
               >
                 {cat.label}
               </button>
@@ -305,11 +325,14 @@ function ShopClientInner({
           ) : (
             <>
               <button
-                onClick={() => updateUrlParams("collection", currentCollection.handle)}
-                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === currentCollection.handle
-                  ? "bg-black text-white"
-                  : "text-muted hover:text-black hover:bg-black/5"
-                  }`}
+                onClick={() =>
+                  updateUrlParams("collection", currentCollection.handle)
+                }
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
+                  activeCategory === currentCollection.handle
+                    ? "bg-black text-white"
+                    : "text-muted hover:text-black hover:bg-black/5"
+                }`}
               >
                 All {currentCollection.title}
               </button>
@@ -317,10 +340,11 @@ function ShopClientInner({
                 <button
                   key={sub.id}
                   onClick={() => updateUrlParams("collection", sub.handle)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === sub.handle
-                    ? "bg-black text-white"
-                    : "text-muted hover:text-black hover:bg-black/5"
-                    }`}
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
+                    activeCategory === sub.handle
+                      ? "bg-black text-white"
+                      : "text-muted hover:text-black hover:bg-black/5"
+                  }`}
                 >
                   {sub.title}
                 </button>
@@ -332,43 +356,46 @@ function ShopClientInner({
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-12 gap-x-6">
           {products.map(({ node: product }) => (
-            <div
-              key={product.id}
-              className="group block space-y-4"
-            >
-              <div className="relative aspect-[4/5] bg-surface border border-black/10 rounded-xl overflow-hidden transition-all group-hover:shadow-elevated group-hover:border-black/20">
-                {product.featuredImage?.url ? (
-                  <img
-                    src={product.featuredImage.url}
-                    alt={product.featuredImage.altText || product.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-black/5 font-black text-9xl select-none group-hover:scale-105 transition-transform duration-500">
-                    {product.title[0]}
+            <div key={product.id} className="group block space-y-4">
+              <div onClick={() => router.push(`/product/${product.handle}`)}>
+                <div className="relative aspect-4/5 bg-surface border border-black/10 rounded-xl overflow-hidden transition-all group-hover:shadow-elevated group-hover:border-black/20">
+                  {product.featuredImage?.url ? (
+                    <img
+                      src={product.featuredImage.url}
+                      alt={product.featuredImage.altText || product.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-black/5 font-black text-9xl select-none group-hover:scale-105 transition-transform duration-500">
+                      {product.title[0]}
+                    </div>
+                  )}
+
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
+
+                  <div className="absolute bottom-0 w-full left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                    <Link
+                      href={`/product/${product.handle}`}
+                      className="block text-center w-full py-3 bg-white border border-black/10 rounded-lg text-[#111] text-sm font-semibold shadow-sm hover:bg-black hover:text-white hover:border-black transition-all"
+                    >
+                      View Product
+                    </Link>
                   </div>
-                )}
-
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
-
-                <div className="absolute bottom-0 w-full left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                  <Link href={`/product/${product.handle}`} className="block text-center w-full py-3 bg-white border border-black/10 rounded-lg text-[#111] text-sm font-semibold shadow-sm hover:bg-black hover:text-white hover:border-black transition-all">
-                    View Product
-                  </Link>
                 </div>
               </div>
 
               <div className="flex justify-between items-start gap-2">
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-muted truncate w-32">
-                    {product.tags?.[0] || 'Apparel'}
+                    {product.tags?.[0] || "Apparel"}
                   </p>
                   <h3 className="text-sm font-semibold text-[#111] truncate w-40">
                     {product.title}
                   </h3>
                 </div>
                 <p className="font-semibold text-sm text-[#111]">
-                  {product.priceRange?.minVariantPrice?.amount || '0.00'} {product.priceRange?.minVariantPrice?.currencyCode}
+                  {product.priceRange?.minVariantPrice?.amount || "0.00"}{" "}
+                  {product.priceRange?.minVariantPrice?.currencyCode}
                 </p>
               </div>
             </div>
@@ -377,7 +404,10 @@ function ShopClientInner({
 
         {/* Intersection Observer Target */}
         {pageInfo.hasNextPage && (
-          <div ref={observerTarget} className="w-full py-12 flex justify-center">
+          <div
+            ref={observerTarget}
+            className="w-full py-12 flex justify-center"
+          >
             {isLoadingMore ? (
               <Loader2 className="w-6 h-6 animate-spin text-black/40" />
             ) : (
@@ -394,26 +424,36 @@ function ShopClientInner({
 
         {products.length === 0 && (
           <div className="w-full py-20 flex flex-col items-center justify-center text-center">
-            <h2 className="text-xl font-sora font-semibold text-[#111] mb-2">No products found</h2>
-            <p className="text-muted text-sm">Try adjusting your filters or browsing a different category.</p>
+            <h2 className="text-xl font-sora font-semibold text-[#111] mb-2">
+              No products found
+            </h2>
+            <p className="text-muted text-sm">
+              Try adjusting your filters or browsing a different category.
+            </p>
           </div>
         )}
       </div>
 
       {/* Filter Sidebar Overlay */}
       <div
-        className={`fixed inset-0 z-[150] bg-black/20 backdrop-blur-sm transition-opacity duration-300 flex justify-end ${isFilterOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-150 bg-black/20 backdrop-blur-sm transition-opacity duration-300 flex justify-end ${
+          isFilterOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
         onClick={() => setIsFilterOpen(false)}
       >
         {/* Sidebar Panel */}
         <div
-          className={`w-full max-w-sm bg-white h-full shadow-2xl transition-transform duration-500 ease-in-out flex flex-col ${isFilterOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`w-full max-w-sm bg-white h-full shadow-2xl transition-transform duration-500 ease-in-out flex flex-col ${
+            isFilterOpen ? "translate-x-0" : "translate-x-full"
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="h-16 border-b border-black/5 flex items-center justify-between px-6 shrink-0">
-            <h2 className="text-base font-sora font-semibold text-[#111]">Filters</h2>
+            <h2 className="text-base font-sora font-semibold text-[#111]">
+              Filters
+            </h2>
             <button
               onClick={() => setIsFilterOpen(false)}
               className="p-2 text-muted hover:text-black transition-colors rounded-full hover:bg-surface"
@@ -427,8 +467,11 @@ function ShopClientInner({
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-[#111]">Category</h3>
               <div className="space-y-3">
-                {dynamicCategories.slice(1).map(cat => (
-                  <label key={cat.label} className="flex items-center gap-3 cursor-pointer group">
+                {dynamicCategories.slice(1).map((cat) => (
+                  <label
+                    key={cat.label}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
                     <input
                       type="radio"
                       name="category"
@@ -438,9 +481,13 @@ function ShopClientInner({
                       className="hidden"
                     />
                     <div className="w-4 h-4 border border-black/20 rounded-sm flex items-center justify-center group-hover:border-black transition-colors">
-                      {isCatActive(cat) && <Check className="w-3 h-3 text-black" />}
+                      {isCatActive(cat) && (
+                        <Check className="w-3 h-3 text-black" />
+                      )}
                     </div>
-                    <span className="text-sm text-muted group-hover:text-black transition-colors">{cat.label}</span>
+                    <span className="text-sm text-muted group-hover:text-black transition-colors">
+                      {cat.label}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -448,13 +495,15 @@ function ShopClientInner({
 
             {/* Keeping UI for size and color but they don't do anything structurally yet because Shopify filtering requires more complex GraphQL queries not in scope of standard getProducts without tags/options handling */}
             <div className="space-y-4 opacity-50 pointer-events-none">
-              <p className="text-xs text-muted italic">Size & Color filtering coming soon.</p>
+              <p className="text-xs text-muted italic">
+                Size & Color filtering coming soon.
+              </p>
             </div>
           </div>
 
           <div className="p-6 border-t border-black/5 bg-surface shrink-0 flex gap-4">
             <button
-              onClick={() => router.push('/shop')}
+              onClick={() => router.push("/shop")}
               className="flex-1 py-3 bg-white border border-black/10 text-[#111] text-sm font-semibold rounded-md hover:bg-black/5 transition-colors"
             >
               Clear All
@@ -474,7 +523,13 @@ function ShopClientInner({
 
 export default function ShopClient(props: ShopClientProps) {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="w-6 h-6 border-2 border-black/20 border-t-black rounded-full animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-6 h-6 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+        </div>
+      }
+    >
       <ShopClientInner {...props} />
     </Suspense>
   );
