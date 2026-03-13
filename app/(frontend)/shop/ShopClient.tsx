@@ -220,7 +220,7 @@ function ShopClientInner({
             <h1 className="text-3xl font-sora font-semibold text-[#111] tracking-tight">
               {currentCollection?.title || "The Catalog"}
             </h1>
-            <p className="text-[#737373] text-sm">
+            <p className="text-muted text-sm">
               {currentCollection?.description || "Engineered garments for modern brands."}
             </p>
           </div>
@@ -233,7 +233,7 @@ function ShopClientInner({
                 placeholder="Search products..."
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                className="w-full pl-4 pr-10 py-2 border border-black/10 rounded-md text-sm text-[#111] bg-white placeholder:text-[#737373] focus:outline-none focus:border-black transition-colors shadow-sm"
+                className="w-full pl-4 pr-10 py-2 border border-black/10 rounded-md text-sm text-[#111] bg-white placeholder:text-muted focus:outline-none focus:border-black transition-colors shadow-sm"
               />
               {searchValue && (
                 <button
@@ -241,7 +241,7 @@ function ShopClientInner({
                     setSearchValue('');
                     updateUrlParams('q', '');
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-black p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-black p-1"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -275,7 +275,7 @@ function ShopClientInner({
                         updateUrlParams("sort", option.value);
                         setIsSortOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-[#111] hover:bg-[#fafafa] flex items-center justify-between"
+                      className="w-full text-left px-4 py-2 text-sm text-[#111] hover:bg-surface flex items-center justify-between"
                     >
                       {option.label}
                       {activeSortValue === option.value && <Check className="w-4 h-4 text-black" />}
@@ -296,7 +296,7 @@ function ShopClientInner({
                 onClick={() => handleCatClick(cat)}
                 className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${isCatActive(cat)
                   ? "bg-black text-white"
-                  : "text-[#737373] hover:text-black hover:bg-black/5"
+                  : "text-muted hover:text-black hover:bg-black/5"
                   }`}
               >
                 {cat.label}
@@ -308,7 +308,7 @@ function ShopClientInner({
                 onClick={() => updateUrlParams("collection", currentCollection.handle)}
                 className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === currentCollection.handle
                   ? "bg-black text-white"
-                  : "text-[#737373] hover:text-black hover:bg-black/5"
+                  : "text-muted hover:text-black hover:bg-black/5"
                   }`}
               >
                 All {currentCollection.title}
@@ -319,7 +319,7 @@ function ShopClientInner({
                   onClick={() => updateUrlParams("collection", sub.handle)}
                   className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === sub.handle
                     ? "bg-black text-white"
-                    : "text-[#737373] hover:text-black hover:bg-black/5"
+                    : "text-muted hover:text-black hover:bg-black/5"
                     }`}
                 >
                   {sub.title}
@@ -336,7 +336,7 @@ function ShopClientInner({
               key={product.id}
               className="group block space-y-4"
             >
-              <div className="relative aspect-[4/5] bg-[#fafafa] border border-black/10 rounded-xl overflow-hidden transition-all group-hover:shadow-elevated group-hover:border-black/20">
+              <div className="relative aspect-[4/5] bg-surface border border-black/10 rounded-xl overflow-hidden transition-all group-hover:shadow-elevated group-hover:border-black/20">
                 {product.featuredImage?.url ? (
                   <img
                     src={product.featuredImage.url}
@@ -360,7 +360,7 @@ function ShopClientInner({
 
               <div className="flex justify-between items-start gap-2">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-[#737373] truncate w-32">
+                  <p className="text-xs font-medium text-muted truncate w-32">
                     {product.tags?.[0] || 'Apparel'}
                   </p>
                   <h3 className="text-sm font-semibold text-[#111] truncate w-40">
@@ -387,7 +387,7 @@ function ShopClientInner({
         )}
 
         {!pageInfo.hasNextPage && products.length > 0 && (
-          <div className="w-full py-12 flex justify-center text-sm text-[#737373]">
+          <div className="w-full py-12 flex justify-center text-sm text-muted">
             You've reached the end of the catalog.
           </div>
         )}
@@ -395,7 +395,7 @@ function ShopClientInner({
         {products.length === 0 && (
           <div className="w-full py-20 flex flex-col items-center justify-center text-center">
             <h2 className="text-xl font-sora font-semibold text-[#111] mb-2">No products found</h2>
-            <p className="text-[#737373] text-sm">Try adjusting your filters or browsing a different category.</p>
+            <p className="text-muted text-sm">Try adjusting your filters or browsing a different category.</p>
           </div>
         )}
       </div>
@@ -416,7 +416,7 @@ function ShopClientInner({
             <h2 className="text-base font-sora font-semibold text-[#111]">Filters</h2>
             <button
               onClick={() => setIsFilterOpen(false)}
-              className="p-2 text-[#737373] hover:text-black transition-colors rounded-full hover:bg-[#fafafa]"
+              className="p-2 text-muted hover:text-black transition-colors rounded-full hover:bg-surface"
             >
               <X className="w-5 h-5" />
             </button>
@@ -440,7 +440,7 @@ function ShopClientInner({
                     <div className="w-4 h-4 border border-black/20 rounded-sm flex items-center justify-center group-hover:border-black transition-colors">
                       {isCatActive(cat) && <Check className="w-3 h-3 text-black" />}
                     </div>
-                    <span className="text-sm text-[#737373] group-hover:text-black transition-colors">{cat.label}</span>
+                    <span className="text-sm text-muted group-hover:text-black transition-colors">{cat.label}</span>
                   </label>
                 ))}
               </div>
@@ -448,11 +448,11 @@ function ShopClientInner({
 
             {/* Keeping UI for size and color but they don't do anything structurally yet because Shopify filtering requires more complex GraphQL queries not in scope of standard getProducts without tags/options handling */}
             <div className="space-y-4 opacity-50 pointer-events-none">
-              <p className="text-xs text-[#737373] italic">Size & Color filtering coming soon.</p>
+              <p className="text-xs text-muted italic">Size & Color filtering coming soon.</p>
             </div>
           </div>
 
-          <div className="p-6 border-t border-black/5 bg-[#fafafa] shrink-0 flex gap-4">
+          <div className="p-6 border-t border-black/5 bg-surface shrink-0 flex gap-4">
             <button
               onClick={() => router.push('/shop')}
               className="flex-1 py-3 bg-white border border-black/10 text-[#111] text-sm font-semibold rounded-md hover:bg-black/5 transition-colors"

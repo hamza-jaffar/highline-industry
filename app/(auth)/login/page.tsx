@@ -37,7 +37,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-sora font-semibold text-[#111] mb-2">Welcome Back</h1>
-          <p className="text-[#737373] text-sm font-inter">
+          <p className="text-muted text-sm font-inter">
             Log in to manage your factory workflow.
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function LoginPage() {
               name="email"
               type="email"
               placeholder="name@company.com"
-              className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
+              className="w-full px-4 py-2.5 bg-surface border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
               disabled={isPending}
             />
@@ -72,7 +72,7 @@ export default function LoginPage() {
               </label>
               <Link
                 href="#"
-                className="text-xs font-semibold text-[#737373] hover:text-black transition-colors"
+                className="text-xs font-semibold text-muted hover:text-black transition-colors"
                 tabIndex={-1}
               >
                 Forgot password?
@@ -83,7 +83,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               placeholder="••••••••"
-              className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
+              className="w-full px-4 py-2.5 bg-surface border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
               disabled={isPending}
             />
@@ -107,7 +107,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="mt-8 pt-6 border-t border-black/5 text-center">
-          <p className="text-sm text-[#737373] font-inter">
+          <p className="text-sm text-muted font-inter">
             Don't have an account?{" "}
             <Link href="/signup" className="text-black font-semibold hover:underline">
               Sign up

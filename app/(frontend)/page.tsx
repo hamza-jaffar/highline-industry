@@ -18,7 +18,7 @@ export default function HomePage() {
             The Digital Infrastructure for Apparel
           </h1>
 
-          <p className="text-lg text-[#737373] font-inter max-w-xl leading-relaxed">
+          <p className="text-lg text-muted font-inter max-w-xl leading-relaxed">
             Manage your entire supply chain from one unified platform. Design, source, and scale production instantly with Highline's Factory-as-a-Service integration.
           </p>
 
@@ -41,9 +41,9 @@ export default function HomePage() {
 
         {/* Hero Abstract Graphic (Subtle) */}
         <div className="absolute right-0 top-32 -z-10 hidden lg:block opacity-40">
-          <div className="w-[600px] h-[600px] border border-black/5 rounded-full absolute -right-40 -top-40" />
-          <div className="w-[400px] h-[400px] border border-black/10 rounded-full absolute -right-20 -top-20" />
-          <div className="w-[200px] h-[200px] border border-black/20 rounded-full absolute right-0 top-0 bg-[#fafafa]" />
+          <div className="w-150 h-[600px] border border-black/5 rounded-full absolute -right-40 -top-40" />
+          <div className="w-[400px] w-100 border border-black/10 rounded-full absolute -right-20 -top-20" />
+          <div className="w-[200px] h-[200px] border border-black/20 rounded-full absolute right-0 top-0 bg-surface" />
         </div>
       </section>
 
@@ -52,7 +52,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
             <h2 className="text-3xl font-sora font-semibold tracking-tight text-[#111] mb-4">Precision Manufacturing</h2>
-            <p className="text-[#737373] max-w-2xl font-inter">
+            <p className="text-muted max-w-2xl font-inter">
               Our standardized infrastructure removes the friction from apparel production, allowing you to focus on design and brand growth.
             </p>
           </div>
@@ -64,12 +64,12 @@ export default function HomePage() {
               { icon: Globe, title: "Global Logistics", desc: "Integrated fulfillment from our international hubs to your customers." },
               { icon: Shield, title: "Quality Assurance", desc: "Every unit passes through our rigorous 12-point inspection." }
             ].map((item, i) => (
-              <div key={i} className="p-6 rounded-xl border border-black/10 bg-[#fafafa] hover:shadow-premium transition-shadow">
+              <div key={i} className="p-6 rounded-xl border border-black/10 bg-surface hover:shadow-premium transition-shadow">
                 <div className="w-10 h-10 rounded-lg bg-white border border-black/10 flex items-center justify-center mb-6">
                   <item.icon className="w-5 h-5 text-black" />
                 </div>
                 <h3 className="text-base font-sora font-semibold text-[#111] mb-2">{item.title}</h3>
-                <p className="text-sm text-[#737373] leading-relaxed">{item.desc}</p>
+                <p className="text-sm text-muted leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -81,7 +81,7 @@ export default function HomePage() {
         <div className="flex justify-between items-end mb-12">
           <div>
             <h2 className="text-3xl font-sora font-semibold tracking-tight text-[#111] mb-3">Essential Systems</h2>
-            <p className="text-[#737373] font-inter">Core garments engineered for maximum versatility.</p>
+            <p className="text-muted font-inter">Core garments engineered for maximum versatility.</p>
           </div>
           <Link href="/shop" className="text-sm font-semibold text-black hover:underline hidden sm:block">
             View All Categories
@@ -100,13 +100,13 @@ export default function HomePage() {
                   {cat.img}
                 </div>
                 <div className="absolute top-4 left-4">
-                  <span className="px-2 py-1 bg-[#fafafa] border border-black/10 rounded text-[10px] font-semibold text-black tracking-wide uppercase">
+                  <span className="px-2 py-1 bg-surface border border-black/10 rounded text-[10px] font-semibold text-black tracking-wide uppercase">
                     {cat.tag}
                   </span>
                 </div>
               </div>
               <h3 className="text-sm font-semibold text-[#111]">{cat.title}</h3>
-              <p className="text-sm text-[#737373]">Configure System</p>
+              <p className="text-sm text-muted">Configure System</p>
             </Link>
           ))}
         </div>
@@ -118,7 +118,7 @@ export default function HomePage() {
           <h2 className="text-4xl md:text-5xl font-sora font-semibold tracking-tight text-[#111]">
             Ready to scale your brand?
           </h2>
-          <p className="text-lg text-[#737373] font-inter max-w-2xl mx-auto">
+          <p className="text-lg text-muted font-inter max-w-2xl mx-auto">
             Join the hundreds of modern apparel brands using Highline to power their supply chain.
           </p>
           <div className="pt-4">

@@ -13,7 +13,7 @@ const Footer = () => {
             <Link href="/" className="text-xl font-sora font-semibold tracking-tight text-black flex items-center">
               HIGHLINE
             </Link>
-            <p className="text-[#737373] text-sm leading-relaxed max-w-sm font-inter">
+            <p className="text-muted text-sm leading-relaxed max-w-sm font-inter">
               Your factory as a service. Redefining the apparel supply chain through digital infrastructure and premium craftsmanship.
             </p>
           </div>
@@ -24,7 +24,7 @@ const Footer = () => {
             <ul className="space-y-4">
               {['New Arrivals', 'Shop All', 'Collections', 'Accessories'].map(item => (
                 <li key={item}>
-                  <Link href="#" className="text-[#737373] hover:text-black text-sm transition-colors block">
+                  <Link href="#" className="text-muted hover:text-black text-sm transition-colors block">
                     {item}
                   </Link>
                 </li>
@@ -38,7 +38,7 @@ const Footer = () => {
             <ul className="space-y-4">
               {['Shipping', 'Size Guide', 'FAQ', 'Contact'].map(item => (
                 <li key={item}>
-                  <Link href="#" className="text-[#737373] hover:text-black text-sm transition-colors block">
+                  <Link href="#" className="text-muted hover:text-black text-sm transition-colors block">
                     {item}
                   </Link>
                 </li>
@@ -49,12 +49,12 @@ const Footer = () => {
           {/* Newsletter Section */}
           <div>
             <h4 className="font-sora text-sm font-semibold tracking-tight mb-6 text-black">Stay Updated</h4>
-            <p className="text-[#737373] text-sm mb-6 font-inter leading-relaxed">Early access to drops and industrial insights.</p>
+            <p className="text-muted text-sm mb-6 font-inter leading-relaxed">Early access to drops and industrial insights.</p>
             <form className="relative flex flex-col gap-3">
               <input 
                 type="email" 
                 placeholder="Email address" 
-                className="w-full bg-[#fafafa] border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-black/20 focus:ring-1 focus:ring-black/20 transition-all placeholder:text-[#a3a3a3]"
+                className="w-full bg-surface border border-black/5 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-black/20 focus:ring-1 focus:ring-black/20 transition-all placeholder:text-[#a3a3a3]"
               />
               <button 
                 type="submit" 

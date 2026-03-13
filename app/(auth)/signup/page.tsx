@@ -37,7 +37,7 @@ export default function SignupPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-sora font-semibold text-[#111] mb-2">Create Account</h1>
-          <p className="text-[#737373] text-sm font-inter">
+          <p className="text-muted text-sm font-inter">
             Get your factory dashboard up and running in seconds.
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function SignupPage() {
               name="name"
               type="text"
               placeholder="John Doe"
-              className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
+              className="w-full px-4 py-2.5 bg-surface border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
               disabled={isPending}
             />
@@ -74,7 +74,7 @@ export default function SignupPage() {
               name="email"
               type="email"
               placeholder="name@company.com"
-              className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
+              className="w-full px-4 py-2.5 bg-surface border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
               disabled={isPending}
             />
@@ -92,7 +92,7 @@ export default function SignupPage() {
               name="password"
               type="password"
               placeholder="••••••••"
-              className="w-full px-4 py-2.5 bg-[#fafafa] border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
+              className="w-full px-4 py-2.5 bg-surface border border-black/10 rounded-md focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-shadow font-inter text-sm placeholder:text-[#a3a3a3]"
               required
               disabled={isPending}
             />
@@ -116,7 +116,7 @@ export default function SignupPage() {
 
         {/* Footer */}
         <div className="mt-8 pt-6 border-t border-black/5 text-center">
-          <p className="text-sm text-[#737373] font-inter">
+          <p className="text-sm text-muted font-inter">
             Already have an account?{" "}
             <Link href="/login" className="text-black font-semibold hover:underline">
               Sign In

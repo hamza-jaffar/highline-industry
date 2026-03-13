@@ -65,7 +65,7 @@ export default function CollectionDetailPage() {
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
         <h2 className="text-2xl font-sora font-semibold text-[#111]">Collection Not Found</h2>
-        <p className="text-[#737373]">{error || "The requested collection could not be located in the factory records."}</p>
+        <p className="text-muted">{error || "The requested collection could not be located in the factory records."}</p>
         <Link
           href="/dashboard/admin/collections"
           className="inline-flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-black/80 transition-all"
@@ -105,7 +105,7 @@ export default function CollectionDetailPage() {
             {isLoading ? (
               <div className="h-4 w-32 bg-black/5 animate-pulse rounded mt-2" />
             ) : (
-              <p className="text-[#737373] text-sm font-mono">{collection?.handle}</p>
+              <p className="text-muted text-sm font-mono">{collection?.handle}</p>
             )}
           </div>
         </div>
@@ -114,14 +114,14 @@ export default function CollectionDetailPage() {
           <button
             onClick={() => setShowDeleteDialog(true)}
             disabled={isDeleting || isLoading}
-            className="p-2.5 text-[#737373] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 disabled:opacity-20"
+            className="p-2.5 text-muted hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 disabled:opacity-20"
           >
             <Trash2 className="w-5 h-5" />
           </button>
           <a
             href={collection?.handle ? `/collections/${collection.handle}` : "#"}
             target="_blank"
-            className={`inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-[#fafafa] transition-all ${!collection?.handle ? 'pointer-events-none opacity-20' : ''}`}
+            className={`inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl text-sm font-semibold hover:bg-surface transition-all ${!collection?.handle ? 'pointer-events-none opacity-20' : ''}`}
           >
             <ExternalLink className="w-4 h-4" />
             View Live
@@ -149,10 +149,10 @@ export default function CollectionDetailPage() {
         <div className="lg:col-span-2 space-y-8">
           {/* Image Preview */}
           <div className="bg-white border border-black/10 rounded-2xl p-6 shadow-sm overflow-hidden">
-            <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider mb-6 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-6 flex items-center gap-2">
               <ImageIcon className="w-4 h-4" /> Visual Identity
             </h3>
-            <div className={`aspect-video rounded-xl border border-black/5 overflow-hidden bg-[#fafafa] ${isLoading ? 'animate-pulse bg-black/5' : ''}`}>
+            <div className={`aspect-video rounded-xl border border-black/5 overflow-hidden bg-surface ${isLoading ? 'animate-pulse bg-black/5' : ''}`}>
               {!isLoading && (
                 collection.image ? (
                   <img src={collection.image.url} alt={collection.image.altText} className="w-full h-full object-cover" />
@@ -168,8 +168,8 @@ export default function CollectionDetailPage() {
 
           {/* Hierarchy / Sub-collections */}
           <div className="bg-white border border-black/10 rounded-2xl overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-black/5 bg-[#fafafa]/50 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider flex items-center gap-2">
+            <div className="p-6 border-b border-black/5 bg-surface/50 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
                 <Layers className="w-4 h-4" /> Collection Hierarchy
               </h3>
               {!isLoading && (
@@ -200,7 +200,7 @@ export default function CollectionDetailPage() {
                   <Link
                     key={node.id}
                     href={`/dashboard/admin/collections/${node.id.split('/').pop()}`}
-                    className="flex items-center justify-between p-6 hover:bg-[#fafafa] transition-all group"
+                    className="flex items-center justify-between p-6 hover:bg-surface transition-all group"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-lg bg-black/5 flex items-center justify-center">
@@ -208,7 +208,7 @@ export default function CollectionDetailPage() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-[#111]">{node.title}</p>
-                        <p className="text-xs text-[#737373] font-mono">{node.handle}</p>
+                        <p className="text-xs text-muted font-mono">{node.handle}</p>
                       </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-black/20 group-hover:translate-x-1 transition-all" />
@@ -216,7 +216,7 @@ export default function CollectionDetailPage() {
                 ))
               ) : (
                 <div className="p-12 text-center">
-                  <p className="text-xs text-[#737373]">No sub-collections nested under this node.</p>
+                  <p className="text-xs text-muted">No sub-collections nested under this node.</p>
                 </div>
               )}
             </div>
@@ -224,7 +224,7 @@ export default function CollectionDetailPage() {
 
           {/* Description */}
           <div className="bg-white border border-black/10 rounded-2xl p-8 shadow-sm">
-            <h3 className="text-sm font-bold text-[#737373] uppercase tracking-wider mb-6 flex items-center gap-2">
+            <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-6 flex items-center gap-2">
               <Settings className="w-4 h-4" /> Content Strategy
             </h3>
             {isLoading ? (
@@ -236,7 +236,7 @@ export default function CollectionDetailPage() {
             ) : (
               <div
                 className="prose prose-sm max-w-none text-[#111]"
-                dangerouslySetInnerHTML={{ __html: collection.descriptionHtml || '<p class="italic text-[#737373]">No description provided...</p>' }}
+                dangerouslySetInnerHTML={{ __html: collection.descriptionHtml || '<p class="italic text-muted">No description provided...</p>' }}
               />
             )}
           </div>
@@ -246,10 +246,10 @@ export default function CollectionDetailPage() {
         <div className="space-y-8">
           <div className="bg-white border border-black/10 rounded-2xl p-8 shadow-sm space-y-6">
             <div>
-              <h4 className="text-[10px] font-bold text-[#737373] uppercase tracking-wider mb-4">Inventory Summary</h4>
+              <h4 className="text-[10px] font-bold text-muted uppercase tracking-wider mb-4">Inventory Summary</h4>
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-[#737373]">Total Products</span>
+                  <span className="text-muted">Total Products</span>
                   {isLoading ? (
                     <div className="h-4 w-8 bg-black/5 animate-pulse rounded" />
                   ) : (
@@ -260,10 +260,10 @@ export default function CollectionDetailPage() {
             </div>
 
             <div className="pt-6 border-t border-black/5">
-              <h4 className="text-[10px] font-bold text-[#737373] uppercase tracking-wider mb-4">Meta Data</h4>
+              <h4 className="text-[10px] font-bold text-muted uppercase tracking-wider mb-4">Meta Data</h4>
               <div className="space-y-2">
-                <div className={`px-3 py-2 bg-[#fafafa] border border-black/5 rounded-lg ${isLoading ? 'animate-pulse' : ''}`}>
-                  <p className="text-[10px] font-bold text-[#737373]">Metafield: Parent ID</p>
+                <div className={`px-3 py-2 bg-surface border border-black/5 rounded-lg ${isLoading ? 'animate-pulse' : ''}`}>
+                  <p className="text-[10px] font-bold text-muted">Metafield: Parent ID</p>
                   {isLoading ? (
                     <div className="h-3 w-32 bg-black/5 rounded mt-1" />
                   ) : (

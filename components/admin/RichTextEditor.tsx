@@ -88,7 +88,7 @@ export default function RichTextEditor({
       Placeholder.configure({
         placeholder,
         emptyEditorClass:
-          "before:content-[attr(data-placeholder)] before:text-[#737373] before:float-left before:h-0 before:pointer-events-none",
+          "before:content-[attr(data-placeholder)] before:text-muted before:float-left before:h-0 before:pointer-events-none",
       }),
     ],
     content: value,
@@ -127,7 +127,7 @@ export default function RichTextEditor({
   return (
     <div className="w-full border border-black/10 rounded-xl overflow-hidden bg-white focus-within:border-black/30 transition-colors shadow-sm">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-black/5 bg-[#fafafa]">
+      <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-black/5 bg-surface">
         {/* Undo/Redo */}
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -282,11 +282,11 @@ export default function RichTextEditor({
       <EditorContent editor={editor} />
 
       {/* Footer */}
-      <div className="px-4 py-2 border-t border-black/5 bg-[#fafafa] flex items-center justify-between">
-        <span className="text-[10px] text-[#737373]">
+      <div className="px-4 py-2 border-t border-black/5 bg-surface flex items-center justify-between">
+        <span className="text-[10px] text-muted">
           {editor.storage.characterCount?.characters?.() ?? ""} chars
         </span>
-        <span className="text-[10px] text-[#737373] font-mono">
+        <span className="text-[10px] text-muted font-mono">
           {editor.isActive("heading", { level: 1 })
             ? "H1"
             : editor.isActive("heading", { level: 2 })

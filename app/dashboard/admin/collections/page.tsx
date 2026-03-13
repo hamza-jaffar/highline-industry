@@ -124,7 +124,7 @@ function CollectionsAdminPageInner() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-sora font-semibold text-[#111]">Collections</h1>
-          <p className="text-[#737373] text-sm">Organize your products into groups.</p>
+          <p className="text-muted text-sm">Organize your products into groups.</p>
         </div>
 
         <Link
@@ -138,8 +138,8 @@ function CollectionsAdminPageInner() {
 
       {/* Filters Hub */}
       <div className="flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 min-w-0 md:min-w-[300px]">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#737373]" />
+        <div className="relative flex-1 min-w-0 md:min-w-75">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
             type="text"
             placeholder="Search collections by title or handle..."
@@ -152,7 +152,7 @@ function CollectionsAdminPageInner() {
               onClick={() => setSearchQuery("")}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-black/5 rounded-full"
             >
-              <X className="w-3 h-3 text-[#737373]" />
+              <X className="w-3 h-3 text-muted" />
             </button>
           )}
         </div>
@@ -162,10 +162,10 @@ function CollectionsAdminPageInner() {
           <div className="relative">
             <button
               onClick={() => setIsPerPageOpen(!isPerPageOpen)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-black/10 rounded-xl text-xs font-semibold hover:bg-[#fafafa] transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-black/10 rounded-xl text-xs font-semibold hover:bg-surface transition-all"
             >
               <span>{per_page} / page</span>
-              <ChevronRight className={`w-3 h-3 text-[#737373] transition-transform ${isPerPageOpen ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-3 h-3 text-muted transition-transform ${isPerPageOpen ? 'rotate-90' : ''}`} />
             </button>
 
             {isPerPageOpen && (
@@ -179,7 +179,7 @@ function CollectionsAdminPageInner() {
                         setPerPage(val);
                         setIsPerPageOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 text-xs hover:bg-[#fafafa] transition-all ${per_page === val ? 'bg-black/5 font-bold' : ''}`}
+                      className={`w-full text-left px-4 py-3 text-xs hover:bg-surface transition-all ${per_page === val ? 'bg-black/5 font-bold' : ''}`}
                     >
                       {val} / page
                     </button>
@@ -191,14 +191,14 @@ function CollectionsAdminPageInner() {
         </div>
       </div>
 
-      <div className="w-full max-w-full bg-white border border-black/10 rounded-2xl shadow-sm overflow-hidden min-h-[400px] flex flex-col">
+      <div className="w-full max-w-full bg-white border border-black/10 rounded-2xl shadow-sm overflow-hidden min-w-100 flex flex-col">
         {error ? (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6 flex-1">
             <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-4 border border-red-100">
               <X className="w-8 h-8 text-red-400" />
             </div>
             <h3 className="text-lg font-sora font-semibold text-[#111]">API Connection Failed</h3>
-            <p className="text-[#737373] text-sm max-w-xs mt-1 mb-8">
+            <p className="text-muted text-sm max-w-xs mt-1 mb-8">
               {error}
             </p>
             <button
@@ -210,11 +210,11 @@ function CollectionsAdminPageInner() {
           </div>
         ) : !isLoading && collections.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6 flex-1">
-            <div className="w-16 h-16 bg-[#fafafa] rounded-2xl flex items-center justify-center mb-4 border border-black/5">
+            <div className="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center mb-4 border border-black/5">
               <FolderOpen className="w-8 h-8 text-black/20" />
             </div>
             <h3 className="text-lg font-sora font-semibold text-[#111]">No collections found</h3>
-            <p className="text-[#737373] text-sm max-w-xs mt-1 mb-8">
+            <p className="text-muted text-sm max-w-xs mt-1 mb-8">
               {searchQuery ? `No results for "${searchQuery}". Try a different term or clear filters.` : "Group your products into collections like 'Featured' or 'New Arrivals'."}
             </p>
             {searchQuery && (
@@ -229,29 +229,29 @@ function CollectionsAdminPageInner() {
         ) : (
           <>
             <div className="w-full overflow-x-auto">
-              <table className="w-full text-left min-w-[600px]">
+              <table className="w-full text-left min-w-150">
                 <thead>
-                  <tr className="border-b border-black/5 bg-[#fafafa]/50">
+                  <tr className="border-b border-black/5 bg-surface/50">
                     <th
                       onClick={() => handleSort('TITLE')}
-                      className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider cursor-pointer hover:text-black transition-colors"
+                      className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider cursor-pointer hover:text-black transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         Collection
                         <SortIcon columnKey="TITLE" />
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center">Products</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Products</th>
                     <th
                       onClick={() => handleSort('UPDATED_AT')}
-                      className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center cursor-pointer hover:text-black transition-colors"
+                      className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center cursor-pointer hover:text-black transition-colors"
                     >
                       <div className="flex items-center justify-center gap-2">
                         Updated
                         <SortIcon columnKey="UPDATED_AT" />
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/5">
@@ -260,7 +260,7 @@ function CollectionsAdminPageInner() {
                       <tr key={`skeleton-${i}`} className="animate-pulse">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-lg bg-black/20 flex-shrink-0" />
+                            <div className="w-12 h-12 rounded-lg bg-black/20 shrink-0" />
                             <div className="space-y-2">
                               <div className="h-4 w-32 bg-black/20 rounded" />
                               <div className="h-3 w-20 bg-black/20 rounded" />
@@ -280,10 +280,10 @@ function CollectionsAdminPageInner() {
                     ))
                   ) : (
                     collections.map(({ node }) => (
-                      <tr key={node.id} className="group hover:bg-[#fafafa] transition-colors cursor-pointer" onClick={() => router.push(`/dashboard/admin/collections/${node.id.split('/').pop()}`)}>
+                      <tr key={node.id} className="group hover:bg-surface transition-colors cursor-pointer" onClick={() => router.push(`/dashboard/admin/collections/${node.id.split('/').pop()}`)}>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-lg border border-black/5 bg-[#fafafa] overflow-hidden flex-shrink-0">
+                            <div className="w-12 h-12 rounded-lg border border-black/5 bg-surface overflow-hidden shrink-0">
                               {node.image ? (
                                 <img src={node.image.url} alt={node.image.altText} className="w-full h-full object-cover" />
                               ) : (
@@ -294,7 +294,7 @@ function CollectionsAdminPageInner() {
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-[#111] leading-none mb-1 group-hover:text-black">{node.title}</p>
-                              <p className="text-[10px] text-[#737373] font-mono">{node.handle}</p>
+                              <p className="text-[10px] text-muted font-mono">{node.handle}</p>
                             </div>
                           </div>
                         </td>
@@ -302,7 +302,7 @@ function CollectionsAdminPageInner() {
                           <p className="text-sm text-[#111] font-medium">{node.productsCount?.count || 0} products</p>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <p className="text-[11px] text-[#737373] font-mono">
+                          <p className="text-[11px] text-muted font-mono">
                             {node.updatedAt ? new Date(node.updatedAt).toLocaleDateString() : 'N/A'}
                           </p>
                         </td>
@@ -330,15 +330,15 @@ function CollectionsAdminPageInner() {
               </table>
             </div>
 
-            <div className="p-6 border-t border-black/5 flex items-center justify-between bg-[#fafafa]/30 mt-auto">
-              <p className="text-[11px] text-[#737373] font-medium tracking-tight">
+            <div className="p-6 border-t border-black/5 flex items-center justify-between bg-surface/30 mt-auto">
+              <p className="text-[11px] text-muted font-medium tracking-tight">
                 VIEWING {collections.length} RECORDS — {pageInfo?.hasNextPage ? 'SYNC CONTINUES' : 'END OF LIST'}
               </p>
               <div className="flex gap-2">
                 <button
                   disabled={!pageInfo?.hasPreviousPage}
                   onClick={() => setCursor(undefined)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-black/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-[#fafafa] active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-black/10 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-surface active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none"
                 >
                   <ChevronLeft className="w-3 h-3" />
                   Prev
@@ -372,7 +372,7 @@ function CollectionsAdminPageInner() {
 
 export default function CollectionsAdminPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-sm text-[#737373]">Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-sm text-muted">Loading...</div>}>
       <CollectionsAdminPageInner />
     </Suspense>
   );

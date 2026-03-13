@@ -44,7 +44,7 @@ function NewCollectionPageInner() {
         </Link>
         <div>
           <h1 className="text-2xl font-sora font-semibold text-[#111]">New Collection</h1>
-          <p className="text-[#737373] text-sm">Create a new group for your products.</p>
+          <p className="text-muted text-sm">Create a new group for your products.</p>
         </div>
       </div>
 
@@ -66,7 +66,7 @@ function NewCollectionPageInner() {
 
 export default function NewCollectionPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-sm text-[#737373]">Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-sm text-muted">Loading...</div>}>
       <NewCollectionPageInner />
     </Suspense>
   );
