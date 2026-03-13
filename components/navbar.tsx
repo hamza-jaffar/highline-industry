@@ -6,6 +6,7 @@ import { Search, User, X, Menu, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/actions/signup.actions";
 import Image from "next/image";
+import AppLogo from "./appLogo";
 
 export default function NavBar({ user }: { user?: any }) {
   const [open, setOpen] = useState(false);
@@ -45,13 +46,7 @@ export default function NavBar({ user }: { user?: any }) {
       <nav className="fixed top-0 w-full z-100 bg-white border-b border-black/5">
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link
-            href="/"
-            className="text-lg font-sora font-bold tracking-tight text-black flex gap-2 items-center"
-          >
-            <Image src="/logo.png" alt="Logo" width={18} height={18} />
-            HIGHLINE
-          </Link>
+          <AppLogo />
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import AppLogo from './appLogo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -10,9 +11,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand Section */}
           <div className="md:col-span-1 space-y-6">
-            <Link href="/" className="text-xl font-sora font-semibold tracking-tight text-black flex items-center">
-              HIGHLINE
-            </Link>
+            <AppLogo size={40} />
             <p className="text-muted text-sm leading-relaxed max-w-sm font-inter">
               Your factory as a service. Redefining the apparel supply chain through digital infrastructure and premium craftsmanship.
             </p>
