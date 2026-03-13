@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { saveCollection } from "@/app/actions/admin.action";
 import CollectionForm from "../CollectionForm";
 
-export default function NewCollectionPage() {
+function NewCollectionPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const parentId = searchParams.get("parentId");
@@ -61,5 +61,13 @@ export default function NewCollectionPage() {
         submitLabel="Create Collection"
       />
     </div>
+  );
+}
+
+export default function NewCollectionPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-sm text-[#737373]">Loading...</div>}>
+      <NewCollectionPageInner />
+    </Suspense>
   );
 }
