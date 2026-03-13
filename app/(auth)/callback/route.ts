@@ -16,7 +16,12 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       // Get the authenticated user
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+      console.log('Callback: Auth exchange successful')
+      console.log('Callback: User error:', userError)
+      console.log('Callback: User found:', !!user)
+      console.log('Callback: User ID:', user?.id)
 
       if (user) {
         // Check if user role exists, if not create it
@@ -43,6 +48,10 @@ export async function GET(request: Request) {
           }
         } catch (dbError) {
           console.error("Failed to create user role during email verification:", dbError);
+          console.error("Database error details:", {
+            message: dbError instanceof Error ? dbError.message : 'Unknown error',
+            stack: dbError instanceof Error ? dbError.stack : undefined
+          });
           // Continue with redirect even if role creation fails
         }
       }
