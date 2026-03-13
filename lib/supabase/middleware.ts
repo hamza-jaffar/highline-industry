@@ -35,8 +35,35 @@ export async function updateSession(request: NextRequest) {
   
   if (user && isAuthRoute) {
     try {
-      const role = await getUserRole(user.id);
+      let role = await getUserRole(user.id);
       console.log('User role from middleware (auth route):', role);
+
+      // If no role found and we're in production, try to create it
+      if (role === 'user' && process.env.NODE_ENV === 'production') {
+        try {
+          console.log('Attempting to create missing user role in middleware');
+          const { db } = await import('@/db');
+          const { userRoles } = await import('@/db/schemas/user-roles.schema');
+          const { eq } = await import('drizzle-orm');
+
+          const existingRole = await db
+            .select()
+            .from(userRoles)
+            .where(eq(userRoles.userId, user.id))
+            .limit(1);
+
+          if (existingRole.length === 0) {
+            await db.insert(userRoles).values({
+              userId: user.id,
+              role: 'user',
+            });
+            console.log('User role created in middleware');
+          }
+        } catch (dbError) {
+          console.error('Failed to create user role in middleware:', dbError);
+        }
+      }
+
       const url = request.nextUrl.clone();
       url.pathname = `/dashboard/${role}`;
       return NextResponse.redirect(url);
@@ -57,14 +84,42 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isDashboardRoute) {
     try {
-      const role = await getUserRole(user.id);
+      let role = await getUserRole(user.id);
       console.log('User role from middleware (dashboard route):', role);
+
+      // If no role found and we're in production, try to create it
+      if (role === 'user' && process.env.NODE_ENV === 'production') {
+        try {
+          console.log('Attempting to create missing user role in middleware for dashboard');
+          const { db } = await import('@/db');
+          const { userRoles } = await import('@/db/schemas/user-roles.schema');
+          const { eq } = await import('drizzle-orm');
+
+          const existingRole = await db
+            .select()
+            .from(userRoles)
+            .where(eq(userRoles.userId, user.id))
+            .limit(1);
+
+          if (existingRole.length === 0) {
+            await db.insert(userRoles).values({
+              userId: user.id,
+              role: 'user',
+            });
+            console.log('User role created in middleware for dashboard');
+            role = 'user'; // Update the role variable
+          }
+        } catch (dbError) {
+          console.error('Failed to create user role in middleware for dashboard:', dbError);
+        }
+      }
+
       const allowedPrefix = `/dashboard/${role}`;
-      
+
       if (!pathname.startsWith(allowedPrefix)) {
-          const url = request.nextUrl.clone();
-          url.pathname = allowedPrefix;
-          return NextResponse.redirect(url);
+        const url = request.nextUrl.clone();
+        url.pathname = allowedPrefix;
+        return NextResponse.redirect(url);
       }
     } catch (error) {
       console.error('Error getting user role in middleware for dashboard:', error);
