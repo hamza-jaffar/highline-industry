@@ -1,7 +1,5 @@
 "use server";
 
-// Shopify Admin Actions for Product and Collection Management
-
 import { adminShopifyFetch, getPrimaryLocationId } from "@/lib/shopify/admin";
 import { revalidatePath } from "next/cache";
 
@@ -46,7 +44,7 @@ export async function saveProduct(formData: any, id?: string) {
             const { url, parameters, resourceUrl } = staged.target;
             const uploadFormData = new FormData();
             parameters.forEach((p: any) => uploadFormData.append(p.name, p.value));
-            
+
             const buffer = Buffer.from(image.base64, 'base64');
             const blob = new Blob([buffer], { type: image.type });
             uploadFormData.append("file", blob, uniqueFilename);
@@ -86,8 +84,8 @@ export async function saveProduct(formData: any, id?: string) {
         productType: formData.category,
         status: formData.status || "ACTIVE",
         productOptions: productOptions,
-        files: uploadedImages.map(img => ({ altText: img.altText, contentType: "IMAGE", url: img.src })),
-        collectionsToJoin: formData.collections || [],
+        files: uploadedImages.map(img => ({ alt: img.altText, contentType: "IMAGE", originalSource: img.src })),
+        collections: formData.collections || [],
         variants: formData.variants.map((v: any) => ({
           id: v.id, // Include ID if updating variant
           price: v.price,
@@ -117,7 +115,7 @@ export async function saveProduct(formData: any, id?: string) {
     revalidatePath("/shop");
     revalidatePath("/dashboard/admin/products");
     if (id) revalidatePath(`/dashboard/admin/products/${id.split('/').pop()}`);
-    
+
     return { success: true, product: data.product };
   } catch (error: any) {
     console.error("Error saving product:", error);
@@ -300,19 +298,19 @@ export async function saveCollection(formData: { id?: string; title: string; han
 
       console.log(`Starting staged upload for: ${uniqueFilename} (original: ${formData.imageName})`);
       const staged = await getStagedUploadUrl(uniqueFilename, formData.imageType);
-      
+
       if (!staged.success) {
         return { success: false, error: `Failed to initialize image upload: ${staged.error || (staged.errors && JSON.stringify(staged.errors)) || 'Unknown error'}` };
       }
 
       const { url, parameters, resourceUrl } = staged.target;
-      
+
       // Prepare FormData for upload to GCS/Shopify
       const uploadFormData = new FormData();
       parameters.forEach((p: any) => {
         uploadFormData.append(p.name, p.value);
       });
-      
+
       // Convert base64 to Blob using Buffer for better reliability on server
       const buffer = Buffer.from(formData.imageBase64, 'base64');
       const blob = new Blob([buffer], { type: formData.imageType });
@@ -377,7 +375,7 @@ export async function saveCollection(formData: { id?: string; title: string; han
     revalidatePath("/shop");
     revalidatePath("/dashboard/admin/collections");
     if (formData.id) revalidatePath(`/dashboard/admin/collections/${formData.id.split('/').pop()}`);
-    
+
     return { success: true, collection: data.collection };
   } catch (error: any) {
     console.error("Error saving collection:", error);
@@ -410,12 +408,12 @@ export async function getAdminCollection(id: string) {
   try {
     const result = await adminShopifyFetch(query, { id });
     const collection = result.data.collection;
-    
+
     // Also fetch sub-collections (collections where parent_collection_id = this id)
     // Note: We can't easily query metafields in a collection list effectively without special indexes, 
     // but we can fetch all and filter for now, or use a specific naming convention.
     // For now, we'll just return the collection data.
-    
+
     return { success: true, data: collection };
   } catch (error: any) {
     console.error("Error fetching admin collection:", error);

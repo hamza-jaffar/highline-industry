@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useEffect } from "react";
-import { signup, type FormState } from "@/app/(auth)/actions";
+import { signup, type FormState } from "@/app/actions/signup.actions";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -24,16 +24,16 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 selection:bg-black selection:text-white py-12">
       {/* Brand */}
-      <Link 
-        href="/" 
+      <Link
+        href="/"
         className="text-2xl font-sora font-bold tracking-tight text-black mb-8"
       >
         HIGHLINE
       </Link>
-      
+
       {/* Card */}
       <div className="w-full max-w-[400px] bg-white border border-black/10 shadow-elevated rounded-2xl p-8">
-        
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-sora font-semibold text-[#111] mb-2">Create Account</h1>
@@ -45,8 +45,8 @@ export default function SignupPage() {
         {/* Form */}
         <form action={formAction} className="w-full space-y-5">
           <div className="space-y-1.5">
-            <label 
-              htmlFor="name" 
+            <label
+              htmlFor="name"
               className="text-sm font-medium text-[#111]"
             >
               Full Name
@@ -63,8 +63,8 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label 
-              htmlFor="email" 
+            <label
+              htmlFor="email"
               className="text-sm font-medium text-[#111]"
             >
               Email Address
@@ -81,8 +81,8 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label 
-              htmlFor="password" 
+            <label
+              htmlFor="password"
               className="text-sm font-medium text-[#111]"
             >
               Password
@@ -109,7 +109,7 @@ export default function SignupPage() {
                 Creating Account...
               </>
             ) : (
-             "Create Account"
+              "Create Account"
             )}
           </button>
         </form>

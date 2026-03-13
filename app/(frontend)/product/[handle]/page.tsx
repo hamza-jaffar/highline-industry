@@ -32,7 +32,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
                 {product.title}
               </h1>
               <p className="text-xl font-semibold text-[#111]">
-                ${product.priceRange.minVariantPrice.amount} {product.priceRange.minVariantPrice.currencyCode}
+                {product.priceRange.minVariantPrice.amount} {product.priceRange.minVariantPrice.currencyCode}
               </p>
             </div>
 

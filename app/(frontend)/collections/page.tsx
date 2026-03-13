@@ -3,7 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import { getCollections } from "@/lib/shopify/collection.query";
 
 export default async function CollectionsPage() {
-  const collections = await getCollections();
+  const allCollections = await getCollections();
+  const collections = allCollections.filter((c: any) => !c.metafield?.value);
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
