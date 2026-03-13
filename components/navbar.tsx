@@ -42,7 +42,7 @@ export default function NavBar({ user }: { user?: any }) {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-[100] bg-white border-b border-black/5">
+      <nav className="fixed top-0 w-full z-100 bg-white border-b border-black/5">
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link
@@ -73,26 +73,35 @@ export default function NavBar({ user }: { user?: any }) {
               className="text-black/60 hover:text-black transition-colors"
               aria-label="Search"
             >
-              <Search className="w-[18px] h-[18px]" />
+              <Search className="w-4.5 h-4.5" />
             </button>
 
             {user ? (
-              <form action={signout} className="hidden md:flex">
-                <button
-                  type="submit"
-                  className="text-black/60 hover:text-black transition-colors flex items-center gap-2"
-                  title="Sign Out"
+              <div className="flex gap-4">
+                <form action={signout} className="hidden md:flex">
+                  <button
+                    type="submit"
+                    className="text-black/60 hover:text-black transition-colors flex items-center gap-2"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4.5 h-4.5" />
+                  </button>
+                </form>
+                <Link
+                  href="/dashboard"
+                  className="hidden md:flex items-center justify-center h-8 px-4 bg-black text-white text-xs font-semibold rounded-md hover:bg-black/80 transition-colors shadow-sm"
+                  aria-label="Dashboard"
                 >
-                  <LogOut className="w-[18px] h-[18px]" />
-                </button>
-              </form>
+                  Dashboard
+                </Link>
+              </div>
             ) : (
               <Link
                 href="/login"
                 className="hidden md:flex text-black/60 hover:text-black transition-colors"
                 aria-label="Account"
               >
-                <User className="w-[18px] h-[18px]" />
+                <User className="w-4.5 h-4.5" />
               </Link>
             )}
 
@@ -151,8 +160,11 @@ export default function NavBar({ user }: { user?: any }) {
 
       {/* Search Modal (Precision Look) */}
       <div
-        className={`fixed inset-0 z-[200] bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${searchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-[200] bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${
+          searchOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
       >
         <button
           onClick={() => setSearchOpen(false)}
@@ -162,7 +174,10 @@ export default function NavBar({ user }: { user?: any }) {
         </button>
 
         <div className="w-full max-w-2xl space-y-6">
-          <form className="relative w-full flex items-center border-b border-black/10 pb-4" onSubmit={handleSearchSubmit}>
+          <form
+            className="relative w-full flex items-center border-b border-black/10 pb-4"
+            onSubmit={handleSearchSubmit}
+          >
             <Search className="w-6 h-6 text-black/40 mr-4" />
             <input
               type="text"
@@ -174,16 +189,20 @@ export default function NavBar({ user }: { user?: any }) {
             />
           </form>
           <div className="flex gap-4 pt-4">
-            <span className="text-xs font-semibold text-black/40 uppercase tracking-wider">Suggestions:</span>
-            {["T-Shirts", "Outerwear", "Heavyweight", "Accessories"].map(term => (
-              <button
-                key={term}
-                onClick={() => handleSuggestionClick(term)}
-                className="text-xs font-medium text-black/60 hover:text-black transition-colors"
-              >
-                {term}
-              </button>
-            ))}
+            <span className="text-xs font-semibold text-black/40 uppercase tracking-wider">
+              Suggestions:
+            </span>
+            {["T-Shirts", "Outerwear", "Heavyweight", "Accessories"].map(
+              (term) => (
+                <button
+                  key={term}
+                  onClick={() => handleSuggestionClick(term)}
+                  className="text-xs font-medium text-black/60 hover:text-black transition-colors"
+                >
+                  {term}
+                </button>
+              ),
+            )}
           </div>
         </div>
       </div>
