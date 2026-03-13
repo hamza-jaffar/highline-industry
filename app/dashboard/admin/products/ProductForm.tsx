@@ -16,15 +16,16 @@ interface ProductFormProps {
 export default function ProductForm({ initialData, onSubmit, isLoading, submitLabel }: ProductFormProps) {
   const [collections, setCollections] = useState<any[]>([]);
   const [isFetchingCollections, setIsFetchingCollections] = useState(false);
-  const [formData, setFormData] = useState({
-    title: initialData?.title || "",
-    description: initialData?.descriptionHtml || "",
-    status: initialData?.status || "ACTIVE",
-    category: initialData?.productType || "",
-    vendor: initialData?.vendor || "Highline Industry",
-    collections: initialData?.collections?.edges?.map(({ node }: any) => node.id) || [],
-    options: initialData?.options?.map((o: any) => o.name) || ["Size", "Color"],
-    variants: initialData?.variants?.edges?.map(({ node }: any) => ({
+
+  const getInitialFormData = (data: any) => ({
+    title: data?.title || "",
+    description: data?.descriptionHtml || "",
+    status: data?.status || "ACTIVE",
+    category: data?.productType || "",
+    vendor: data?.vendor || "Highline Industry",
+    collections: data?.collections?.edges?.map(({ node }: any) => node.id) || [],
+    options: data?.options?.map((o: any) => o.name) || ["Size", "Color"],
+    variants: data?.variants?.edges?.map(({ node }: any) => ({
       id: node.id,
       price: node.price,
       sku: node.sku || "",
@@ -33,8 +34,14 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
     })) || [
       { price: "0.00", sku: "", quantity: "0", options: [{ name: "Size", value: "M" }, { name: "Color", value: "Black" }] }
     ],
-    images: initialData?.images?.edges?.map(({ node }: any) => ({ url: node.url, altText: node.altText })) || []
+    images: data?.images?.edges?.map(({ node }: any) => ({ url: node.url, altText: node.altText })) || []
   });
+
+  const [formData, setFormData] = useState(getInitialFormData(initialData));
+
+  useEffect(() => {
+    setFormData(getInitialFormData(initialData));
+  }, [initialData]);
 
   useEffect(() => {
     const fetchCollections = async () => {

@@ -35,7 +35,8 @@ export default function EditProductPage() {
         vendor: result.data.vendor || "Highline Industry",
         options: result.data.options,
         variants: result.data.variants,
-        images: result.data.images
+        images: result.data.images,
+        collections: result.data.collections
       };
       setProduct(transformedData);
     } else {
@@ -64,7 +65,7 @@ export default function EditProductPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 animate-spin text-black/20" />
-        <p className="text-sm text-[#737373] mt-4">Loading product data...</p>
+        <p className="text-sm text-muted mt-4">Loading product data...</p>
       </div>
     );
   }
@@ -76,7 +77,7 @@ export default function EditProductPage() {
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
         <h2 className="text-2xl font-sora font-semibold text-[#111]">Product Not Found</h2>
-        <p className="text-[#737373]">{error || "The product you are trying to edit could not be found."}</p>
+        <p className="text-muted">{error || "The product you are trying to edit could not be found."}</p>
         <Link 
           href="/dashboard/admin/products"
           className="inline-flex items-center gap-2 px-6 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-black/80 transition-all"
@@ -96,7 +97,7 @@ export default function EditProductPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-sora font-semibold text-[#111]">Edit Product</h1>
-          <p className="text-[#737373] text-sm">Update your product details and variants.</p>
+          <p className="text-muted text-sm">Update your product details and variants.</p>
         </div>
       </div>
 

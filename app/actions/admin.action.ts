@@ -176,6 +176,14 @@ export async function getAdminProduct(id: string) {
             }
           }
         }
+        collections(first: 10) {
+          edges {
+            node {
+              id
+              title
+            }
+          }
+        }
         variants(first: 50) {
           edges {
             node {
