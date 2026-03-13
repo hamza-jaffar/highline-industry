@@ -32,7 +32,10 @@ export default async function ShopPage(props: {
     reverse = true;
   }
 
-  const { getCollectionByHandle, getSubCollections } = await import("@/lib/shopify/collection.query");
+  const { getCollectionByHandle, getSubCollections, getCollections } = await import("@/lib/shopify/collection.query");
+  
+  const allCollections = await getCollections();
+  const topLevelCollections = allCollections.filter((c: any) => !c.metafield?.value);
   
   let currentCollection = null;
   let subCollections: any[] = [];
@@ -61,6 +64,7 @@ export default async function ShopPage(props: {
       queryParam={queryParam}
       subCollections={subCollections}
       currentCollection={currentCollection}
+      allCollections={topLevelCollections}
     />
   );
 }

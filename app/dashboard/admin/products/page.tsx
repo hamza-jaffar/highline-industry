@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Plus, Search, MoreHorizontal, PackageOpen, ChevronRight, ChevronLeft, Loader2, X, SlidersHorizontal } from "lucide-react";
+import { getAdminProducts, deleteProduct } from "@/app/actions/admin.action";
+import { toast } from "sonner";
+import { Plus, Search, PackageOpen, ChevronRight, ChevronLeft, Loader2, X, SlidersHorizontal, Edit2, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { getAdminProducts } from "@/app/actions/admin.action";
 import { useDebounce } from "@/lib/hooks/use-debounce";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
 export default function ProductsAdminPage() {
   const router = useRouter();
@@ -24,6 +26,12 @@ export default function ProductsAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageInfo, setPageInfo] = useState<any>(null);
+
+  // Deletion State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteTitle, setDeleteTitle] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Sync state to URL
   useEffect(() => {
@@ -80,6 +88,27 @@ export default function ProductsAdminPage() {
       setSortKey(key);
       setReverse(false);
     }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id: string, title: string) => {
+    e.stopPropagation();
+    setDeleteId(id);
+    setDeleteTitle(title);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    setIsDeleting(true);
+    const result = await deleteProduct(deleteId);
+    if (result.success) {
+      toast.success("Product deleted successfully");
+      setIsConfirmOpen(false);
+      fetchProducts();
+    } else {
+      toast.error(result.error || "Failed to delete product");
+    }
+    setIsDeleting(false);
   };
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
@@ -179,7 +208,7 @@ export default function ProductsAdminPage() {
               <table className="w-full text-left min-w-[800px]">
                 <thead>
                   <tr className="border-b border-black/5 bg-[#fafafa]/50">
-                    <th 
+                    <th
                       onClick={() => handleSort('TITLE')}
                       className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider cursor-pointer hover:text-black transition-colors"
                     >
@@ -190,7 +219,7 @@ export default function ProductsAdminPage() {
                     </th>
                     <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center">Price</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center">Status</th>
-                    <th 
+                    <th
                       onClick={() => handleSort('UPDATED_AT')}
                       className="px-6 py-4 text-[10px] font-bold text-[#737373] uppercase tracking-wider text-center cursor-pointer hover:text-black transition-colors"
                     >
@@ -268,9 +297,21 @@ export default function ProductsAdminPage() {
                           </p>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button className="p-2 hover:bg-black/5 rounded-lg transition-colors">
-                            <MoreHorizontal className="w-4 h-4 text-black/40" />
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={`/dashboard/admin/products/${node.id.split('/').pop()}/edit`}
+                              className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </Link>
+                            <button
+                              onClick={(e) => handleDelete(e, node.id, node.title)}
+                              className="p-2 hover:bg-red-700 cursor-pointer bg-red-500 text-white rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -305,6 +346,16 @@ export default function ProductsAdminPage() {
           </>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${deleteTitle}"? This action cannot be undone.`}
+        confirmLabel="Delete Product"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

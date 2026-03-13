@@ -14,16 +14,7 @@ const SORT_OPTIONS = [
   { label: "Price: High to Low", value: "price-desc" }
 ];
 
-const FILTER_CATEGORIES = [
-  { label: "All", value: "", type: "collection" },
-  { label: "New Arrivals", value: "new", type: "sort" },
-  { label: "Outerwear", value: "outerwear", type: "collection" },
-  { label: "Tops", value: "tops", type: "collection" },
-  { label: "Bottoms", value: "bottoms", type: "collection" },
-  { label: "Accessories", value: "accessories", type: "collection" },
-  { label: "FW25 Heavyweight", value: "fw25", type: "collection" },
-  { label: "Core Essentials", value: "essentials", type: "collection" }
-];
+const FILTER_CATEGORIES = []; // Removed in favor of dynamic categories
 
 interface ShopClientProps {
   initialProducts: ShopifyProductEdge[];
@@ -33,9 +24,19 @@ interface ShopClientProps {
   queryParam?: string;
   subCollections?: any[];
   currentCollection?: any;
+  allCollections?: any[];
 }
 
-export default function ShopClient({ initialProducts, initialPageInfo, collectionParam, sortParam, queryParam, subCollections = [], currentCollection }: ShopClientProps) {
+export default function ShopClient({ 
+  initialProducts, 
+  initialPageInfo, 
+  collectionParam, 
+  sortParam, 
+  queryParam, 
+  subCollections = [], 
+  currentCollection,
+  allCollections = []
+}: ShopClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -59,6 +60,16 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
   const activeSortValue = sortParam || "featured";
   const activeSortLabel = SORT_OPTIONS.find(o => o.value === activeSortValue)?.label || "Featured";
   const activeQuery = queryParam || "";
+
+  const dynamicCategories = [
+    { label: "All", value: "", type: "collection" },
+    { label: "New Arrivals", value: "new", type: "sort" },
+    ...allCollections.map(col => ({
+      label: col.title,
+      value: col.handle,
+      type: "collection"
+    }))
+  ];
 
   const [searchValue, setSearchValue] = useState(activeQuery);
 
@@ -279,7 +290,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
         {/* Categories / Sub-collections */}
         <div className="flex overflow-x-auto pb-4 mb-8 no-scrollbar gap-2 border-b border-black/5">
           {(!currentCollection || subCollections.length === 0) ? (
-            FILTER_CATEGORIES.map((cat) => (
+            dynamicCategories.map((cat) => (
               <button
                 key={cat.label}
                 onClick={() => handleCatClick(cat)}
@@ -416,7 +427,7 @@ export default function ShopClient({ initialProducts, initialPageInfo, collectio
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-[#111]">Category</h3>
               <div className="space-y-3">
-                {FILTER_CATEGORIES.slice(1).map(cat => (
+                {dynamicCategories.slice(1).map(cat => (
                   <label key={cat.label} className="flex items-center gap-3 cursor-pointer group">
                     <input
                       type="radio"

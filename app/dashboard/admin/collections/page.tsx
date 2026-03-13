@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Plus, FolderOpen, ChevronRight, ChevronLeft, Loader2, Image as ImageIcon, X, Search, SlidersHorizontal, MoreHorizontal } from "lucide-react";
+import { getAdminCollections, deleteCollection } from "@/app/actions/admin.action";
+import { toast } from "sonner";
+import { Plus, FolderOpen, ChevronRight, ChevronLeft, Loader2, Image as ImageIcon, X, Search, SlidersHorizontal, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
-import { getAdminCollections } from "@/app/actions/admin.action";
 import { useDebounce } from "@/lib/hooks/use-debounce";
+import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
 export default function CollectionsAdminPage() {
   const router = useRouter();
@@ -24,6 +26,12 @@ export default function CollectionsAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageInfo, setPageInfo] = useState<any>(null);
+
+  // Deletion State
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteTitle, setDeleteTitle] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Sync state to URL
   useEffect(() => {
@@ -83,6 +91,27 @@ export default function CollectionsAdminPage() {
       setSortKey(key);
       setReverse(false);
     }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, id: string, title: string) => {
+    e.stopPropagation();
+    setDeleteId(id);
+    setDeleteTitle(title);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    setIsDeleting(true);
+    const result = await deleteCollection(deleteId);
+    if (result.success) {
+      toast.success("Collection deleted successfully");
+      setIsConfirmOpen(false);
+      fetchCollections();
+    } else {
+      toast.error(result.error || "Failed to delete collection");
+    }
+    setIsDeleting(false);
   };
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
@@ -278,9 +307,21 @@ export default function CollectionsAdminPage() {
                           </p>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button className="p-2 hover:bg-black/5 rounded-lg transition-colors">
-                            <MoreHorizontal className="w-4 h-4 text-black/40" />
-                          </button>
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={`/dashboard/admin/collections/${node.id.split('/').pop()}/edit`}
+                              className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </Link>
+                            <button
+                              onClick={(e) => handleDelete(e, node.id, node.title)}
+                              className="p-2 hover:bg-red-700 cursor-pointer bg-red-500 text-white rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -315,6 +356,16 @@ export default function CollectionsAdminPage() {
           </>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Delete Collection"
+        message={`Are you sure you want to delete collection "${deleteTitle}"? This action cannot be undone.`}
+        confirmLabel="Delete Collection"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setIsConfirmOpen(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
