@@ -38,7 +38,7 @@ import { getCollectionByHandle, getSubCollections } from "./collection.query";
 export async function getProducts({
   collection: collectionHandle,
   sortKey = "RELEVANCE",
-  reverse = true,
+  reverse = false,
   query: searchQuery,
   after,
   first = 12,
@@ -50,22 +50,112 @@ export async function getProducts({
   after?: string;
   first?: number;
 }): Promise<ShopifyProductsData> {
-  let collectionId: string | null = null;
-  let subCollectionIds: string[] = [];
-  
+  // Map sort keys to Admin API equivalents
+  let adminSortKey = sortKey;
+  if (sortKey === "BEST_SELLING") adminSortKey = "BEST_SELLING";
+  if (sortKey === "PRICE") adminSortKey = "PRICE";
+  if (sortKey === "CREATED_AT") adminSortKey = "CREATED_AT";
+
   if (collectionHandle) {
+    // Resolve the collection GID
     const mainCollection = await getCollectionByHandle(collectionHandle);
-    if (mainCollection) {
-      collectionId = mainCollection.id;
-      // Also get sub-collections
-      const subs = await getSubCollections(mainCollection.id);
-      subCollectionIds = subs.map((s: any) => s.id);
+    if (!mainCollection) {
+      return { edges: [], pageInfo: { hasNextPage: false, endCursor: null } };
     }
+
+    const collectionId = mainCollection.id;
+
+    // Fetch products directly via collection connection — the correct Admin API approach
+    const gqlQuery = `
+      query getCollectionProducts(
+        $id: ID!,
+        $first: Int!,
+        $sortKey: ProductCollectionSortKeys,
+        $reverse: Boolean,
+        $after: String
+      ) {
+        collection(id: $id) {
+          products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              cursor
+              node {
+                id
+                title
+                handle
+                description
+                tags
+                priceRangeV2 {
+                  minVariantPrice {
+                    amount
+                    currencyCode
+                  }
+                }
+                featuredImage {
+                  url
+                  altText
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    // ProductCollectionSortKeys supported values
+    const collectionSortKeyMap: Record<string, string> = {
+      RELEVANCE: "MANUAL",
+      CREATED_AT: "CREATED",
+      PRICE: "PRICE",
+      BEST_SELLING: "BEST_SELLING",
+      TITLE: "TITLE",
+    };
+    const collectionSortKey = collectionSortKeyMap[adminSortKey] || "MANUAL";
+
+    const variables = {
+      id: collectionId,
+      first,
+      sortKey: collectionSortKey,
+      reverse,
+      after,
+    };
+
+    const data = await shopifyFetch(gqlQuery, variables);
+    const productsData = data?.data?.collection?.products;
+
+    if (!productsData) {
+      return { edges: [], pageInfo: { hasNextPage: false, endCursor: null } };
+    }
+
+    // Filter by search query client-side if provided (collection products don't support text search)
+    let edges = productsData.edges.map((edge: any) => ({
+      ...edge,
+      node: {
+        ...edge.node,
+        priceRange: edge.node.priceRangeV2,
+      },
+    }));
+
+    if (searchQuery) {
+      const lower = searchQuery.toLowerCase();
+      edges = edges.filter((e: any) =>
+        e.node.title.toLowerCase().includes(lower) ||
+        e.node.description.toLowerCase().includes(lower) ||
+        e.node.tags?.some((t: string) => t.toLowerCase().includes(lower))
+      );
+    }
+
+    return {
+      edges,
+      pageInfo: productsData.pageInfo || { hasNextPage: false, endCursor: null },
+    };
   }
 
-  // Admin API products query doesn't allow 'collection(handle:...)' effectively.
-  // We use the global 'products(query: ...)' which is very flexible.
-  let gqlQuery = `
+  // --- No collection: global products listing ---
+  const gqlQuery = `
     query getProducts($first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean, $after: String, $query: String) {
       products(first: $first, sortKey: $sortKey, reverse: $reverse, after: $after, query: $query) {
         pageInfo {
@@ -96,47 +186,31 @@ export async function getProducts({
     }
   `;
 
-  // Build the search query
-  const searchParts = [];
-  if (searchQuery) searchParts.push(searchQuery);
-  
-  if (collectionId) {
-    if (subCollectionIds.length > 0) {
-      const ids = [collectionId, ...subCollectionIds].map(id => `(collection_id:${id})`).join(" OR ");
-      searchParts.push(`(${ids})`);
-    } else {
-      searchParts.push(`collection_id:${collectionId}`);
-    }
-  }
-
-  const finalSearchQuery = searchParts.join(" ") || undefined;
-
-  // Map sort keys
-  let adminSortKey = sortKey;
-  if (sortKey === "BEST_SELLING") adminSortKey = "RELEVANCE";
-  if (sortKey === "PRICE") adminSortKey = "RELEVANCE"; 
+  // Safety: RELEVANCE + reverse: true often breaks things
+  let finalReverse = reverse;
+  if (adminSortKey === "RELEVANCE") finalReverse = false;
 
   const variables = {
     first,
     sortKey: adminSortKey,
-    reverse,
+    reverse: finalReverse,
     after,
-    query: finalSearchQuery,
+    query: searchQuery || undefined,
   };
 
   const data = await shopifyFetch(gqlQuery, variables);
-  
+
   const edges = data?.data?.products?.edges?.map((edge: any) => ({
     ...edge,
     node: {
       ...edge.node,
-      priceRange: edge.node.priceRangeV2
-    }
+      priceRange: edge.node.priceRangeV2,
+    },
   })) || [];
 
-  return { 
-    edges, 
-    pageInfo: data?.data?.products?.pageInfo || { hasNextPage: false, endCursor: null } 
+  return {
+    edges,
+    pageInfo: data?.data?.products?.pageInfo || { hasNextPage: false, endCursor: null },
   };
 }
 
