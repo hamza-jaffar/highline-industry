@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createServerClient } from '@/lib/supabase/server-client'
+import { db } from '@/db'
+import { userRoles } from '@/db/schemas/user-roles.schema'
+import { eq } from 'drizzle-orm'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -12,6 +15,38 @@ export async function GET(request: Request) {
     const supabase = await createServerClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Get the authenticated user
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user) {
+        // Check if user role exists, if not create it
+        try {
+          console.log('Checking user role for user:', user.id);
+          const existingRole = await db
+            .select()
+            .from(userRoles)
+            .where(eq(userRoles.userId, user.id))
+            .limit(1)
+
+          console.log('Existing role result:', existingRole);
+
+          if (existingRole.length === 0) {
+            console.log('Creating user role for user:', user.id);
+            // Create default user role
+            await db.insert(userRoles).values({
+              userId: user.id,
+              role: 'user', // Default role for all new signups
+            });
+            console.log('User role created successfully');
+          } else {
+            console.log('User role already exists');
+          }
+        } catch (dbError) {
+          console.error("Failed to create user role during email verification:", dbError);
+          // Continue with redirect even if role creation fails
+        }
+      }
+
       const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development'
       if (isLocalEnv) {

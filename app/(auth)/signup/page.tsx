@@ -14,12 +14,50 @@ const initialState: FormState = {
 export default function SignupPage() {
   const [state, formAction, isPending] = useActionState(signup, initialState);
 
-  // Trigger toast on error
+  // Trigger toast on error or success
   useEffect(() => {
     if (!state.success && state.message) {
       toast.error(state.message);
+    } else if (state.success && state.message) {
+      toast.success(state.message);
     }
   }, [state]);
+
+  // Show success message instead of form when registration is successful
+  if (state.success && state.message && !isPending) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 selection:bg-black selection:text-white py-12">
+        {/* Brand */}
+        <Link
+          href="/"
+          className="text-2xl font-sora font-bold tracking-tight text-black mb-8"
+        >
+          HIGHLINE
+        </Link>
+
+        {/* Success Card */}
+        <div className="w-full max-w-[400px] bg-white border border-black/10 shadow-elevated rounded-2xl p-8 text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <h1 className="text-2xl font-sora font-semibold text-[#111] mb-4">Check Your Email</h1>
+          <p className="text-muted text-sm font-inter mb-6">
+            {state.message}
+          </p>
+
+          <Link
+            href="/login"
+            className="inline-block w-full py-3 bg-[#111] text-white text-sm font-semibold rounded-md hover:bg-black transition-colors shadow-sm"
+          >
+            Back to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 selection:bg-black selection:text-white py-12">
