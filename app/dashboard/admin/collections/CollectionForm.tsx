@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2, Image as ImageIcon, X, ChevronDown, FolderOpen, Sea
 import Link from "next/link";
 import { getAdminCollections } from "@/app/actions/admin.action";
 import Image from "next/image";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 interface CollectionFormProps {
   initialData?: {
@@ -122,12 +123,11 @@ export default function CollectionForm({ initialData, onSubmit, isLoading, submi
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#111]">Description</label>
-                <textarea
-                  rows={5}
+                <RichTextEditor
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Collection description (HTML supported)..."
-                  className="w-full px-4 py-3 bg-[#fafafa] border border-black/5 rounded-xl text-sm focus:outline-none focus:border-black/20 focus:bg-white transition-all resize-none"
+                  onChange={(html) => setFormData({ ...formData, description: html })}
+                  placeholder="Describe this collection..."
+                  minHeight={180}
                 />
               </div>
             </div>

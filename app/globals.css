@@ -40,4 +40,57 @@
     @apply bg-white/95 backdrop-blur-xl border-b border-black/5;
   }
 }
+
+/* ── Tiptap Rich Text Editor Prose Styles ─────────────────────────── */
+.ProseMirror {
+  outline: none;
+}
+.ProseMirror h1 { font-size: 1.5rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; }
+.ProseMirror h2 { font-size: 1.25rem; font-weight: 700; margin-top: 0.875rem; margin-bottom: 0.4rem; }
+.ProseMirror h3 { font-size: 1.1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.3rem; }
+.ProseMirror p { margin-bottom: 0.5rem; }
+.ProseMirror ul, .ProseMirror ol { padding-left: 1.4rem; margin-bottom: 0.5rem; }
+.ProseMirror ul { list-style-type: disc; }
+.ProseMirror ol { list-style-type: decimal; }
+.ProseMirror li { margin-bottom: 0.2rem; }
+.ProseMirror blockquote {
+  border-left: 3px solid #e5e5e5;
+  padding-left: 1rem;
+  color: #737373;
+  font-style: italic;
+  margin: 0.75rem 0;
+}
+.ProseMirror code {
+  background: #f4f4f5;
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+}
+.ProseMirror pre {
+  background: #1a1a1a;
+  color: #e5e5e5;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: ui-monospace, monospace;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+.ProseMirror hr {
+  border: none;
+  border-top: 1px solid #e5e5e5;
+  margin: 1rem 0;
+}
+.ProseMirror a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #a3a3a3;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
 
