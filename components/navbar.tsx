@@ -135,7 +135,7 @@ export default function NavBar({ user }: { user?: any }) {
                 {link.name}
               </Link>
             ))}
-            <div className="h-[1px] w-full bg-black/5 my-2" />
+            <div className="h-px w-full bg-black/5 my-2" />
 
             {user ? (
               <form action={signout}>
@@ -160,7 +160,7 @@ export default function NavBar({ user }: { user?: any }) {
 
       {/* Search Modal (Precision Look) */}
       <div
-        className={`fixed inset-0 z-[200] bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${
+        className={`fixed inset-0 z-200 bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${
           searchOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
