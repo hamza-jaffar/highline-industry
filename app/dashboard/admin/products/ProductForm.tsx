@@ -30,9 +30,10 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
       price: node.price,
       sku: node.sku || "",
       quantity: node.inventoryQuantity?.toString() || "0",
-      options: node.selectedOptions.map((so: any) => ({ name: so.name, value: so.value }))
+      options: node.selectedOptions.map((so: any) => ({ name: so.name, value: so.value })),
+      image: node.image ? { id: node.image.id, url: node.image.url, altText: node.image.altText } : null
     })) || [
-      { price: "0.00", sku: "", quantity: "0", options: [{ name: "Size", value: "M" }, { name: "Color", value: "Black" }] }
+      { price: "0.00", sku: "", quantity: "0", options: [{ name: "Size", value: "M" }, { name: "Color", value: "Black" }], image: null }
     ],
     images: data?.images?.edges?.map(({ node }: any) => ({ url: node.url, altText: node.altText })) || []
   });
@@ -100,7 +101,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
   const handleAddVariant = () => {
     setFormData({
       ...formData,
-      variants: [...formData.variants, { price: "0.00", sku: "", quantity: "0", options: formData.options.map((o: string) => ({ name: o, value: "" })) }]
+      variants: [...formData.variants, { price: "0.00", sku: "", quantity: "0", options: formData.options.map((o: string) => ({ name: o, value: "" })), image: null }]
     });
   };
 
@@ -120,6 +121,31 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
   const handleOptionValueChange = (vIndex: number, oIndex: number, value: string) => {
     const newVariants = [...formData.variants];
     newVariants[vIndex].options[oIndex].value = value;
+    setFormData({ ...formData, variants: newVariants });
+  };
+
+  const handleVariantImageChange = async (vIndex: number, file: File | null) => {
+    if (!file) return;
+
+    const base64 = await toBase64(file);
+    const preview = URL.createObjectURL(file);
+
+    const newVariants = [...formData.variants];
+    newVariants[vIndex].image = {
+      file,
+      base64,
+      type: file.type,
+      name: file.name,
+      preview,
+      altText: formData.title || "",
+    };
+
+    setFormData({ ...formData, variants: newVariants });
+  };
+
+  const handleVariantImageRemove = (vIndex: number) => {
+    const newVariants = [...formData.variants];
+    newVariants[vIndex].image = null;
     setFormData({ ...formData, variants: newVariants });
   };
 
@@ -245,6 +271,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
                 <thead>
                   <tr className="border-b border-black/5 bg-surface/30">
                     <th className="px-8 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Appearance</th>
+                    <th className="px-12 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Image</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Price</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Inventory</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">SKU</th>
@@ -268,6 +295,36 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
                               />
                             </div>
                           ))}
+                        </div>
+                      </td>
+                      <td className="px-12 py-6 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          {v.image ? (
+                            <div className="relative">
+                              <img
+                                src={v.image.preview || v.image.url}
+                                alt={v.image.altText || "Variant image"}
+                                className="w-12 h-12 object-cover rounded-md border border-black/10"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleVariantImageRemove(vIndex)}
+                                className="absolute -top-1 -right-1 text-white bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-[10px]"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ) : (
+                            <label className="border border-dashed border-black/20 p-2 rounded-lg text-[10px] text-muted cursor-pointer hover:border-black/30">
+                              Upload
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleVariantImageChange(vIndex, e.target.files?.[0] || null)}
+                              />
+                            </label>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-6 text-center">
