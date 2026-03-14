@@ -247,6 +247,10 @@ export async function getSingleProduct(handle: string) {
                   sku
                   price
                   inventoryQuantity
+                  image {
+                    url
+                    altText
+                  }
                   selectedOptions {
                     name
                     value
