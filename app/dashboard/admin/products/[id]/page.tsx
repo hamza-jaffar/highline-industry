@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Package, Tag, Layers, Settings, ExternalLink, AlertCircle, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { getAdminProduct, deleteProduct } from "@/app/actions/admin.action";
+import { getAdminProduct, deleteProduct } from "@/app/actions/admin";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
 export default function ProductDetailPage() {
@@ -128,7 +128,7 @@ export default function ProductDetailPage() {
         isLoading={isDeleting}
         title="Delete Product"
         message={`This action cannot be undone. Are you sure you want to permanently delete "${product.title}"?`}
-        confirmLabel="Decommission"
+        confirmLabel="Confirm"
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteDialog(false)}
       />

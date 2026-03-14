@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { getAdminProducts, deleteProduct } from "@/app/actions/admin.action";
+import { getAdminProducts, deleteProduct } from "@/app/actions/admin";
 import { toast } from "sonner";
 import {
   Plus,

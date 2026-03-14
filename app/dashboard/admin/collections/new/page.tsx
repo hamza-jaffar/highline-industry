@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { saveCollection } from "@/app/actions/admin.action";
+import { saveCollection } from "@/app/actions/admin";
 import CollectionForm from "../CollectionForm";
 
 function NewCollectionPageInner() {

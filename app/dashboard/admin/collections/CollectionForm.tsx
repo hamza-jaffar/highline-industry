@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Loader2, Image as ImageIcon, X, ChevronDown, FolderOpen, Search } from "lucide-react";
 import Link from "next/link";
-import { getAdminCollections } from "@/app/actions/admin.action";
+import { getAdminCollections } from "@/app/actions/admin";
 import Image from "next/image";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 

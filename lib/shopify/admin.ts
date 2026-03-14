@@ -7,7 +7,7 @@ export async function adminShopifyFetch(query: string, variables = {}) {
     throw new Error('Missing SHOPIFY_STORE_DOMAIN or SHOPIFY_ADMIN_API_ACCESS_TOKEN');
   }
 
-  const url = `https://${domain}/admin/api/2024-10/graphql.json`;
+  const url = `https://${domain}/admin/api/2026-01/graphql.json`;
 
   const response = await fetch(url, {
     method: "POST",
