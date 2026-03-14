@@ -1,5 +1,5 @@
 import { getProducts } from "@/lib/shopify/product.query";
-import ShopClient from "./ShopClient";
+import ShopClient from "./shop-client";
 
 export const metadata = {
   title: "Shop - Highline Industry",

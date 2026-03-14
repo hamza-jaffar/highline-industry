@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Package, FolderTree, LayoutDashboard, Settings, X, Menu, ChevronLeft } from "lucide-react";
 import Image from "next/image";
-import Breadcrumb from "@/components/Breadcrumb";
+import Breadcrumb from "@/components/breadcrumb";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

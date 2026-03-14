@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Plus, FolderOpen, ChevronRight, ChevronLeft, Loader2, Image as ImageIcon, X, Search, SlidersHorizontal, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/confirm-dialog";
 
 function CollectionsAdminPageInner() {
   const router = useRouter();

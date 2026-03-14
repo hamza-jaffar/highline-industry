@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/confirm-dialog";
 
 function ProductsAdminPageInner() {
   const router = useRouter();

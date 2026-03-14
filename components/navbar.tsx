@@ -6,7 +6,7 @@ import { Search, User, X, Menu, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/actions/signup.actions";
 import Image from "next/image";
-import AppLogo from "./appLogo";
+import AppLogo from "./app-logo";
 
 export default function NavBar({ user }: { user?: any }) {
   const [open, setOpen] = useState(false);

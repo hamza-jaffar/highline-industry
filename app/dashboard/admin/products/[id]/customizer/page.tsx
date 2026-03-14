@@ -1,5 +1,7 @@
+import CustomizerSidebar from "./customizer-sidebar";
+
 const CustomizerPage = () => {
-  return <div>CustomizerPage</div>;
+  return <section>CustomizerPage <CustomizerSidebar /></section>;
 };
 
 export default CustomizerPage;
