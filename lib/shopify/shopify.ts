@@ -12,7 +12,7 @@ function getEnvVariables() {
 
 export async function shopifyFetch(query: string, variables = {}, secure = true) {
     const { domain, storefrontAccessToken, adminAccessToken } = getEnvVariables();
-    const url = `https://${domain}/admin/api/2026-01/graphql.json`;
+    const url = `https://${domain}/admin/api/2024-10/graphql.json`;
 
     const response = await fetch(url, {
         method: "POST",
