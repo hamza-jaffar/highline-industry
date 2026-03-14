@@ -27,7 +27,7 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8">
       <div className="flex items-center gap-4">
         <Link href="/dashboard/admin/products" className="p-2 hover:bg-black/5 rounded-full transition-all">
           <ArrowLeft className="w-5 h-5" />

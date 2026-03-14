@@ -11,6 +11,22 @@ export async function saveProduct(formData: any, id?: string) {
           id
           title
           handle
+          images(first: 250) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 250) {
+            edges {
+              node {
+                id
+              }
+            }
+          }
         }
         userErrors {
           field
@@ -26,38 +42,71 @@ export async function saveProduct(formData: any, id?: string) {
       return { success: false, error: "Primary location ID not found. Please check your Shopify settings." };
     }
 
-    // Handle Multiple Image Uploads
-    const uploadedImages = [];
+    // Handle Multiple Image Uploads (global and per-variant)
+    const imageInputs: Array<{ alt: string; contentType: string; originalSource: string }> = [];
+    const variantImageAlt: Record<number, string> = {};
+    const variantImageId: Record<number, string> = {};
+
+    const addImageInput = (imageSrc: string, altText: string) => {
+      if (!imageSrc) return;
+      imageInputs.push({ alt: altText, contentType: "IMAGE", originalSource: imageSrc });
+    };
+
+    const uploadLocalImage = async (image: any, altText: string) => {
+      if (!image?.base64 || !image?.type || !image?.name) return;
+
+      const extension = image.name.split('.').pop();
+      const sanitizedBase = image.name
+        .split('.')[0]
+        .replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase();
+      const uniqueFilename = `${sanitizedBase}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${extension}`;
+
+      const staged = await getStagedUploadUrl(uniqueFilename, image.type);
+      if (!staged.success) return;
+
+      const { url, parameters, resourceUrl } = staged.target;
+      const uploadFormData = new FormData();
+      parameters.forEach((p: any) => uploadFormData.append(p.name, p.value));
+
+      const buffer = Buffer.from(image.base64, 'base64');
+      const blob = new Blob([buffer], { type: image.type });
+      uploadFormData.append("file", blob, uniqueFilename);
+
+      const uploadResult = await fetch(url, { method: "POST", body: uploadFormData });
+      if (!uploadResult.ok) return;
+
+      addImageInput(resourceUrl, altText);
+    };
+
     if (formData.images && formData.images.length > 0) {
       for (const image of formData.images) {
+        const altText = image.altText || formData.title || "Product image";
         if (image.base64 && image.type && image.name) {
-          // Use the refined staged upload logic
-          const extension = image.name.split('.').pop();
-          const sanitizedBase = image.name
-            .split('.')[0]
-            .replace(/[^a-z0-9]/gi, '_')
-            .toLowerCase();
-          const uniqueFilename = `${sanitizedBase}_${Date.now()}_${Math.floor(Math.random() * 1000)}.${extension}`;
-
-          const staged = await getStagedUploadUrl(uniqueFilename, image.type);
-          if (staged.success) {
-            const { url, parameters, resourceUrl } = staged.target;
-            const uploadFormData = new FormData();
-            parameters.forEach((p: any) => uploadFormData.append(p.name, p.value));
-
-            const buffer = Buffer.from(image.base64, 'base64');
-            const blob = new Blob([buffer], { type: image.type });
-            uploadFormData.append("file", blob, uniqueFilename);
-
-            const uploadResult = await fetch(url, { method: "POST", body: uploadFormData });
-
-            if (uploadResult.ok) {
-              uploadedImages.push({ src: resourceUrl, altText: formData.title });
-            }
-          }
+          await uploadLocalImage(image, altText);
         } else if (image.url) {
-          // Maintain existing images
-          uploadedImages.push({ src: image.url, altText: image.altText || formData.title });
+          addImageInput(image.url, altText);
+        }
+      }
+    }
+
+    if (formData.variants && formData.variants.length > 0) {
+      for (let i = 0; i < formData.variants.length; i++) {
+        const variant = formData.variants[i];
+        if (!variant.image) continue;
+
+        if (variant.image.id) {
+          variantImageId[i] = variant.image.id;
+          continue;
+        }
+
+        const altText = variant.image.altText || `${formData.title || 'variant'}-image-${i}-${Date.now()}`;
+        variantImageAlt[i] = altText;
+
+        if (variant.image.base64 && variant.image.type && variant.image.name) {
+          await uploadLocalImage(variant.image, altText);
+        } else if (variant.image.url) {
+          addImageInput(variant.image.url, altText);
         }
       }
     }
@@ -84,9 +133,9 @@ export async function saveProduct(formData: any, id?: string) {
         productType: formData.category,
         status: formData.status || "ACTIVE",
         productOptions: productOptions,
-        files: uploadedImages.map(img => ({ alt: img.altText, contentType: "IMAGE", originalSource: img.src })),
+        files: imageInputs,
         collections: formData.collections || [],
-        variants: formData.variants.map((v: any) => ({
+        variants: formData.variants.map((v: any, index: number) => ({
           id: v.id, // Include ID if updating variant
           price: v.price,
           sku: v.sku,
@@ -100,7 +149,8 @@ export async function saveProduct(formData: any, id?: string) {
           optionValues: v.options.map((opt: any) => ({
             optionName: opt.name,
             name: opt.value
-          }))
+          })),
+          ...(variantImageId[index] ? { imageId: variantImageId[index] } : {})
         }))
       }
     };
@@ -110,6 +160,52 @@ export async function saveProduct(formData: any, id?: string) {
 
     if (data.userErrors && data.userErrors.length > 0) {
       return { success: false, error: data.userErrors.map((e: any) => e.message).join(", ") };
+    }
+
+    const productImageMapByAlt: Record<string, string> = {};
+    const productImageMapByUrl: Record<string, string> = {};
+    (data.product.images?.edges || []).forEach((edge: any) => {
+      if (!edge?.node) return;
+      const node = edge.node;
+      if (node.altText) productImageMapByAlt[node.altText] = node.id;
+      if (node.url) productImageMapByUrl[node.url] = node.id;
+    });
+
+    const variantUpdateMutation = `
+      mutation variantUpdate($input: ProductVariantUpdateInput!) {
+        productVariantUpdate(input: $input) {
+          productVariant { id }
+          userErrors { field message }
+        }
+      }
+    `;
+
+    for (let i = 0; i < (formData.variants || []).length; i++) {
+      const variant = formData.variants[i];
+      if (!variant || !variant.image) continue;
+
+      let setImageId = variantImageId[i] || "";
+      if (!setImageId && variantImageAlt[i]) {
+        setImageId = productImageMapByAlt[variantImageAlt[i]] || "";
+      }
+      if (!setImageId && variant.image.url) {
+        setImageId = productImageMapByUrl[variant.image.url] || "";
+      }
+      if (!setImageId) continue;
+
+      const variantId = variant.id || data.product.variants?.edges?.[i]?.node?.id;
+      if (!variantId) continue;
+
+      const updateResult = await adminShopifyFetch(variantUpdateMutation, {
+        input: {
+          id: variantId,
+          imageId: setImageId
+        }
+      });
+      const updateErrors = updateResult?.data?.productVariantUpdate?.userErrors;
+      if (updateErrors && updateErrors.length > 0) {
+        return { success: false, error: updateErrors.map((e: any) => e.message).join(", ") };
+      }
     }
 
     revalidatePath("/shop");
@@ -195,6 +291,11 @@ export async function getAdminProduct(id: string) {
               selectedOptions {
                 name
                 value
+              }
+              image {
+                id
+                url
+                altText
               }
             }
           }
