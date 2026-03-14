@@ -12,8 +12,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    await db.execute('SELECT 1');
-
     const result = await db
       .select({ role: userRoles.role })
       .from(userRoles)

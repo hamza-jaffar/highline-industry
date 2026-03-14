@@ -17,6 +17,7 @@ export async function saveProduct(formData: any, id?: string) {
               node {
                 ... on MediaImage {
                   id
+                  alt
                   image {
                     url
                     altText
@@ -196,7 +197,8 @@ export async function saveProduct(formData: any, id?: string) {
     (data.product.media?.edges || []).forEach((edge: any) => {
       if (!edge?.node) return;
       const node = edge.node;
-      if (node.image?.altText) productImageMapByAlt[node.image.altText] = node.id;
+      const alt = node.alt || node.image?.altText;
+      if (alt) productImageMapByAlt[alt] = node.id;
       if (node.image?.url) productImageMapByUrl[node.image.url] = node.id;
     });
 
@@ -212,7 +214,7 @@ export async function saveProduct(formData: any, id?: string) {
       if (!setImageId && variantImageKeys[i]) {
         setImageId = productImageMapByAlt[variantImageKeys[i]] || "";
       }
-      if (!setImageId && variantImageAlt[i]) {
+      if (!setImageId && variantImageAlt[i] && variantImageAlt[i] !== formData.title) {
         setImageId = productImageMapByAlt[variantImageAlt[i]] || "";
       }
       if (!setImageId && variantImageUrls[i]) {

@@ -138,7 +138,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
       type: file.type,
       name: file.name,
       preview,
-      altText: formData.title || imageKey,
+      altText: imageKey,
       imageKey,
     };
 
