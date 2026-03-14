@@ -4,7 +4,19 @@ import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { getAdminProducts, deleteProduct } from "@/app/actions/admin.action";
 import { toast } from "sonner";
-import { Plus, Search, PackageOpen, ChevronRight, ChevronLeft, Loader2, X, SlidersHorizontal, Edit2, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Search,
+  PackageOpen,
+  ChevronRight,
+  ChevronLeft,
+  Loader2,
+  X,
+  SlidersHorizontal,
+  Edit2,
+  Trash2,
+  MousePointerClickIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -17,10 +29,18 @@ function ProductsAdminPageInner() {
   // Initial state from URL
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const debouncedSearch = useDebounce(searchQuery, 500);
-  const [sortKey, setSortKey] = useState(searchParams.get("sort") || "CREATED_AT");
-  const [reverse, setReverse] = useState(searchParams.get("reverse") === "false" ? false : true);
-  const [per_page, setPerPage] = useState(Number(searchParams.get("per_page")) || 10);
-  const [cursor, setCursor] = useState<string | undefined>(searchParams.get("cursor") || undefined);
+  const [sortKey, setSortKey] = useState(
+    searchParams.get("sort") || "CREATED_AT",
+  );
+  const [reverse, setReverse] = useState(
+    searchParams.get("reverse") === "false" ? false : true,
+  );
+  const [per_page, setPerPage] = useState(
+    Number(searchParams.get("per_page")) || 10,
+  );
+  const [cursor, setCursor] = useState<string | undefined>(
+    searchParams.get("cursor") || undefined,
+  );
 
   const [products, setProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,11 +56,13 @@ function ProductsAdminPageInner() {
   // Sync state to URL
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (debouncedSearch) params.set("q", debouncedSearch); else params.delete("q");
+    if (debouncedSearch) params.set("q", debouncedSearch);
+    else params.delete("q");
     params.set("sort", sortKey);
     params.set("reverse", String(reverse));
     params.set("per_page", String(per_page));
-    if (cursor) params.set("cursor", cursor); else params.delete("cursor");
+    if (cursor) params.set("cursor", cursor);
+    else params.delete("cursor");
 
     const newQuery = params.toString();
     const currentQuery = searchParams.toString();
@@ -48,12 +70,27 @@ function ProductsAdminPageInner() {
     if (newQuery !== currentQuery) {
       router.push(`${pathname}?${newQuery}`, { scroll: false });
     }
-  }, [debouncedSearch, sortKey, reverse, per_page, cursor, router, pathname, searchParams]);
+  }, [
+    debouncedSearch,
+    sortKey,
+    reverse,
+    per_page,
+    cursor,
+    router,
+    pathname,
+    searchParams,
+  ]);
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const result = await getAdminProducts(per_page, cursor, debouncedSearch, sortKey, reverse);
+    const result = await getAdminProducts(
+      per_page,
+      cursor,
+      debouncedSearch,
+      sortKey,
+      reverse,
+    );
     if (result.success) {
       setProducts(result.data.edges);
       setPageInfo(result.data.pageInfo);
@@ -90,7 +127,11 @@ function ProductsAdminPageInner() {
     }
   };
 
-  const handleDelete = async (e: React.MouseEvent, id: string, title: string) => {
+  const handleDelete = async (
+    e: React.MouseEvent,
+    id: string,
+    title: string,
+  ) => {
     e.stopPropagation();
     setDeleteId(id);
     setDeleteTitle(title);
@@ -112,16 +153,25 @@ function ProductsAdminPageInner() {
   };
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
-    if (sortKey !== columnKey) return <SlidersHorizontal className="w-3 h-3 opacity-20" />;
-    return reverse ? <ChevronRight className="w-3 h-3 rotate-90" /> : <ChevronRight className="w-3 h-3 -rotate-90" />;
+    if (sortKey !== columnKey)
+      return <SlidersHorizontal className="w-3 h-3 opacity-20" />;
+    return reverse ? (
+      <ChevronRight className="w-3 h-3 rotate-90" />
+    ) : (
+      <ChevronRight className="w-3 h-3 -rotate-90" />
+    );
   };
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-sora font-semibold text-[#111]">Products</h1>
-          <p className="text-muted text-sm">Manage your catalog and inventory.</p>
+          <h1 className="text-3xl font-sora font-semibold text-[#111]">
+            Products
+          </h1>
+          <p className="text-muted text-sm">
+            Manage your catalog and inventory.
+          </p>
         </div>
 
         <Link
@@ -173,10 +223,10 @@ function ProductsAdminPageInner() {
             <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mb-4 border border-red-100">
               <X className="w-8 h-8 text-red-400" />
             </div>
-            <h3 className="text-lg font-sora font-semibold text-[#111]">API Connection Failed</h3>
-            <p className="text-muted text-sm max-w-xs mt-1 mb-8">
-              {error}
-            </p>
+            <h3 className="text-lg font-sora font-semibold text-[#111]">
+              API Connection Failed
+            </h3>
+            <p className="text-muted text-sm max-w-xs mt-1 mb-8">{error}</p>
             <button
               onClick={() => fetchProducts()}
               className="text-sm font-semibold text-black hover:underline"
@@ -189,9 +239,13 @@ function ProductsAdminPageInner() {
             <div className="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center mb-4 border border-black/5">
               <PackageOpen className="w-8 h-8 text-black/20" />
             </div>
-            <h3 className="text-lg font-sora font-semibold text-[#111]">No products found</h3>
+            <h3 className="text-lg font-sora font-semibold text-[#111]">
+              No products found
+            </h3>
             <p className="text-muted text-sm max-w-xs mt-1 mb-8">
-              {searchQuery ? `No results for "${searchQuery}". Try a different term or clear filters.` : "Start building your store by adding your first product."}
+              {searchQuery
+                ? `No results for "${searchQuery}". Try a different term or clear filters.`
+                : "Start building your store by adding your first product."}
             </p>
             {searchQuery && (
               <button
@@ -209,7 +263,7 @@ function ProductsAdminPageInner() {
                 <thead>
                   <tr className="border-b border-black/5 bg-surface/50">
                     <th
-                      onClick={() => handleSort('TITLE')}
+                      onClick={() => handleSort("TITLE")}
                       className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider cursor-pointer hover:text-black transition-colors"
                     >
                       <div className="flex items-center gap-2">
@@ -217,10 +271,14 @@ function ProductsAdminPageInner() {
                         <SortIcon columnKey="TITLE" />
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Price</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Status</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">
+                      Price
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">
+                      Status
+                    </th>
                     <th
-                      onClick={() => handleSort('UPDATED_AT')}
+                      onClick={() => handleSort("UPDATED_AT")}
                       className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center cursor-pointer hover:text-black transition-colors"
                     >
                       <div className="flex items-center justify-center gap-2">
@@ -228,101 +286,137 @@ function ProductsAdminPageInner() {
                         <SortIcon columnKey="UPDATED_AT" />
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-right">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/5">
-                  {isLoading ? (
-                    Array.from({ length: per_page }).map((_, i) => (
-                      <tr key={`skeleton-${i}`} className="animate-pulse">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-lg bg-black/5 shrink-0" />
-                            <div className="space-y-2">
-                              <div className="h-4 w-40 bg-black/20 rounded" />
-                              <div className="h-3 w-24 bg-black/20 rounded" />
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-4 w-12 bg-black/20 rounded mx-auto" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-5 w-16 bg-black/20 rounded-full mx-auto" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-4 w-20 bg-black/20 rounded mx-auto" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="h-8 w-8 bg-black/20 rounded-lg ml-auto" />
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    products.map(({ node }) => (
-                      <tr key={node.id} className="group hover:bg-surface transition-colors cursor-pointer" onClick={() => router.push(`/dashboard/admin/products/${node.id.split('/').pop()}`)}>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-lg border border-black/5 bg-surface overflow-hidden shrink-0">
-                              {node.featuredImage ? (
-                                <img src={node.featuredImage.url} alt={node.featuredImage.altText} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <PackageOpen className="w-5 h-5 text-black/10" />
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-[#111] leading-none mb-1 group-hover:text-black">{node.title}</p>
-                              <div className="flex items-center gap-2">
-                                <p className="text-[10px] text-muted font-mono">{node.handle}</p>
+                  {isLoading
+                    ? Array.from({ length: per_page }).map((_, i) => (
+                        <tr key={`skeleton-${i}`} className="animate-pulse">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-lg bg-black/5 shrink-0" />
+                              <div className="space-y-2">
+                                <div className="h-4 w-40 bg-black/20 rounded" />
+                                <div className="h-3 w-24 bg-black/20 rounded" />
                               </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <p className="text-sm text-[#111] font-medium">
-                            {node.priceRangeV2.minVariantPrice.amount} {node.priceRangeV2.minVariantPrice.currencyCode}
-                          </p>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${node.status === 'ACTIVE' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                            }`}>
-                            {node.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <p className="text-[11px] text-muted font-mono">
-                            {node.updatedAt ? new Date(node.updatedAt).toLocaleDateString() : 'N/A'}
-                          </p>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link
-                              href={`/dashboard/admin/products/${node.id.split('/').pop()}/edit`}
-                              className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                              onClick={(e) => e.stopPropagation()}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-12 bg-black/20 rounded mx-auto" />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="h-5 w-16 bg-black/20 rounded-full mx-auto" />
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="h-4 w-20 bg-black/20 rounded mx-auto" />
+                          </td>
+                          <td className="px-6 py-4 flex gap-2">
+                            <div className="h-8 w-8 bg-black/20 rounded-lg ml-auto" />
+                            <div className="h-8 w-8 bg-black/20 rounded-lg" />
+                            <div className="h-8 w-8 bg-black/20 rounded-lg" />
+                          </td>
+                        </tr>
+                      ))
+                    : products.map(({ node }) => (
+                        <tr
+                          key={node.id}
+                          className="group hover:bg-surface transition-colors cursor-pointer"
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/admin/products/${node.id.split("/").pop()}`,
+                            )
+                          }
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-lg border border-black/5 bg-surface overflow-hidden shrink-0">
+                                {node.featuredImage ? (
+                                  <img
+                                    src={node.featuredImage.url}
+                                    alt={node.featuredImage.altText}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <PackageOpen className="w-5 h-5 text-black/10" />
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-[#111] leading-none mb-1 group-hover:text-black">
+                                  {node.title}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <p className="text-[10px] text-muted font-mono">
+                                    {node.handle}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <p className="text-sm text-[#111] font-medium">
+                              {node.priceRangeV2.minVariantPrice.amount}{" "}
+                              {node.priceRangeV2.minVariantPrice.currencyCode}
+                            </p>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                node.status === "ACTIVE"
+                                  ? "bg-green-100 text-green-700 border border-green-200"
+                                  : "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                              }`}
                             >
-                              <Edit2 className="w-4 h-4" />
-                            </Link>
-                            <button
-                              onClick={(e) => handleDelete(e, node.id, node.title)}
-                              className="p-2 hover:bg-red-700 cursor-pointer bg-red-500 text-white rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                              {node.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <p className="text-[11px] text-muted font-mono">
+                              {node.updatedAt
+                                ? new Date(node.updatedAt).toLocaleDateString()
+                                : "N/A"}
+                            </p>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Link
+                                href={`/dashboard/admin/products/${node.id.split("/").pop()}/customizer`}
+                                className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MousePointerClickIcon className="w-4 h-4" />
+                              </Link>
+                              <Link
+                                href={`/dashboard/admin/products/${node.id.split("/").pop()}/edit`}
+                                className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Link>
+                              <button
+                                onClick={(e) =>
+                                  handleDelete(e, node.id, node.title)
+                                }
+                                className="p-2 hover:bg-red-700 cursor-pointer bg-red-500 text-white rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
 
             <div className="p-6 border-t border-black/5 flex items-center justify-between bg-surface/30 mt-auto">
               <p className="text-[11px] text-muted font-medium tracking-tight">
-                PAGE {pageInfo?.hasNextPage ? 'ACTIVE' : 'FINAL'} — {products.length} ENTRIES LOADED
+                PAGE {pageInfo?.hasNextPage ? "ACTIVE" : "FINAL"} —{" "}
+                {products.length} ENTRIES LOADED
               </p>
               <div className="flex gap-2">
                 <button
@@ -362,7 +456,11 @@ function ProductsAdminPageInner() {
 
 export default function ProductsAdminPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-sm text-muted">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-sm text-muted">Loading...</div>
+      }
+    >
       <ProductsAdminPageInner />
     </Suspense>
   );

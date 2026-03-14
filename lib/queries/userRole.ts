@@ -1,49 +1,27 @@
-import { eq } from 'drizzle-orm';
-import { db } from '@/db';
-import { userRoles } from '@/db/schemas/user-roles.schema';
-
 export async function getUserRole(userId: string) {
   try {
-    console.log('getUserRole called with userId:', userId);
-    console.log('Environment check:', {
-      nodeEnv: process.env.NODE_ENV,
-      hasDatabaseUrl: !!process.env.DATABASE_URL,
-      databaseUrlLength: process.env.DATABASE_URL?.length
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/user-role?userId=${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    // Test database connection first
-    await db.execute('SELECT 1');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    const result = await db
-      .select({ role: userRoles.role })
-      .from(userRoles)
-      .where(eq(userRoles.userId, userId))
-      .limit(1);
-
-    console.log('Database query result:', result);
-
-    const role = result[0]?.role || 'user';
-    console.log('Returning role:', role);
-
-    return role;
-
+    const data = await response.json();
+    return data.role;
   } catch (error) {
-    console.error('Error fetching user role:', error);
-    console.error('Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      code: (error as any)?.code,
-      userId,
-      isProduction: process.env.NODE_ENV === 'production'
-    });
+    console.error('Error fetching user role from API:', error);
 
-    // In production, if database fails, return default role
-    // This prevents users from being locked out
+    // Fallback to default role in production
     if (process.env.NODE_ENV === 'production') {
-      console.warn('Database error in production, returning default user role');
+      console.warn('API error in production, returning default user role');
       return 'user';
     }
 
-    // In development, still throw the error for debugging
     throw error;
   }
 }

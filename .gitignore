@@ -44,3 +44,5 @@ next-env.d.ts
 # custom
 highlineindustry.pdf
 tmp/
+example.json
+db/migrations/

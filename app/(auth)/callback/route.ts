@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createServerClient } from '@/lib/supabase/server-client'
-import { db } from '@/db'
-import { userRoles } from '@/db/schemas/user-roles.schema'
-import { eq } from 'drizzle-orm'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -26,32 +23,26 @@ export async function GET(request: Request) {
       if (user) {
         // Check if user role exists, if not create it
         try {
-          console.log('Checking user role for user:', user.id);
-          const existingRole = await db
-            .select()
-            .from(userRoles)
-            .where(eq(userRoles.userId, user.id))
-            .limit(1)
-
-          console.log('Existing role result:', existingRole);
-
-          if (existingRole.length === 0) {
-            console.log('Creating user role for user:', user.id);
-            // Create default user role
-            await db.insert(userRoles).values({
+          console.log('Setting user role for user:', user.id);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/user-role`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
               userId: user.id,
-              role: 'user', // Default role for all new signups
-            });
-            console.log('User role created successfully');
-          } else {
-            console.log('User role already exists');
-          }
-        } catch (dbError) {
-          console.error("Failed to create user role during email verification:", dbError);
-          console.error("Database error details:", {
-            message: dbError instanceof Error ? dbError.message : 'Unknown error',
-            stack: dbError instanceof Error ? dbError.stack : undefined
+              role: 'user',
+            }),
           });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log('User role set successfully:', data.message);
+        } catch (apiError) {
+          console.error("Failed to set user role during email verification:", apiError);
           // Continue with redirect even if role creation fails
         }
       }
