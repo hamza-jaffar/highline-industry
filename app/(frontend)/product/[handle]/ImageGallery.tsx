@@ -1,9 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function ImageGallery({ images }: { images: { url: string; altText: string }[] }) {
-  const [activeImage, setActiveImage] = useState(images[0]);
+export default function ImageGallery({
+  images,
+  variantImage,
+}: {
+  images: { url: string; altText?: string }[];
+  variantImage?: { url: string; altText?: string } | null;
+}) {
+  const [activeImage, setActiveImage] = useState(variantImage || images[0]);
+
+  useEffect(() => {
+    if (variantImage && variantImage.url) {
+      setActiveImage(variantImage);
+    } else if (images && images.length > 0) {
+      setActiveImage(images[0]);
+    }
+  }, [variantImage, images]);
 
   if (!images || images.length === 0) {
     return (

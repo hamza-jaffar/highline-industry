@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 type Variant = {
   id: string;
@@ -8,10 +8,11 @@ type Variant = {
   price: string;
   inventoryQuantity: number;
   availableForSale?: boolean;
+  image?: { url: string; altText?: string } | null;
   selectedOptions: { name: string; value: string }[];
 };
 
-export default function ProductForm({ product }: { product: any }) {
+export default function ProductForm({ product, onVariantSelect }: { product: any; onVariantSelect?: (variant?: Variant) => void }) {
   const variants: Variant[] = product.variants.edges.map(({ node }: any) => node);
 
   // Collect all unique option names IN ORDER (e.g. ["Color", "Size"])
@@ -87,6 +88,13 @@ export default function ProductForm({ product }: { product: any }) {
   const isInStock =
     selectedVariant &&
     (selectedVariant.inventoryQuantity > 0 || selectedVariant.availableForSale);
+
+  // Keep parent informed of variant selection changes (for image sync)
+  useEffect(() => {
+    if (onVariantSelect) {
+      onVariantSelect(selectedVariant);
+    }
+  }, [selectedVariant, onVariantSelect]);
 
   const displayPrice = selectedVariant?.price
     ? `${parseFloat(selectedVariant.price).toFixed(2)}`
