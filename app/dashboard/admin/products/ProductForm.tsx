@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Plus, X, Loader2, Image as ImageIcon, Upload, Trash2, Layers, Tag, Settings, Package, ChevronDown, Monitor, Globe } from "lucide-react";
 import Link from "next/link";
-import { getAdminCollections } from "@/app/actions/admin.action";
+import { getAdminCollections } from "@/app/actions/admin";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 
 interface ProductFormProps {
@@ -131,13 +131,15 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
     const preview = URL.createObjectURL(file);
 
     const newVariants = [...formData.variants];
+    const imageKey = `variant-${vIndex}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     newVariants[vIndex].image = {
       file,
       base64,
       type: file.type,
       name: file.name,
       preview,
-      altText: formData.title || "",
+      altText: formData.title || imageKey,
+      imageKey,
     };
 
     setFormData({ ...formData, variants: newVariants });
@@ -251,7 +253,7 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
             </div>
           </div>
 
-          {/* Variants Table */}
+          {/* Variants Cards */}
           <div className="bg-white border border-black/10 rounded-2xl overflow-hidden shadow-sm">
             <div className="p-8 border-b border-black/5 flex items-center justify-between bg-surface/50">
               <h3 className="text-sm font-bold text-muted uppercase tracking-wider flex items-center gap-2">
@@ -266,110 +268,103 @@ export default function ProductForm({ initialData, onSubmit, isLoading, submitLa
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-150">
-                <thead>
-                  <tr className="border-b border-black/5 bg-surface/30">
-                    <th className="px-8 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Appearance</th>
-                    <th className="px-12 py-4 text-[10px] font-bold text-muted uppercase tracking-wider">Image</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Price</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">Inventory</th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-muted uppercase tracking-wider text-center">SKU</th>
-                    <th className="px-8 py-4"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/5">
-                  {formData.variants.map((v: any, vIndex: number) => (
-                    <tr key={vIndex} className="group hover:bg-surface/50 transition-colors">
-                      <td className="px-8 py-6">
-                        <div className="flex flex-col gap-2">
-                          {v.options.map((opt: any, oIndex: number) => (
-                            <div key={oIndex} className="flex items-center gap-3">
-                              <span className="text-[10px] font-bold text-muted w-12">{opt.name}:</span>
-                              <input 
-                                type="text"
-                                value={opt.value}
-                                onChange={(e) => handleOptionValueChange(vIndex, oIndex, e.target.value)}
-                                className="bg-white border border-black/5 rounded-md px-2 py-1 text-xs w-24 focus:outline-none focus:border-black/20"
-                                placeholder="..."
-                              />
-                            </div>
-                          ))}
+            <div className="p-8 space-y-4">
+              {formData.variants.map((v: any, vIndex: number) => (
+                <div key={vIndex} className="p-4 border border-black/5 rounded-2xl bg-white shadow-sm grid gap-4 md:grid-cols-[80px_1fr] items-start">
+                  <div className="space-y-2">
+                    {v.image ? (
+                      <div className="relative w-20 h-20">
+                        <img
+                          src={v.image.preview || v.image.url}
+                          alt={v.image.altText || "Variant image"}
+                          className="w-full h-full object-cover rounded-xl border border-black/10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleVariantImageRemove(vIndex)}
+                          className="absolute -top-1 -right-1 text-white bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-[10px]"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="w-20 h-20 flex items-center justify-center border border-dashed border-black/20 rounded-xl text-[10px] text-muted cursor-pointer hover:border-black/30">
+                        Upload
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleVariantImageChange(vIndex, e.target.files?.[0] || null)}
+                        />
+                      </label>
+                    )}
+                    <p className="text-xs text-muted">variant image</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {v.options.map((opt: any, oIndex: number) => (
+                        <div key={oIndex} className="space-y-1">
+                          <label className="text-[10px] font-bold text-muted uppercase tracking-wider">{opt.name}</label>
+                          <input
+                            type="text"
+                            value={opt.value}
+                            onChange={(e) => handleOptionValueChange(vIndex, oIndex, e.target.value)}
+                            className="w-full bg-white border border-black/20 rounded-md px-2 py-1 text-xs focus:outline-none focus:border-black/20"
+                            placeholder="..."
+                          />
                         </div>
-                      </td>
-                      <td className="px-12 py-6 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          {v.image ? (
-                            <div className="relative">
-                              <img
-                                src={v.image.preview || v.image.url}
-                                alt={v.image.altText || "Variant image"}
-                                className="w-12 h-12 object-cover rounded-md border border-black/10"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleVariantImageRemove(vIndex)}
-                                className="absolute -top-1 -right-1 text-white bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-[10px]"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ) : (
-                            <label className="border border-dashed border-black/20 p-2 rounded-lg text-[10px] text-muted cursor-pointer hover:border-black/30">
-                              Upload
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => handleVariantImageChange(vIndex, e.target.files?.[0] || null)}
-                              />
-                            </label>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-6 text-center">
-                        <div className="relative inline-block w-24">
-                          <span className="absolute left-3 top-2 text-[10px] text-muted">$</span>
-                          <input 
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-muted uppercase tracking-wider">Price</label>
+                        <div className="relative">
+                          <span className="absolute left-2 top-2 text-[10px] text-muted">$</span>
+                          <input
                             type="text"
                             value={v.price}
                             onChange={(e) => handleVariantChange(vIndex, 'price', e.target.value)}
-                            className="bg-white border border-black/5 rounded-md pl-6 pr-2 py-1.5 text-xs w-full focus:outline-none focus:border-black/20 font-mono"
+                            className="w-full bg-white border border-black/20 rounded-md pl-5 pr-2 py-1.5 text-xs focus:outline-none focus:border-black/20 font-mono"
                           />
                         </div>
-                      </td>
-                      <td className="px-6 py-6 text-center">
-                        <input 
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-muted uppercase tracking-wider">Inventory</label>
+                        <input
                           type="text"
                           value={v.quantity}
                           onChange={(e) => handleVariantChange(vIndex, 'quantity', e.target.value)}
-                          className="bg-white border border-black/5 rounded-md px-2 py-1.5 text-xs w-16 text-center focus:outline-none focus:border-black/20 font-mono"
+                          className="w-full bg-white border border-black/20 rounded-md px-2 py-1.5 text-xs text-center focus:outline-none focus:border-black/20 font-mono"
                         />
-                      </td>
-                      <td className="px-6 py-6 text-center">
-                        <input 
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-muted uppercase tracking-wider">SKU</label>
+                        <input
                           type="text"
                           value={v.sku}
                           onChange={(e) => handleVariantChange(vIndex, 'sku', e.target.value)}
-                          className="bg-white border border-black/5 rounded-md px-2 py-1.5 text-xs w-24 focus:outline-none focus:border-black/20 font-mono"
+                          className="w-full bg-white border border-black/20 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:border-black/20 font-mono"
                           placeholder="SKU"
                         />
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        {formData.variants.length > 1 && (
-                          <button 
-                            type="button"
-                            onClick={() => handleRemoveVariant(vIndex)}
-                            className="p-2 text-muted hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+
+                    {formData.variants.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveVariant(vIndex)}
+                        className="text-xs font-semibold text-red-500 hover:text-red-600"
+                      >
+                        Remove variant
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

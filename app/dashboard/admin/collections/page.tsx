@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { getAdminCollections, deleteCollection } from "@/app/actions/admin.action";
+import { getAdminCollections, deleteCollection } from "@/app/actions/admin";
 import { toast } from "sonner";
 import { Plus, FolderOpen, ChevronRight, ChevronLeft, Loader2, Image as ImageIcon, X, Search, SlidersHorizontal, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
