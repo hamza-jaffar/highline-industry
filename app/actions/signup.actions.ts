@@ -64,8 +64,6 @@ export async function signup(prevState: FormState, formData: FormData): Promise<
     return { success: false, message: error.message };
   }
 
-  // Always assume email confirmation is required for security
-  // Role will be created in the callback route after email verification
   return {
     success: true,
     message: "Registration successful! Please check your email and click the verification link to complete your account setup."

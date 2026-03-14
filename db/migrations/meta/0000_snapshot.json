@@ -1,5 +1,5 @@
 {
-  "id": "3a4ae0e0-8deb-40f7-90c8-0ddf1ad6141e",
+  "id": "1f2ff1da-0426-48ce-b91f-cce899e453c3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -108,6 +108,20 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "text_price": {
+          "name": "text_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "image_price": {
+          "name": "image_price",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
         }
       },
       "indexes": {},
