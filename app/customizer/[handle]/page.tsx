@@ -29,9 +29,7 @@ const CustomizerPage = async (props: {
                 <CenterCanvas />
 
                 {/* Transformer / Attributes */}
-                <section className="w-1/5">
-                    <CustomizerRightSidebar />
-                </section>
+                <CustomizerRightSidebar />
             </main>
 
             <style dangerouslySetInnerHTML={{

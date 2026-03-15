@@ -20,8 +20,6 @@ const SORT_OPTIONS = [
   { label: "Price: High to Low", value: "price-desc" },
 ];
 
-const FILTER_CATEGORIES = []; // Removed in favor of dynamic categories
-
 interface ShopClientProps {
   initialProducts: ShopifyProductEdge[];
   initialPageInfo: { hasNextPage: boolean; endCursor: string | null };
@@ -370,7 +368,7 @@ function ShopClientInner({
 
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none" />
 
-                  <div className="absolute bottom-0 w-full left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                  <div className="absolute bottom-0 w-full left-0 z-100 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                     <Link
                       href={`/customizer/${product.handle}`}
                       className="block text-center w-full py-3 bg-white border border-black/10 rounded-lg text-[#111] text-sm font-semibold shadow-sm hover:bg-black hover:text-white hover:border-black transition-all"
