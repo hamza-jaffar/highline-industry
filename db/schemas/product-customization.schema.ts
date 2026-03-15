@@ -1,9 +1,11 @@
-import { integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const ProductViews = pgTable("product_views", {
   id: uuid("id").primaryKey().defaultRandom(),
   productId: text("product_id").notNull(),
-  name: text("name"),
+  name: text("name"), // Part Name (Front, Back, etc.)
+  color: text("color"), // Null if common
+  isCommon: boolean("is_common").default(false),
   imageUrl: text("image_url").notNull(),
   sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
