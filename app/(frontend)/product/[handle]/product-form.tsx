@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useMemo, useEffect } from "react";
 
 type Variant = {
@@ -99,7 +100,7 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
   const displayPrice = selectedVariant?.price
     ? `${parseFloat(selectedVariant.price).toFixed(2)}`
     : product.priceRange?.minVariantPrice?.amount || "—";
-  
+
   const currency = product.priceRange?.minVariantPrice?.currencyCode || "";
 
   const handleAddToCart = () => {
@@ -118,11 +119,10 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
         </span>
         {selectedVariant && (
           <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-              isInStock
-                ? "text-emerald-700 bg-emerald-50"
-                : "text-red-600 bg-red-50"
-            }`}
+            className={`text-xs font-semibold px-2 py-0.5 rounded-full ${isInStock
+              ? "text-emerald-700 bg-emerald-50"
+              : "text-red-600 bg-red-50"
+              }`}
           >
             {isInStock
               ? `In Stock${selectedVariant.inventoryQuantity > 0 ? ` (${selectedVariant.inventoryQuantity})` : ""}`
@@ -160,13 +160,12 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
                     key={value}
                     onClick={() => isAvailable && handleOptionChange(optionName, value)}
                     disabled={!isAvailable}
-                    className={`px-5 py-2.5 rounded-xl border text-sm font-medium transition-all relative ${
-                      isActive
-                        ? "border-black bg-black text-white shadow-sm"
-                        : isAvailable
+                    className={`px-5 py-2.5 rounded-xl border text-sm font-medium transition-all relative ${isActive
+                      ? "border-black bg-black text-white shadow-sm"
+                      : isAvailable
                         ? "border-black/10 bg-white text-[#111] hover:border-black/30 hover:bg-surface"
                         : "border-black/5 bg-surface text-black/20 cursor-not-allowed line-through"
-                    }`}
+                      }`}
                   >
                     {value}
                   </button>
@@ -177,21 +176,27 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
         );
       })}
 
-      <button
-        onClick={handleAddToCart}
-        disabled={!isInStock}
-        className={`w-full py-4 rounded-xl text-sm font-semibold transition-all shadow-sm ${
-          isInStock
-            ? "bg-[#111] text-white hover:bg-black"
-            : "bg-black/5 text-muted cursor-not-allowed"
-        }`}
-      >
-        {!selectedVariant
-          ? "Select Options"
-          : isInStock
-          ? "Add to Cart"
-          : "Out of Stock"}
-      </button>
+      {selectedVariant && isInStock ? (
+        <>
+          <Link
+            href={`/customizer/${product.handle}`}
+            className="block text-center w-full py-3 bg-white border border-black/10 rounded-lg text-[#111] text-sm font-semibold shadow-sm hover:bg-black hover:text-white hover:border-black transition-all"
+          >
+            Design Now
+          </Link>
+          <button
+            onClick={handleAddToCart}
+            className={`w-full py-4 rounded-xl text-sm font-semibold transition-all shadow-sm bg-[#111] text-white hover:bg-black`}
+          >
+            Add to Cart
+          </button>
+        </>
+      ) : (
+        <button className="w-full py-4 rounded-xl text-sm font-semibold transition-all shadow-sm bg-black/5 text-muted cursor-not-allowed">
+          Out of Stock
+        </button>
+      )}
+
     </div>
   );
 }

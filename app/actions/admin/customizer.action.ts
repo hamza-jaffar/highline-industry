@@ -147,6 +147,7 @@ export async function getCustomizerConfig(productId: string) {
             const zones = await db.select().from(customizationZones).where(eq(customizationZones.viewId, view.id));
             const areas: Area[] = zones.map(z => ({
                 id: Math.random().toString(36).substr(2, 9),
+                name: z.name || undefined,
                 x: z.x,
                 y: z.y,
                 width: z.width,

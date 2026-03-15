@@ -313,11 +313,10 @@ function ShopClientInner({
               <button
                 key={cat.label}
                 onClick={() => handleCatClick(cat)}
-                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
-                  isCatActive(cat)
-                    ? "bg-black text-white"
-                    : "text-muted hover:text-black hover:bg-black/5"
-                }`}
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${isCatActive(cat)
+                  ? "bg-black text-white"
+                  : "text-muted hover:text-black hover:bg-black/5"
+                  }`}
               >
                 {cat.label}
               </button>
@@ -328,11 +327,10 @@ function ShopClientInner({
                 onClick={() =>
                   updateUrlParams("collection", currentCollection.handle)
                 }
-                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
-                  activeCategory === currentCollection.handle
-                    ? "bg-black text-white"
-                    : "text-muted hover:text-black hover:bg-black/5"
-                }`}
+                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === currentCollection.handle
+                  ? "bg-black text-white"
+                  : "text-muted hover:text-black hover:bg-black/5"
+                  }`}
               >
                 All {currentCollection.title}
               </button>
@@ -340,11 +338,10 @@ function ShopClientInner({
                 <button
                   key={sub.id}
                   onClick={() => updateUrlParams("collection", sub.handle)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
-                    activeCategory === sub.handle
-                      ? "bg-black text-white"
-                      : "text-muted hover:text-black hover:bg-black/5"
-                  }`}
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all ${activeCategory === sub.handle
+                    ? "bg-black text-white"
+                    : "text-muted hover:text-black hover:bg-black/5"
+                    }`}
                 >
                   {sub.title}
                 </button>
@@ -375,10 +372,10 @@ function ShopClientInner({
 
                   <div className="absolute bottom-0 w-full left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                     <Link
-                      href={`/product/${product.handle}`}
+                      href={`/customizer/${product.handle}`}
                       className="block text-center w-full py-3 bg-white border border-black/10 rounded-lg text-[#111] text-sm font-semibold shadow-sm hover:bg-black hover:text-white hover:border-black transition-all"
                     >
-                      View Product
+                      Design Now
                     </Link>
                   </div>
                 </div>
@@ -394,8 +391,11 @@ function ShopClientInner({
                   </h3>
                 </div>
                 <p className="font-semibold text-sm text-[#111]">
-                  {product.priceRange?.minVariantPrice?.amount || "0.00"}{" "}
-                  {product.priceRange?.minVariantPrice?.currencyCode}
+                  <span className="text-muted text-xs">FROM </span>
+                  <span className="font-semibold">
+                    {product.priceRange?.minVariantPrice?.amount || "0.00"}{" "}
+                    {product.priceRange?.minVariantPrice?.currencyCode}
+                  </span>
                 </p>
               </div>
             </div>
@@ -436,18 +436,16 @@ function ShopClientInner({
 
       {/* Filter Sidebar Overlay */}
       <div
-        className={`fixed inset-0 z-150 bg-black/20 backdrop-blur-sm transition-opacity duration-300 flex justify-end ${
-          isFilterOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-150 bg-black/20 backdrop-blur-sm transition-opacity duration-300 flex justify-end ${isFilterOpen
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setIsFilterOpen(false)}
       >
         {/* Sidebar Panel */}
         <div
-          className={`w-full max-w-sm bg-white h-full shadow-2xl transition-transform duration-500 ease-in-out flex flex-col ${
-            isFilterOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`w-full max-w-sm bg-white h-full shadow-2xl transition-transform duration-500 ease-in-out flex flex-col ${isFilterOpen ? "translate-x-0" : "translate-x-full"
+            }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="h-16 border-b border-black/5 flex items-center justify-between px-6 shrink-0">
