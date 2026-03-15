@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { saveCollection } from "@/app/actions/admin";
-import CollectionForm from "../CollectionForm";
+import CollectionForm from "../collection-form";
 
 function NewCollectionPageInner() {
   const router = useRouter();

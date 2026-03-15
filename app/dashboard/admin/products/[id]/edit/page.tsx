@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { getAdminProduct, saveProduct } from "@/app/actions/admin";
-import ProductForm from "../../ProductForm";
+import ProductForm from "../../product-form";
 
 export default function EditProductPage() {
   const { id } = useParams();

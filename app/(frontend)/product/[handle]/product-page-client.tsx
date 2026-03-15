@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ProductForm from "./ProductForm";
-import ImageGallery from "./ImageGallery";
+import ProductForm from "./product-form";
+import ImageGallery from "./image-gallery";
 
 export default function ProductPageClient({ product, images }: { product: any; images: { url: string; altText?: string }[] }) {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);

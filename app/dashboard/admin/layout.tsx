@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import AdminLayout from "./AdminLayout";
+import AdminLayout from "./admin-layout";
 import { createServerClient } from "@/lib/supabase/server-client";
 import { getUserRole } from "@/lib/queries/userRole";
 

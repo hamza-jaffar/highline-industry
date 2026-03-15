@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import AppLogo from './appLogo';
+import AppLogo from './app-logo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

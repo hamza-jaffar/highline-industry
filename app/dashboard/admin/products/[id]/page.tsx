@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Package, Tag, Layers, Settings, ExternalLink, AlertCircle, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { getAdminProduct, deleteProduct } from "@/app/actions/admin";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/confirm-dialog";
 
 export default function ProductDetailPage() {
   const { id } = useParams();

@@ -1,6 +1,6 @@
 import { getSingleProduct } from "@/lib/shopify/product.query";
 import { notFound } from "next/navigation";
-import ProductPageClient from "./ProductPageClient";
+import ProductPageClient from "./product-page-client";
 
 export default async function ProductPage(props: {
   params: Promise<{ handle: string }>;

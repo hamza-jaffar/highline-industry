@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Plus, X, Loader2, Image as ImageIcon, Upload, Trash2, Layers, Tag, Settings, Package, ChevronDown, Monitor, Globe } from "lucide-react";
 import Link from "next/link";
 import { getAdminCollections } from "@/app/actions/admin";
-import RichTextEditor from "@/components/admin/RichTextEditor";
+import RichTextEditor from "@/components/admin/rich-text-editor";
 
 interface ProductFormProps {
   initialData?: any;

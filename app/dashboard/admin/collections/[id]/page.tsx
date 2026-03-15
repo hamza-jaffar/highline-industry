@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, FolderOpen, Settings, ExternalLink, AlertCircle, Trash2, Plus, ChevronRight, Layers, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { getAdminCollection, getAdminCollections, deleteCollection } from "@/app/actions/admin";
-import ConfirmDialog from "@/components/admin/ConfirmDialog";
+import ConfirmDialog from "@/components/admin/confirm-dialog";
 
 export default function CollectionDetailPage() {
   const { id } = useParams();

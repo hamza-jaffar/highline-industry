@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { saveProduct } from "@/app/actions/admin";
-import ProductForm from "../ProductForm";
+import ProductForm from "../product-form";
 
 export default function NewProductPage() {
   const router = useRouter();

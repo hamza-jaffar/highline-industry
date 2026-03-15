@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { getAdminCollection, saveCollection } from "@/app/actions/admin";
-import CollectionForm from "../../CollectionForm";
+import CollectionForm from "../../collection-form";
 
 export default function EditCollectionPage() {
   const { id } = useParams();

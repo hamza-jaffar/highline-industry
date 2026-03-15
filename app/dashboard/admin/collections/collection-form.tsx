@@ -5,7 +5,7 @@ import { ArrowLeft, Loader2, Image as ImageIcon, X, ChevronDown, FolderOpen, Sea
 import Link from "next/link";
 import { getAdminCollections } from "@/app/actions/admin";
 import Image from "next/image";
-import RichTextEditor from "@/components/admin/RichTextEditor";
+import RichTextEditor from "@/components/admin/rich-text-editor";
 
 interface CollectionFormProps {
   initialData?: {
