@@ -34,11 +34,11 @@ const CustomizerRightSidebar = () => {
     const selectedPart = useAppSelector(state => state.customizer.selectedPart);
     const designs = useAppSelector(state => state.customizer.designs);
     const config = useAppSelector(state => state.customizer.config);
-    
+
     // Get all design parts from config
     const availableParts = config?.parts ? Object.keys(config.parts) : [];
 
-    
+
     const currentDesigns = designs.filter(d => d.partName === selectedPart);
     const selectedElement = currentDesigns.find(d => d.id === selectedElementId);
 
@@ -56,7 +56,7 @@ const CustomizerRightSidebar = () => {
             <div className="p-6 border-b border-black/5 flex items-center justify-between">
                 <h2 className="text-xl font-black tracking-tight">Attributes</h2>
                 {selectedElementId && (
-                    <button 
+                    <button
                         onClick={() => {
                             dispatch(removeElement(selectedElementId));
                             dispatch(selectElement(null));
@@ -72,9 +72,9 @@ const CustomizerRightSidebar = () => {
                 {/* Size Controls */}
                 <section className={`space-y-6 ${!selectedElement ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
                     <div className="flex items-end gap-3">
-                        <AttributeInput 
-                            label="Width" 
-                            value={selectedElement?.width ? Math.round(selectedElement.width * selectedElement.scaleX) : 0} 
+                        <AttributeInput
+                            label="Width"
+                            value={selectedElement?.width ? Math.round(selectedElement.width * selectedElement.scaleX) : 0}
                             unit="px"
                             onChange={(val) => {
                                 const num = parseFloat(val);
@@ -86,10 +86,10 @@ const CustomizerRightSidebar = () => {
                         <div className="mb-2 shrink-0 p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-300 hover:text-black">
                             <Link2 className="w-4 h-4" />
                         </div>
-                        <AttributeInput 
-                            label="Height" 
-                            value={selectedElement?.height ? Math.round(selectedElement.height * selectedElement.scaleY) : 0} 
-                            unit="px" 
+                        <AttributeInput
+                            label="Height"
+                            value={selectedElement?.height ? Math.round(selectedElement.height * selectedElement.scaleY) : 0}
+                            unit="px"
                             onChange={(val) => {
                                 const num = parseFloat(val);
                                 if (!isNaN(num) && selectedElement) {
@@ -100,10 +100,10 @@ const CustomizerRightSidebar = () => {
                     </div>
 
                     <div className="flex gap-4">
-                        <AttributeInput 
-                            label="Rotate" 
-                            value={selectedElement?.rotation ? Math.round(selectedElement.rotation) : 0} 
-                            suffix="°" 
+                        <AttributeInput
+                            label="Rotate"
+                            value={selectedElement?.rotation ? Math.round(selectedElement.rotation) : 0}
+                            suffix="°"
                             onChange={(val) => {
                                 const num = parseFloat(val);
                                 if (!isNaN(num)) {
@@ -111,10 +111,10 @@ const CustomizerRightSidebar = () => {
                                 }
                             }}
                         />
-                        <AttributeInput 
-                            label="Opacity" 
-                            value={100} 
-                            suffix="%" 
+                        <AttributeInput
+                            label="Opacity"
+                            value={100}
+                            suffix="%"
                         />
                     </div>
                 </section>
@@ -154,21 +154,20 @@ const CustomizerRightSidebar = () => {
                                             // When moving to a different part, we should probably clear the areaId 
                                             // or assign to the first available area in that part.
                                             const targetPartDef = config?.parts[partKey];
-                                            const firstArea = targetPartDef?.areas.find(a => 
+                                            const firstArea = targetPartDef?.areas.find(a =>
                                                 a.allowedType === 'both' || a.allowedType === selectedElement.type
                                             );
-                                            
-                                            handleUpdate({ 
+
+                                            handleUpdate({
                                                 partName: partKey,
-                                                areaId: firstArea?.id 
+                                                areaId: firstArea?.id
                                             });
                                             handleUpdateComplete();
                                         }}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                                            selectedElement.partName === partKey
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${selectedElement.partName === partKey
                                             ? 'bg-black text-white border-black'
                                             : 'bg-white text-gray-400 border-gray-100 hover:border-black/20'
-                                        }`}
+                                            }`}
                                     >
                                         {config?.parts[partKey].name || partKey}
                                     </button>
@@ -190,14 +189,13 @@ const CustomizerRightSidebar = () => {
                             </div>
                         )}
                         {[...currentDesigns].reverse().map(design => (
-                            <div 
-                                key={design.id} 
+                            <div
+                                key={design.id}
                                 onClick={() => dispatch(selectElement(design.id))}
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${
-                                    selectedElementId === design.id 
-                                    ? 'border-black bg-black/5' 
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${selectedElementId === design.id
+                                    ? 'border-black bg-black/5'
                                     : 'border-black/5 hover:border-black/20 bg-white'
-                                }`}
+                                    }`}
                             >
                                 <div className="w-8 h-8 shrink-0 bg-white rounded-md border border-black/10 flex items-center justify-center overflow-hidden">
                                     {design.type === 'image' ? (
@@ -215,15 +213,24 @@ const CustomizerRightSidebar = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0 text-gray-400">
-                                    <button 
+                                    <button
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             dispatch(updateElement({ id: design.id, isLocked: !design.isLocked }));
                                             dispatch(saveHistoryState());
                                         }}
-                                        className="p-1 hover:text-black hover:bg-white rounded transition-colors"
+                                        className="p-1 hover:text-black hover:bg-white cursor-pointer rounded transition-colors"
                                     >
                                         {design.isLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            dispatch(removeElement(design.id));
+                                            dispatch(selectElement(null));
+                                        }}
+                                        className="p-1.5 hover:bg-red-50 text-red-400 cursor-pointer hover:text-red-500 rounded-md transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>

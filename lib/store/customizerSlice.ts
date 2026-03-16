@@ -36,11 +36,13 @@ export interface CustomizerAppState {
     showGrid: boolean;
   };
   selectedElementId: string | null;
+  activeTab: 'upload' | 'text' | 'shortcuts' | string;
   history: {
     present: DesignElement[];
     past: DesignElement[][];
     future: DesignElement[][];
   };
+  clipboard: DesignElement | null;
 }
 
 const initialState: CustomizerAppState = {
@@ -60,11 +62,13 @@ const initialState: CustomizerAppState = {
     showGrid: false,
   },
   selectedElementId: null,
+  activeTab: 'upload',
   history: {
     present: [],
     past: [],
     future: []
-  }
+  },
+  clipboard: null
 };
 
 const updateHistory = (state: CustomizerAppState) => {
@@ -193,14 +197,67 @@ export const customizerSlice = createSlice({
        state.priceConfig.additions = additions;
     },
     resetCustomizer: (state) => {
-        state.designs = [];
+      state.designs = [];
+      state.selectedElementId = null;
+      state.canvas.zoom = 1;
+      state.canvas.pan = { x: 0, y: 0 };
+      state.history.past = [];
+      state.history.future = [];
+      state.history.present = [];
+      state.priceConfig.additions = 0;
+    },
+    setTab: (state, action: PayloadAction<string>) => {
+      state.activeTab = action.payload as any;
+    },
+    loadDesign: (state, action: PayloadAction<DesignElement[]>) => {
+      state.designs = action.payload;
+      state.selectedElementId = null;
+      updateHistory(state);
+      customizerSlice.caseReducers.recalculateAdditions(state);
+    },
+    removeCurrentElement: (state) => {
+      if (state.selectedElementId) {
+        state.designs = state.designs.filter(el => el.id !== state.selectedElementId);
         state.selectedElementId = null;
-        state.canvas.zoom = 1;
-        state.canvas.pan = { x: 0, y: 0 };
-        state.history.past = [];
-        state.history.future = [];
-        state.history.present = [];
-        state.priceConfig.additions = 0;
+        updateHistory(state);
+        customizerSlice.caseReducers.recalculateAdditions(state);
+      }
+    },
+    copyElement: (state) => {
+      if (state.selectedElementId) {
+        state.clipboard = state.designs.find(el => el.id === state.selectedElementId) || null;
+      }
+    },
+    pasteElement: (state) => {
+      if (state.clipboard) {
+        const newElement = {
+          ...state.clipboard,
+          id: Math.random().toString(36).substr(2, 9),
+          x: state.clipboard.x + 20,
+          y: state.clipboard.y + 20,
+        };
+        state.designs.push(newElement);
+        state.selectedElementId = newElement.id;
+        updateHistory(state);
+        customizerSlice.caseReducers.recalculateAdditions(state);
+      }
+    },
+    duplicateCurrentElement: (state) => {
+      if (state.selectedElementId) {
+        const element = state.designs.find(el => el.id === state.selectedElementId);
+        if (element) {
+          const newElement = {
+            ...element,
+            id: Math.random().toString(36).substr(2, 9),
+            x: element.x + 20,
+            y: element.y + 20,
+          };
+          state.designs.push(newElement);
+          state.selectedElementId = newElement.id;
+          updateHistory(state);
+          customizerSlice.caseReducers.recalculateAdditions(state);
+        }
+      }
     }
   },
 });
@@ -220,7 +277,13 @@ export const {
   setPan,
   toggleGrid,
   recalculateAdditions,
-  resetCustomizer
+  resetCustomizer,
+  setTab,
+  loadDesign,
+  removeCurrentElement,
+  copyElement,
+  pasteElement,
+  duplicateCurrentElement
 } = customizerSlice.actions;
 
 export default customizerSlice.reducer;

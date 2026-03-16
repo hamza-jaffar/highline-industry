@@ -1,8 +1,11 @@
 import { createServerClient } from '@/lib/supabase/server-client';
 import { redirect } from 'next/navigation';
-import { Box, MapPin, CreditCard } from 'lucide-react';
+import { Box, MapPin, CreditCard, Edit2, Clock, Package } from 'lucide-react';
 import Link from 'next/link';
 import { getUserRole } from '@/lib/queries/userRole';
+import { db } from '@/db';
+import { userDesigns } from '@/db/schemas/product-customization.schema';
+import { eq, desc } from 'drizzle-orm';
 
 export default async function UserDashboard() {
   const supabase = await createServerClient();
@@ -12,6 +15,12 @@ export default async function UserDashboard() {
 
   const role = await getUserRole(user.id);
   if (role !== 'user') redirect(`/dashboard/${role}`);
+
+  const designs = await db
+    .select()
+    .from(userDesigns)
+    .where(eq(userDesigns.userId, user.id))
+    .orderBy(desc(userDesigns.updatedAt));
 
   return (
     <div className="min-h-screen bg-surface pt-24 pb-20 px-6">
@@ -47,12 +56,63 @@ export default async function UserDashboard() {
           ))}
         </div>
 
-        <div className="p-8 bg-white border border-black/10 rounded-xl shadow-sm text-center py-16">
-            <h2 className="text-lg font-sora font-semibold text-[#111] mb-2">No active projects</h2>
-            <p className="text-muted text-sm mb-6">Head to the catalog to configure your first garment system.</p>
-            <Link href="/shop" className="inline-flex px-4 py-2 border border-black/10 text-black text-sm font-semibold rounded-md shadow-sm hover:bg-surface transition-colors">
-                Browse Catalog
-            </Link>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-xl font-sora font-semibold text-[#111]">Saved Designs</h2>
+            <Link href="/shop" className="text-xs font-semibold text-black hover:underline">View Catalog</Link>
+          </div>
+
+          {designs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {designs.map((design) => (
+                <div key={design.id} className="group bg-white border border-black/10 rounded-xl overflow-hidden hover:border-black/20 transition-all shadow-sm">
+                  <div className="aspect-video bg-surface relative flex items-center justify-center p-4">
+                    {design.previewUrl ? (
+                      <img src={design.previewUrl} alt={design.name || 'Design'} className="max-h-full object-contain" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center">
+                        <Package className="w-8 h-8 text-black/20" />
+                      </div>
+                    )}
+                    <Link 
+                      href={`/customizer/${design.productHandle}?designId=${design.id}`}
+                      className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <button className="px-4 py-2 bg-white text-black text-xs font-bold rounded-full flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                        <Edit2 className="w-3 h-3" />
+                        Edit Design
+                      </button>
+                    </Link>
+                  </div>
+                  <div className="p-4 border-t border-black/5">
+                    <div className="flex justify-between items-start mb-2">
+                       <h3 className="text-sm font-semibold text-[#111] truncate max-w-[150px]">
+                         {design.name || `${design.productHandle} - ${design.color}`}
+                       </h3>
+                       <span className="text-[10px] font-bold text-black/40 px-2 py-0.5 rounded bg-black/5 uppercase tracking-wider">
+                         {design.color}
+                       </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-muted font-medium">
+                       <Clock className="w-3 h-3" />
+                       {new Date(design.updatedAt!).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-12 bg-white border border-black/10 rounded-xl shadow-sm text-center">
+                <div className="w-12 h-12 rounded-full bg-surface border border-black/5 flex items-center justify-center mx-auto mb-4">
+                  <Package className="w-6 h-6 text-black/20" />
+                </div>
+                <h3 className="text-base font-sora font-semibold text-[#111] mb-1">No saved designs</h3>
+                <p className="text-sm text-muted mb-6">Your customized projects will appear here for future editing.</p>
+                <Link href="/shop" className="inline-flex px-4 py-2 bg-black text-white text-xs font-bold rounded-md hover:bg-black/90 transition-colors">
+                    Start Customizing
+                </Link>
+            </div>
+          )}
         </div>
 
       </div>

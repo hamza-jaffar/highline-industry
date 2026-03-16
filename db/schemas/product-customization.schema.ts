@@ -23,3 +23,16 @@ export const customizationZones = pgTable("customization_zones", {
   textPrice: integer("text_price").default(0),
   imagePrice: integer("image_price").default(0),
 });
+
+export const userDesigns = pgTable("user_designs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  productId: text("product_id").notNull(),
+  productHandle: text("product_handle").notNull(),
+  color: text("color").notNull(),
+  name: text("name"), // Optional name for the design
+  elements: text("elements").notNull(), // JSON stringified DesignElement[]
+  previewUrl: text("preview_url"), // URL to a preview image
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});

@@ -7,6 +7,10 @@ import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { setColor, resetCustomizer } from "@/lib/store/customizerSlice";
 
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
+import { useParams } from "next/navigation";
+
 interface ConfirmDialogProps {
     isOpen: boolean;
     title: string;
@@ -21,14 +25,19 @@ interface ConfirmDialogProps {
 
 const CustomizerHeader = () => {
     const router = useRouter();
+    const params = useParams();
     const dispatch = useAppDispatch();
+    const handle = params.handle as string;
+    
     const product = useAppSelector((state) => state.customizer.product);
     const colors = useAppSelector((state) => state.customizer.colors);
     const selectedColor = useAppSelector((state) => state.customizer.selectedColor);
     const priceConfig = useAppSelector((state) => state.customizer.priceConfig);
-    
+    const designs = useAppSelector((state) => state.customizer.designs);
+
     const totalPrice = (priceConfig.basePrice + priceConfig.additions).toFixed(2);
 
+    const [isSaving, setIsSaving] = useState(false);
     const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogProps>({
         isOpen: false,
@@ -63,7 +72,7 @@ const CustomizerHeader = () => {
             message: "This will remove all your designs. This action cannot be undone.",
             confirmLabel: "Reset",
             cancelLabel: "Cancel",
-            onConfirm: () => { 
+            onConfirm: () => {
                 dispatch(resetCustomizer());
                 setConfirmDialog(prev => ({ ...prev, isOpen: false }));
             },
@@ -71,6 +80,51 @@ const CustomizerHeader = () => {
             isLoading: false,
             variant: "danger",
         })
+    }
+
+    const handleSave = async () => {
+        if (designs.length === 0) {
+            toast.error("Add some designs before saving");
+            return;
+        }
+
+        setIsSaving(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        const designData = {
+            productId: product?.id,
+            productHandle: handle,
+            color: selectedColor,
+            elements: designs,
+        };
+
+        if (!session) {
+            toast.info("Please sign in to save your design");
+            sessionStorage.setItem('pending_design', JSON.stringify(designData));
+            router.push(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/user-designs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(designData),
+            });
+
+            if (response.ok) {
+                toast.success("Design saved successfully");
+            } else {
+                const error = await response.json();
+                toast.error(error.message || "Failed to save design");
+            }
+        } catch (error) {
+            console.error("Save error:", error);
+            toast.error("An error occurred while saving");
+        } finally {
+            setIsSaving(false);
+        }
     }
 
     return (
@@ -85,7 +139,7 @@ const CustomizerHeader = () => {
                     <span className="text-sm font-medium tracking-tight truncate max-w-[250px]">
                         {product?.title || "Loading..."}
                     </span>
-                    <button 
+                    <button
                         onClick={handleReset}
                         className="p-1 hover:bg-white/10 rounded-full transition-colors text-white/60"
                         title="Reset design"
@@ -99,21 +153,21 @@ const CustomizerHeader = () => {
             {colors.length > 0 && (
                 <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
                     <div className="relative">
-                        <button 
+                        <button
                             onClick={() => setIsColorDropdownOpen(!isColorDropdownOpen)}
-                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full transition-colors"
+                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-md cursor-pointer transition-colors"
                         >
                             <div className="w-4 h-4 rounded-full border border-white/30" style={{ backgroundColor: selectedColor.toLowerCase() }} />
                             <span className="text-xs font-bold">{selectedColor}</span>
                             <ChevronDown className="w-3.5 h-3.5 opacity-60" />
                         </button>
-                        
+
                         {isColorDropdownOpen && (
                             <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-white text-black p-2 rounded-xl shadow-2xl border border-black/10 min-w-40 z-50 animate-in fade-in zoom-in-95">
                                 <div className="text-[10px] font-black uppercase text-gray-400 px-2 py-1 mb-1">Select Color</div>
                                 <div className="space-y-1">
                                     {colors.map(color => (
-                                        <button 
+                                        <button
                                             key={color}
                                             onClick={() => {
                                                 dispatch(setColor(color));
@@ -158,8 +212,12 @@ const CustomizerHeader = () => {
                     )}
                 </div>
 
-                <button className="bg-white rounded-md cursor-pointer text-black h-12 px-6 text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all">
-                    Save Design
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="bg-white rounded-md cursor-pointer text-black h-12 px-6 text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50"
+                >
+                    {isSaving ? "Saving..." : "Save Design"}
                 </button>
             </div>
             <ConfirmDialog
