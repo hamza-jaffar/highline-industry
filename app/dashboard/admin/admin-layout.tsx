@@ -113,7 +113,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }`}>
         <div className="min-h-screen pt-24 lg:pt-8 pb-20 px-2 max-w-7xl mx-auto w-full">
           <Breadcrumb />
-          <div className="bg-white rounded-2xl shadow-premium border border-black/5 p-8 min-h-[calc(100vh-12rem)]">
+          <div className="bg-white rounded-2xl shadow-premium border border-black/5 p-3 min-h-[calc(100vh-12rem)]">
             {children}
           </div>
         </div>

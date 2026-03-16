@@ -54,7 +54,7 @@ const AreaSelector = ({ imageUrl, areas, onUpdateAreas, selectedAreaId, onSelect
 
   const handleMouseDown = (e: any) => {
     const clickedOnEmpty = e.target === e.target.getStage() || e.target.className === 'Image';
-    
+
     if (clickedOnEmpty) {
       onSelectArea(null);
       if (e.target.getStage()) {
@@ -206,12 +206,12 @@ const AreaSelector = ({ imageUrl, areas, onUpdateAreas, selectedAreaId, onSelect
       </Stage>
       {selectedAreaId && (
         <div className="absolute top-2 left-2 z-20">
-            <button 
-                onClick={() => deleteArea(selectedAreaId)}
-                className="bg-red-500 text-white p-2 rounded-lg shadow-lg hover:bg-red-600 transition-all flex items-center gap-2 text-xs font-bold"
-            >
-                <Trash2 className="w-4 h-4" /> Delete Selected Area
-            </button>
+          <button
+            onClick={() => deleteArea(selectedAreaId)}
+            className="bg-red-500 cursor-pointer text-white p-2 rounded-sm shadow-lg hover:bg-red-600 transition-all flex items-center gap-2 text-xs font-bold"
+          >
+            <Trash2 className="w-4 h-4" /> Delete Selected Area
+          </button>
         </div>
       )}
     </div>

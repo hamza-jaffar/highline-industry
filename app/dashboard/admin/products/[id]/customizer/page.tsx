@@ -21,7 +21,7 @@ const CustomizerPage = () => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedPart, setSelectedPart] = useState<string>("Front");
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
-  
+
   const [state, setState] = useState<CustomizerState>({
     parts: {
       "Front": { id: "front", name: "Front", isCommon: false, areas: [] },
@@ -35,7 +35,7 @@ const CustomizerPage = () => {
     const fetchProductAndConfig = async () => {
       setIsLoading(true);
       const productId = `gid://shopify/Product/${id}`;
-      
+
       const [productResult, configResult] = await Promise.all([
         getAdminProduct(productId),
         getCustomizerConfig(productId)
@@ -58,10 +58,10 @@ const CustomizerPage = () => {
 
       if (configResult.success && configResult.data) {
         setState(prev => ({
-            ...prev,
-            parts: { ...prev.parts, ...(configResult.data.parts || {}) },
-            commonImages: { ...prev.commonImages, ...(configResult.data.commonImages || {}) },
-            colorImages: { ...prev.colorImages, ...(configResult.data.colorImages || {}) }
+          ...prev,
+          parts: { ...prev.parts, ...(configResult.data.parts || {}) },
+          commonImages: { ...prev.commonImages, ...(configResult.data.commonImages || {}) },
+          colorImages: { ...prev.colorImages, ...(configResult.data.colorImages || {}) }
         }));
       }
 
@@ -80,8 +80,8 @@ const CustomizerPage = () => {
   }, [product]);
 
   const partDef = state.parts[selectedPart];
-  const currentImageUrl = partDef?.isCommon 
-    ? state.commonImages[selectedPart] 
+  const currentImageUrl = partDef?.isCommon
+    ? state.commonImages[selectedPart]
     : state.colorImages[selectedColor]?.[selectedPart];
 
   useEffect(() => {
@@ -173,9 +173,9 @@ const CustomizerPage = () => {
     setIsSaving(true);
     const result = await saveCustomizerConfig(`gid://shopify/Product/${id}`, state);
     if (result.success) {
-        toast.success("Configuration saved successfully");
+      toast.success("Configuration saved successfully");
     } else {
-        toast.error(result.error || "Failed to save configuration");
+      toast.error(result.error || "Failed to save configuration");
     }
     setIsSaving(false);
   };
@@ -230,7 +230,7 @@ const CustomizerPage = () => {
           <div>
             <h1 className="text-xl font-bold tracking-tight text-black">{product.title}</h1>
             <p className="text-sm text-gray-400 font-medium">
-              Configure <span className="font-bold text-black">{selectedPart}</span> 
+              Configure <span className="font-bold text-black">{selectedPart}</span>
               {!partDef?.isCommon && <> for <span className="px-2 py-0.5 bg-black/5 rounded-md text-black lowercase">{selectedColor}</span></>}
             </p>
           </div>
@@ -243,7 +243,7 @@ const CustomizerPage = () => {
             <button
               onClick={handleSubmit}
               disabled={isSaving}
-              className="px-6 py-2 bg-black text-white rounded-xl text-sm font-bold hover:bg-black/80 transition-all active:scale-95 shadow-lg shadow-black/10 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-black text-white rounded-lg cursor-pointer text-sm font-bold hover:bg-black/80 transition-all active:scale-95 shadow-lg shadow-black/10 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? (
                 <>
@@ -258,135 +258,134 @@ const CustomizerPage = () => {
         </header>
 
         <div className="flex-1 relative overflow-auto bg-gray-50/30 flex flex-col">
-            <div className="flex-1 flex items-center justify-center p-8 md:p-12">
+          <div className="flex-1 flex items-center justify-center p-8 md:p-12">
             {currentImageUrl ? (
-                <div className="relative group p-4 bg-white rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-black/5 animate-in zoom-in-95 duration-700">
-                    <AreaSelector 
-                        imageUrl={currentImageUrl} 
-                        areas={partDef?.areas || []} 
-                        onUpdateAreas={updateAreas} 
-                        selectedAreaId={selectedAreaId}
-                        onSelectArea={setSelectedAreaId}
-                    />
-                    <div className="absolute -top-4 -right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                        <button
-                            onClick={removeImage}
-                            className="p-4 bg-white text-red-500 rounded-3xl shadow-2xl border border-black/5 hover:bg-red-50 hover:scale-110 active:scale-95 transition-all"
-                        >
-                            <Trash2 className="w-6 h-6" />
-                        </button>
-                    </div>
+              <div className="relative group p-4 bg-white rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-black/5 animate-in zoom-in-95 duration-700">
+                <AreaSelector
+                  imageUrl={currentImageUrl}
+                  areas={partDef?.areas || []}
+                  onUpdateAreas={updateAreas}
+                  selectedAreaId={selectedAreaId}
+                  onSelectArea={setSelectedAreaId}
+                />
+                <div className="absolute -top-4 -right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <button
+                    onClick={removeImage}
+                    className="p-4 bg-white text-red-500 rounded-3xl shadow-2xl border border-black/5 hover:bg-red-50 hover:scale-110 active:scale-95 transition-all"
+                  >
+                    <Trash2 className="w-6 h-6" />
+                  </button>
                 </div>
+              </div>
             ) : (
-                <label className="flex flex-col items-center justify-center w-full max-w-lg aspect-square border-2 border-dashed border-black/5 rounded-[3.5rem] cursor-pointer hover:border-black/20 hover:bg-white transition-all group bg-white/50 shadow-sm relative overflow-hidden">
+              <label className="flex flex-col items-center justify-center w-full max-w-lg aspect-square border-2 border-dashed border-black/5 rounded-xl cursor-pointer hover:border-black/20 hover:bg-white transition-all group bg-white/50 shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/[0.02] pointer-events-none" />
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 relative z-10">
-                    <div className="p-8 bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5 mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700">
+                  <div className="p-8 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5 mb-8 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700">
                     <Upload className="w-12 h-12 text-black/40 group-hover:text-black transition-colors" />
-                    </div>
-                    <h3 className="mb-2 text-xl font-bold tracking-tight text-black">Upload {selectedPart} Image</h3>
-                    <p className="text-sm text-gray-400 font-medium mb-10 text-center px-8">500 x 500 px PNG/JPG recommended</p>
-                    <div className="px-10 py-4 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:shadow-black/20 transition-all duration-300 transform group-hover:-translate-y-1">
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold tracking-tight text-black">Upload {selectedPart} Image</h3>
+                  <p className="text-sm text-gray-400 font-medium mb-10 text-center px-8">500 x 500 px PNG/JPG recommended</p>
+                  <div className="px-10 py-4 bg-black text-white rounded-lg text-[10px] font-black uppercase tracking-[0.2em] shadow-xl group-hover:shadow-black/20 transition-all duration-300 transform group-hover:-translate-y-1">
                     Choose File
-                    </div>
+                  </div>
                 </div>
                 <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-                </label>
+              </label>
             )}
-            </div>
+          </div>
 
-            <div className="mt-auto p-8 border-t border-black/5 flex items-center gap-6 bg-white/80 backdrop-blur-md">
-                <div className="flex-1 flex items-center gap-4 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
-                    <div className="p-3 bg-black text-white rounded-2xl shadow-lg shadow-black/10">
-                        <Crosshair className="w-4 h-4" />
-                    </div>
-                    <span>Click and drag on the image to define <span className="text-black font-black">synchronized zones</span></span>
-                </div>
+          <div className="mt-auto p-8 border-t border-black/5 flex items-center gap-6 bg-white/80 backdrop-blur-md">
+            <div className="flex-1 flex items-center gap-4 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+              <div className="p-3 bg-black text-white rounded-lg shadow-lg shadow-black/10">
+                <Crosshair className="w-4 h-4" />
+              </div>
+              <span>Click and drag on the image to define <span className="text-black font-black">synchronized zones</span></span>
             </div>
+          </div>
         </div>
 
         {/* Floating/Slide-out Area Settings */}
         {selectedArea && (
-            <div className="absolute top-0 right-0 w-80 h-full bg-white shadow-2xl border-l border-black/5 z-30 animate-in slide-in-from-right duration-500 overflow-y-auto">
-                <div className="p-8">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3 text-black">
-                            <div className="p-2.5 bg-black text-white rounded-2xl">
-                                <Crosshair className="w-4 h-4" />
-                            </div>
-                            <h3 className="text-[12px] font-black uppercase tracking-[0.15em]">Zone Settings</h3>
-                        </div>
-                        <button onClick={() => setSelectedAreaId(null)} className="p-2 hover:bg-gray-100 rounded-xl transition-all">
-                            <X className="w-5 h-5 text-gray-400" />
-                        </button>
-                    </div>
-
-                    <div className="space-y-8">
-                        <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block">Allowed Media</label>
-                            <div className="grid grid-cols-1 gap-2">
-                                {["image", "text", "both"].map((type) => (
-                                    <button
-                                        key={type}
-                                        onClick={() => updateAreaMetadata(selectedArea.id, { allowedType: type as any })}
-                                        className={`px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border-2 text-left flex items-center justify-between group ${
-                                            selectedArea.allowedType === type 
-                                            ? 'bg-black text-white border-black shadow-lg shadow-black/10' 
-                                            : 'bg-white text-gray-400 border-gray-100 hover:border-black/10 hover:text-black'
-                                        }`}
-                                    >
-                                        {type}
-                                        {selectedArea.allowedType === type && <CheckCircle2 className="w-4 h-4" />}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="space-y-6 pt-6 border-t border-black/5">
-                            {(selectedArea.allowedType === "image" || selectedArea.allowedType === "both") && (
-                                <div className="animate-in fade-in slide-in-from-top-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Image Surcharge ($)</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 font-bold">$</span>
-                                        <input 
-                                            type="number"
-                                            className="w-full bg-gray-50 border-none rounded-2xl pl-8 pr-4 py-4 text-sm font-bold focus:ring-2 ring-black/5"
-                                            value={selectedArea.imagePrice}
-                                            onChange={(e) => updateAreaMetadata(selectedArea.id, { imagePrice: Number(e.target.value) })}
-                                            placeholder="0.00"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                            {(selectedArea.allowedType === "text" || selectedArea.allowedType === "both") && (
-                                <div className="animate-in fade-in slide-in-from-top-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Text Surcharge ($)</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 font-bold">$</span>
-                                        <input 
-                                            type="number"
-                                            className="w-full bg-gray-50 border-none rounded-2xl pl-8 pr-4 py-4 text-sm font-bold focus:ring-2 ring-black/5"
-                                            value={selectedArea.textPrice}
-                                            onChange={(e) => updateAreaMetadata(selectedArea.id, { textPrice: Number(e.target.value) })}
-                                            placeholder="0.00"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        
-                        <button 
-                            onClick={() => {
-                                updateAreas(partDef.areas.filter(a => a.id !== selectedArea.id));
-                                setSelectedAreaId(null);
-                            }}
-                            className="w-full py-4 text-red-500 text-[10px] font-black uppercase tracking-widest border-2 border-red-50 hover:bg-red-50 rounded-2xl transition-all flex items-center justify-center gap-2"
-                        >
-                            <Trash2 className="w-4 h-4" /> Delete Zone
-                        </button>
-                    </div>
+          <div className="absolute border shadow-4xl rounded-2xl top-0 right-0 w-80 h-full bg-white border-black/30 z-30 animate-in slide-in-from-right duration-500 overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3 text-black">
+                  <div className="p-2.5 bg-black text-white rounded-lg">
+                    <Crosshair className="w-4 h-4 cursor-pointer" />
+                  </div>
+                  <h3 className="text-[12px] font-black uppercase tracking-[0.15em]">Zone Settings</h3>
                 </div>
+                <button onClick={() => setSelectedAreaId(null)} className="p-2 hover:bg-gray-100 rounded-xl transition-all">
+                  <X className="w-5 h-5 text-gray-400 cursor-pointer" />
+                </button>
+              </div>
+
+              <div className="space-y-8">
+                <div>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block">Allowed Media</label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {["image", "text", "both"].map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => updateAreaMetadata(selectedArea.id, { allowedType: type as any })}
+                        className={`px-5 py-4 rounded-lg cursor-pointer text-[11px] font-black uppercase tracking-widest transition-all border-2 text-left flex items-center justify-between group ${selectedArea.allowedType === type
+                          ? 'bg-black text-white border-black shadow-lg shadow-black/10'
+                          : 'bg-white text-gray-400 border-gray-100 hover:border-black/10 hover:text-black'
+                          }`}
+                      >
+                        {type}
+                        {selectedArea.allowedType === type && <CheckCircle2 className="w-4 h-4" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-6 pt-6 border-t border-black/5">
+                  {(selectedArea.allowedType === "image" || selectedArea.allowedType === "both") && (
+                    <div className="animate-in fade-in slide-in-from-top-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Image Surcharge ($)</label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 font-bold">$</span>
+                        <input
+                          type="number"
+                          className="w-full bg-gray-50 border border-black/10 rounded-lg active:border-black/10 focus:border-black/10 pl-8 pr-4 py-4 text-sm font-bold"
+                          value={selectedArea.imagePrice}
+                          onChange={(e) => updateAreaMetadata(selectedArea.id, { imagePrice: Number(e.target.value) })}
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {(selectedArea.allowedType === "text" || selectedArea.allowedType === "both") && (
+                    <div className="animate-in fade-in slide-in-from-top-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Text Surcharge ($)</label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 font-bold">$</span>
+                        <input
+                          type="number"
+                          className="w-full bg-gray-50 border border-black/10 rounded-lg active:border-black/10 focus:border-black/10 pl-8 pr-4 py-4 text-sm font-bold"
+                          value={selectedArea.textPrice}
+                          onChange={(e) => updateAreaMetadata(selectedArea.id, { textPrice: Number(e.target.value) })}
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => {
+                    updateAreas(partDef.areas.filter(a => a.id !== selectedArea.id));
+                    setSelectedAreaId(null);
+                  }}
+                  className="w-full py-4 text-white text-[10px] font-black uppercase tracking-widest border-2 border-red-50 bg-red-500 hover:bg-red-600 cursor-pointer rounded-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" /> Delete Zone
+                </button>
+              </div>
             </div>
+          </div>
         )}
       </main>
     </section>
