@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Image as KonvaImage, Text as KonvaText, Transformer } from "react-konva";
 import useImage from "@/lib/hooks/useImage";
 import { DesignElement } from "@/lib/store/customizerSlice";
@@ -15,42 +15,36 @@ interface DesignNodeProps {
 export const DesignNode = ({ design, isSelected }: DesignNodeProps) => {
     const shapeRef = useRef<any>(null);
     const dispatch = useAppDispatch();
-    const [image] = useImage(design.type === 'image' ? design.content : null);
+    const [image] = useImage(design.type === 'image' ? design.content : null, 'anonymous');
 
     const handleSelect = (e: any) => {
-        // Prevent event from bubbling up to stage
         e.cancelBubble = true;
         dispatch(selectElement(design.id));
     };
 
     const handleDragMove = (e: any) => {
-        dispatch(updateElement({
-            id: design.id,
-            x: e.target.x(),
-            y: e.target.y()
-        }));
+        dispatch(updateElement({ id: design.id, x: e.target.x(), y: e.target.y() }));
     };
 
-    const handleDragEnd = (e: any) => {
-        // Log history point only on end
+    const handleDragEnd = () => {
         dispatch(saveHistoryState());
     };
 
-    const handleTransformEnd = (e: any) => {
+    const handleTransformEnd = () => {
         const node = shapeRef.current;
-        const scaleX = node.scaleX();
-        const scaleY = node.scaleY();
-
         dispatch(updateElement({
             id: design.id,
             x: node.x(),
             y: node.y(),
             rotation: node.rotation(),
-            scaleX: scaleX,
-            scaleY: scaleY,
+            scaleX: node.scaleX(),
+            scaleY: node.scaleY(),
         }));
         dispatch(saveHistoryState());
     };
+
+    // Convert stored source-px crop to Konva's crop prop
+    const konvaCrop = design.crop ? design.crop : undefined;
 
     return (
         <>
@@ -66,6 +60,7 @@ export const DesignNode = ({ design, isSelected }: DesignNodeProps) => {
                     rotation={design.rotation}
                     scaleX={design.scaleX}
                     scaleY={design.scaleY}
+                    crop={konvaCrop}
                     draggable={!design.isLocked}
                     onClick={handleSelect}
                     onTap={handleSelect}

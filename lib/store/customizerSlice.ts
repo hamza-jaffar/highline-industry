@@ -17,6 +17,13 @@ export interface DesignElement {
   fill?: string;
   isLocked?: boolean;
   areaId?: string;
+  crop?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  originalContent?: string; // Keep original for undoing BG removal
 }
 
 export interface CustomizerAppState {
@@ -152,6 +159,29 @@ export const customizerSlice = createSlice({
         state.selectedElementId = null;
       }
       customizerSlice.caseReducers.recalculateAdditions(state);
+    },
+    removeElementBackground: (state, action: PayloadAction<string>) => {
+      const index = state.designs.findIndex(el => el.id === action.payload);
+      if (index !== -1 && state.designs[index].type === 'image') {
+        const el = state.designs[index];
+        if (!el.originalContent) {
+           el.originalContent = el.content;
+        }
+        // Simulated BG removal - in a real app this would call an API
+        // For now we just append a flag or simulate transparency
+        // We'll use a placeholder or log it for now
+        console.log("Simulating BG removal for", action.payload);
+        state.isDirty = true;
+        updateHistory(state);
+      }
+    },
+    setElementCrop: (state, action: PayloadAction<{ id: string, crop: DesignElement['crop'] }>) => {
+      const index = state.designs.findIndex(el => el.id === action.payload.id);
+      if (index !== -1) {
+        state.designs[index].crop = action.payload.crop;
+        state.isDirty = true;
+        updateHistory(state);
+      }
     },
     selectElement: (state, action: PayloadAction<string | null>) => {
       state.selectedElementId = action.payload;
@@ -292,6 +322,8 @@ export const {
   updateElement,
   saveHistoryState,
   removeElement,
+  removeElementBackground,
+  setElementCrop,
   selectElement,
   undo,
   redo,
