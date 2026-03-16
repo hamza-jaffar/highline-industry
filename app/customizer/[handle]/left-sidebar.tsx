@@ -11,15 +11,18 @@ import {
     HelpCircle,
     X,
     Plus,
-    UploadCloud
+    UploadCloud,
+    Keyboard
 } from "lucide-react";
 import UploadPanel from './sidebar-panels/upload-panel';
 import TextPanel from './sidebar-panels/text-panel';
+import ShortcutsPanel from './sidebar-panels/shortcuts-panel';
 
-const NAV_ITEMS: { id: 'upload' | 'text'; icon: any; label: string }[] = [
+const NAV_ITEMS: { id: 'upload' | 'text' | 'shortcuts'; icon: any; label: string }[] = [
     { id: 'upload', icon: Upload, label: 'Upload' },
     // { id: 'image', icon: ImageIcon, label: 'Image' },
     { id: 'text', icon: Type, label: 'Text' },
+    { id: 'shortcuts', icon: Keyboard, label: 'Shortcuts' },
     // { id: 'product', icon: Package, label: 'Product' },
     // { id: 'saved', icon: Heart, label: 'Saved' },
     // { id: 'issues', icon: AlertCircle, label: 'Issues' },
@@ -27,7 +30,7 @@ const NAV_ITEMS: { id: 'upload' | 'text'; icon: any; label: string }[] = [
 ];
 
 const CustomizerLeftSidebar = () => {
-    const [activeTab, setActiveTab] = useState<'upload' | 'text'>('upload');
+    const [activeTab, setActiveTab] = useState<'upload' | 'text' | 'shortcuts'>('upload');
 
     return (
         <div className="flex w-1/4 h-full bg-[#f0f1f2] border-r border-black/5 overflow-hidden shrink-0">
@@ -60,6 +63,8 @@ const CustomizerLeftSidebar = () => {
                         <UploadPanel />
                     ) : activeTab === 'text' ? (
                         <TextPanel />
+                    ) : activeTab === 'shortcuts' ? (
+                        <ShortcutsPanel />
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center opacity-20 grayscale grayscale-100 py-20 gap-4">
                             <ImageIcon className="w-12 h-12" />
