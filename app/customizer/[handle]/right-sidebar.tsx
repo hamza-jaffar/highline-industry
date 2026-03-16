@@ -28,7 +28,7 @@ const AttributeInput = ({ label, value, unit, suffix, onChange }: { label: strin
     </div>
 );
 
-const CustomizerRightSidebar = () => {
+const CustomizerRightSidebar = ({ isMobile }: { isMobile?: boolean }) => {
     const dispatch = useAppDispatch();
     const selectedElementId = useAppSelector(state => state.customizer.selectedElementId);
     const selectedPart = useAppSelector(state => state.customizer.selectedPart);
@@ -52,9 +52,9 @@ const CustomizerRightSidebar = () => {
     };
 
     return (
-        <aside className="w-full max-w-78 h-full bg-white border-l border-black/5 flex flex-col overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.02)]">
-            <div className="p-6 border-b border-black/5 flex items-center justify-between">
-                <h2 className="text-xl font-black tracking-tight">Attributes</h2>
+        <aside className="w-full h-full bg-white border-l border-black/5 flex flex-col overflow-hidden shrink-0">
+            <div className="p-4 md:p-6 border-b border-black/5 flex items-center justify-between">
+                <h2 className="text-lg md:text-xl font-black tracking-tight">Attributes</h2>
                 {selectedElementId && (
                     <button
                         onClick={() => {
@@ -68,7 +68,7 @@ const CustomizerRightSidebar = () => {
                 )}
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            <div className={`flex-1 overflow-y-auto ${isMobile ? 'p-4 space-y-6' : 'p-6 space-y-8'} custom-scrollbar`}>
                 {/* Size Controls */}
                 <section className={`space-y-6 ${!selectedElement ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
                     <div className="flex items-end gap-3">

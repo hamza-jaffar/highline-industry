@@ -18,7 +18,7 @@ import { DesignNode } from "./design-node";
 
 const CANVAS_SIZE = 500;
 
-const CenterCanvas = () => {
+const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
     const dispatch = useAppDispatch();
     const config = useAppSelector(state => state.customizer.config);
     const selectedPart = useAppSelector(state => state.customizer.selectedPart);
@@ -36,8 +36,8 @@ const CenterCanvas = () => {
     const parts = config?.parts ? Object.keys(config.parts) : [];
     const partDef = config?.parts ? config.parts[selectedPart] : null;
 
-    const currentImageUrl = partDef?.isCommon 
-        ? config?.commonImages?.[selectedPart] 
+    const currentImageUrl = partDef?.isCommon
+        ? config?.commonImages?.[selectedPart]
         : config?.colorImages?.[selectedColor]?.[selectedPart];
 
     const [baseImage] = useImage(currentImageUrl || null, "anonymous");
@@ -87,28 +87,40 @@ const CenterCanvas = () => {
             }
         };
         updateSize();
+
+        // Secondary check for mobile browsers that might report 0 size initially
+        const timeout = setTimeout(updateSize, 100);
+        const timeoutLong = setTimeout(updateSize, 500);
+
         window.addEventListener('resize', updateSize);
-        return () => window.removeEventListener('resize', updateSize);
+        return () => {
+            window.removeEventListener('resize', updateSize);
+            clearTimeout(timeout);
+            clearTimeout(timeoutLong);
+        };
     }, []);
 
     // Center canvas initially
     useEffect(() => {
-        if (containerSize.width && containerSize.height && zoom === 1 && pan.x === 0 && pan.y === 0) {
+        if (containerSize.width > 0 && containerSize.height > 0 && zoom === 1 && pan.x === 0 && pan.y === 0) {
             const scaleX = containerSize.width / CANVAS_SIZE;
             const scaleY = containerSize.height / CANVAS_SIZE;
-            const initialZoom = Math.min(scaleX, scaleY) * 0.8;
-            
+            let initialZoom = Math.min(scaleX, scaleY) * 0.8;
+
+            // Safeguard against zero or invalid size
+            if (initialZoom <= 0 || isNaN(initialZoom)) initialZoom = isMobile ? 0.4 : 0.6;
+
             const initialPanX = (containerSize.width - (CANVAS_SIZE * initialZoom)) / 2;
             const initialPanY = (containerSize.height - (CANVAS_SIZE * initialZoom)) / 2;
-            
+
             dispatch(setZoom(initialZoom));
             dispatch(setPan({ x: initialPanX, y: initialPanY }));
         }
-    }, [containerSize, zoom, pan, dispatch]);
+    }, [containerSize, zoom, pan, dispatch, isMobile]);
 
     const handleWheel = (e: any) => {
         e.evt.preventDefault();
-        
+
         const scaleBy = 1.05;
         const stage = e.target.getStage();
         const oldScale = stage.scaleX();
@@ -118,7 +130,7 @@ const CenterCanvas = () => {
         };
 
         const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        
+
         dispatch(setZoom(newScale));
         dispatch(setPan({
             x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
@@ -152,15 +164,15 @@ const CenterCanvas = () => {
                 const ah = (area.height / 100) * CANVAS_SIZE;
 
                 return centerX >= ax && centerX <= ax + aw &&
-                       centerY >= ay && centerY <= ay + ah &&
-                       (area.allowedType === 'both' || area.allowedType === design.type);
+                    centerY >= ay && centerY <= ay + ah &&
+                    (area.allowedType === 'both' || area.allowedType === design.type);
             });
 
             const targetAreaId = newArea?.id;
             // Always update, even if to undefined, to ensure it doesn't stay stuck to an old area
             dispatch(updateElement({ id: design.id, areaId: targetAreaId }));
         }
-        
+
         dispatch(saveHistoryState());
     };
 
@@ -196,10 +208,10 @@ const CenterCanvas = () => {
                         const scaleX = containerSize.width / CANVAS_SIZE;
                         const scaleY = containerSize.height / CANVAS_SIZE;
                         const newZoom = Math.min(scaleX, scaleY) * 0.8;
-                        
+
                         const newPanX = (containerSize.width - (CANVAS_SIZE * newZoom)) / 2;
                         const newPanY = (containerSize.height - (CANVAS_SIZE * newZoom)) / 2;
-                        
+
                         dispatch(setZoom(newZoom));
                         dispatch(setPan({ x: newPanX, y: newPanY }));
                     }
@@ -212,61 +224,64 @@ const CenterCanvas = () => {
     }, [dispatch, containerSize]);
 
     return (
-        <div className="bg-[#f5f6f7] w-full relative flex flex-col overflow-hidden">
+        <div className="bg-[#f5f6f7] w-full h-full relative flex flex-col overflow-hidden">
             {/* Top Canvas Toolbar */}
-            <div className="h-14 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between px-6 z-10 w-full shrink-0">
-                <div className="flex items-center gap-3">
+            <div className={`h-12 md:h-14 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between ${isMobile ? 'px-2' : 'px-6'} z-10 w-full shrink-0`}>
+                <div className="flex items-center gap-1.5 md:gap-3 overflow-x-auto hide-scrollbar">
                     {parts.map(part => (
                         <button
                             key={part}
                             onClick={() => dispatch(setPart(part))}
-                            className={`cursor-pointer px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                                selectedPart === part 
-                                ? 'bg-black text-white shadow-md' 
+                            className={`cursor-pointer px-3 md:px-4 py-1.5 rounded-md text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${selectedPart === part
+                                ? 'bg-black text-white shadow-md'
                                 : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                            }`}
+                                }`}
                         >
-                            {part}
+                            {isMobile ? (config?.parts[part].name || part).split(' ')[0] : (config?.parts[part].name || part)}
                         </button>
                     ))}
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center bg-gray-100 p-1 rounded-lg">
-                        <button 
+                <div className="flex items-center gap-1 md:gap-2 shrink-0 ml-2">
+                    <div className="flex items-center bg-gray-100 p-0.5 md:p-1 rounded-lg">
+                        <button
                             onClick={() => dispatch(undo())}
                             disabled={past.length === 0}
-                            className="p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:shadow-none"
+                            className="p-1 md:p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black disabled:opacity-30"
                         >
-                            <Undo2 className="w-4 h-4" />
+                            <Undo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
-                        <button 
+                        <button
                             onClick={() => dispatch(redo())}
                             disabled={future.length === 0}
-                            className="p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:shadow-none"
+                            className="p-1 md:p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black disabled:opacity-30"
                         >
-                            <Redo2 className="w-4 h-4" />
+                            <Redo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
                     </div>
-                    <div className="w-[1px] h-6 bg-black/5 mx-2" />
-                    <button 
-                        onClick={() => dispatch(toggleGrid())}
-                        className={`p-2 rounded-lg cursor-pointer transition-colors ${showGrid ? 'bg-black text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-black'}`}
-                    >
-                        <Grid className="w-5 h-5" />
-                    </button>
-                    <button 
-                        onClick={() => dispatch(setZoom(zoom * 1.2))}
-                        className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors text-gray-400 hover:text-black"
-                    >
-                        <Maximize2 className="w-5 h-5" />
-                    </button>
+                    {!isMobile && (
+                        <>
+                            <div className="w-[1px] h-6 bg-black/5 mx-2" />
+                            <button
+                                onClick={() => dispatch(toggleGrid())}
+                                className={`p-2 rounded-lg cursor-pointer transition-colors ${showGrid ? 'bg-black text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-black'}`}
+                            >
+                                <Grid className="w-5 h-5" />
+                            </button>
+                            <button
+                                onClick={() => dispatch(setZoom(zoom * 1.2))}
+                                className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors text-gray-400 hover:text-black"
+                            >
+                                <Maximize2 className="w-5 h-5" />
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
 
             {/* Main Stage */}
-            <div 
-                className="flex-1 relative flex items-center justify-center p-0 overflow-hidden" 
+            <div
+                className="flex-1 relative flex items-center justify-center p-0 overflow-hidden"
                 id="canvas-container"
                 ref={containerRef}
             >
@@ -288,16 +303,24 @@ const CenterCanvas = () => {
                         <Layer>
                             {/* Base Image Background */}
                             <Rect name="background-rect" width={CANVAS_SIZE} height={CANVAS_SIZE} fill="#ffffff" />
-                            
+
                             {/* Base Product Image */}
-                            {baseImage && (
-                                <KonvaImage 
-                                    image={baseImage} 
+                            {baseImage ? (
+                                <KonvaImage
+                                    image={baseImage}
+                                    width={CANVAS_SIZE}
+                                    height={CANVAS_SIZE}
+                                />
+                            ) : (
+                                <Rect 
                                     width={CANVAS_SIZE} 
                                     height={CANVAS_SIZE} 
+                                    fill="#f8f9fa" 
+                                    stroke="#e9ecef" 
+                                    strokeWidth={2}
                                 />
                             )}
-                            
+
                             {/* Grid (if enabled) */}
                             {showGrid && (
                                 <Group opacity={0.15} listening={false}>
@@ -358,7 +381,7 @@ const CenterCanvas = () => {
                                         />
                                     </Group>
                                 ))}
-                                
+
                                 {/* 
                                     Unified Design Rendering:
                                     1. Render designs assigned to existing areas (clipped).
@@ -366,7 +389,7 @@ const CenterCanvas = () => {
                                 */}
                                 {(() => {
                                     const areaIdsInPart = new Set(partDef?.areas.map(a => a.id));
-                                    
+
                                     return (
                                         <>
                                             {/* Render User Designs inside Clipped Areas */}
@@ -386,22 +409,23 @@ const CenterCanvas = () => {
                                                         clipHeight={areaHeight}
                                                     >
                                                         {areaDesigns.map(design => (
-                                                            <DesignNode 
-                                                                key={design.id} 
-                                                                design={design} 
-                                                                isSelected={design.id === selectedElementId} 
+                                                            <DesignNode
+                                                                key={design.id}
+                                                                design={design}
+                                                                isSelected={design.id === selectedElementId}
                                                             />
                                                         ))}
                                                     </Group>
                                                 );
                                             })}
-                                            
+
                                             {/* Render floating designs or designs with orphaned areaIds for this perspective */}
                                             {/* We use a clipFunc to ensure they are only visible within the union of all valid areas */}
                                             <Group
                                                 key={`floating-clipped-${selectedPart}`}
                                                 clipFunc={(ctx) => {
                                                     if (!partDef) return;
+                                                    ctx.beginPath();
                                                     partDef.areas.forEach(area => {
                                                         const ax = (area.x / 100) * CANVAS_SIZE;
                                                         const ay = (area.y / 100) * CANVAS_SIZE;
@@ -409,13 +433,14 @@ const CenterCanvas = () => {
                                                         const ah = (area.height / 100) * CANVAS_SIZE;
                                                         ctx.rect(ax, ay, aw, ah);
                                                     });
+                                                    ctx.closePath();
                                                 }}
                                             >
                                                 {currentDesigns.filter(d => !d.areaId || !areaIdsInPart.has(d.areaId)).map(design => (
-                                                    <DesignNode 
-                                                        key={design.id} 
-                                                        design={design} 
-                                                        isSelected={design.id === selectedElementId} 
+                                                    <DesignNode
+                                                        key={design.id}
+                                                        design={design}
+                                                        isSelected={design.id === selectedElementId}
                                                     />
                                                 ))}
                                             </Group>

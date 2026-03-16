@@ -13,16 +13,19 @@ import {
     duplicateCurrentElement,
     undo,
     redo,
-    setCurrentDesignId
+    setCurrentDesignId,
+    DesignElement
 } from "@/lib/store/customizerSlice";
 import ConfirmDialog from "@/components/admin/confirm-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { ChevronDown } from "lucide-react";
 
 import CustomizerLeftSidebar from "./left-sidebar";
 import CustomizerRightSidebar from "./right-sidebar";
 import CustomizerHeader from "./header";
 import CenterCanvas from "./canvas";
+import MobileNav from "./mobile-nav";
 
 export default function CustomizerApp({ product, configResult }: { product: any, configResult: any }) {
     const dispatch = useAppDispatch();
@@ -31,6 +34,8 @@ export default function CustomizerApp({ product, configResult }: { product: any,
     const designId = searchParams.get('designId');
     const isDirty = useAppSelector(state => state.customizer.isDirty);
     const designs = useAppSelector(state => state.customizer.designs);
+    const activeTab = useAppSelector(state => state.customizer.activeTab);
+    const selectedElementId = useAppSelector(state => state.customizer.selectedElementId);
     
     const [showExitDialog, setShowExitDialog] = useState(false);
 
@@ -156,22 +161,78 @@ export default function CustomizerApp({ product, configResult }: { product: any,
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [isDirty]);
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     return (
-        <div className="h-screen flex flex-col overflow-hidden">
+        <div className="h-screen flex flex-col overflow-hidden bg-[#f5f6f7]">
             {/* Global Header */}
-            <CustomizerHeader />
+            <CustomizerHeader isMobile={isMobile} />
 
             {/* Main Workspace */}
-            <main className="flex-1 flex overflow-hidden">
-                {/* Navigation & Assets */}
-                <CustomizerLeftSidebar />
+            <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+                {/* Desktop Navigation & Assets */}
+                <div className="hidden md:block w-1/4 h-full shrink-0">
+                    <CustomizerLeftSidebar isMobile={isMobile} />
+                </div>
 
                 {/* Visual Workspace */}
-                <CenterCanvas />
+                <div className="flex-1 relative min-h-0 h-full">
+                    <CenterCanvas isMobile={isMobile} />
+                </div>
 
-                {/* Transformer / Attributes */}
-                <CustomizerRightSidebar />
+                {/* Desktop Transformer / Attributes */}
+                <div className="hidden md:block w-full max-w-78 h-full shrink-0">
+                    <CustomizerRightSidebar isMobile={isMobile} />
+                </div>
+
+                {/* Mobile Overlays/Drawers */}
+                {isMobile && activeTab && (
+                    <>
+                        <div 
+                            className="absolute inset-0 bg-black/20 z-30 md:hidden animate-in fade-in duration-300" 
+                            onClick={() => dispatch(setTab(''))}
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 z-40 bg-white md:hidden animate-in slide-in-from-bottom duration-300 h-[80%] rounded-t-3xl shadow-2xl overflow-hidden">
+                            <div className="flex flex-col h-full bg-[#f0f1f2]">
+                                <div className="h-14 flex items-center justify-between px-6 border-b border-black/5 bg-white shrink-0">
+                                    <span className="text-xs font-black uppercase tracking-widest">{activeTab}</span>
+                                    <button 
+                                        onClick={() => dispatch(setTab(''))}
+                                        className="p-2 hover:bg-black/5 rounded-full flex items-center gap-1.5 text-black/60"
+                                    >
+                                        <span className="text-[11px] font-black">DONE</span>
+                                        <ChevronDown className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-hidden">
+                                    {activeTab === 'layers' ? (
+                                        <CustomizerRightSidebar isMobile={isMobile} />
+                                    ) : (
+                                        <CustomizerLeftSidebar isMobile={isMobile} />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Mobile Attributes Overlay */}
+                {isMobile && selectedElementId && !activeTab && (
+                    <div className="absolute bottom-0 left-0 right-0 z-40 bg-white border-t border-black/10 max-h-[60%] overflow-y-auto animate-in slide-in-from-bottom duration-300 rounded-t-2xl shadow-2xl">
+                        <CustomizerRightSidebar isMobile={isMobile} />
+                    </div>
+                )}
             </main>
+
+            {/* Mobile Bottom Navigation */}
+            {isMobile && <MobileNav />}
 
             <ConfirmDialog 
                 isOpen={showExitDialog}
