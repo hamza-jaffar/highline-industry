@@ -3,9 +3,9 @@
 import ConfirmDialog from "@/components/admin/confirm-dialog";
 import { LogOut, ChevronDown, RefreshCw, Palette } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import { setColor, resetCustomizer } from "@/lib/store/customizerSlice";
+import { setColor, resetCustomizer, setCurrentDesignId, setDirty } from "@/lib/store/customizerSlice";
 
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -82,7 +82,10 @@ const CustomizerHeader = () => {
         })
     }
 
-    const handleSave = async () => {
+    const currentDesignId = useAppSelector((state) => state.customizer.currentDesignId);
+
+    const handleSave = async (isSaveAs: boolean = false) => {
+        console.log('handleSave called', { isSaveAs, currentDesignId });
         if (designs.length === 0) {
             toast.error("Add some designs before saving");
             return;
@@ -92,12 +95,17 @@ const CustomizerHeader = () => {
         const supabase = createClient();
         const { data: { session } } = await supabase.auth.getSession();
 
-        const designData = {
+        const designData: any = {
             productId: product?.id,
             productHandle: handle,
             color: selectedColor,
             elements: designs,
         };
+
+        // If not saving as new and we have a current ID, pass it for update
+        if (!isSaveAs && currentDesignId) {
+            designData.id = currentDesignId;
+        }
 
         if (!session) {
             toast.info("Please sign in to save your design");
@@ -114,7 +122,24 @@ const CustomizerHeader = () => {
             });
 
             if (response.ok) {
-                toast.success("Design saved successfully");
+                const data = await response.json();
+                if (data.success && data.design) {
+                    const newDesignId = data.design.id;
+                    dispatch(setCurrentDesignId(newDesignId));
+                    dispatch(setDirty(false));
+                    
+                    // Sync designId to URL without full reload
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('designId', newDesignId);
+                    window.history.replaceState({}, '', url.toString());
+
+                    toast.success(isSaveAs || !currentDesignId ? "Design saved successfully" : "Design updated successfully");
+                    
+                    // Removed redirect to dashboard to allow continuous editing
+                    // setTimeout(() => {
+                    //    router.push('/dashboard/user');
+                    // }, 1000);
+                }
             } else {
                 const error = await response.json();
                 toast.error(error.message || "Failed to save design");
@@ -126,6 +151,16 @@ const CustomizerHeader = () => {
             setIsSaving(false);
         }
     }
+
+    // Listen for save shortcuts via custom event
+    useEffect(() => {
+        const onSaveShortcut = (e: any) => {
+            console.log('Header received save event', e.detail);
+            handleSave(e.detail.isSaveAs);
+        };
+        window.addEventListener('customizer-save', onSaveShortcut);
+        return () => window.removeEventListener('customizer-save', onSaveShortcut);
+    }, [handleSave]);
 
     return (
         <header className="h-14 bg-black text-white flex items-center justify-between px-4 z-50 overflow-visible shrink-0 relative">
@@ -212,13 +247,23 @@ const CustomizerHeader = () => {
                     )}
                 </div>
 
-                <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="bg-white rounded-md cursor-pointer text-black h-12 px-6 text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50"
-                >
-                    {isSaving ? "Saving..." : "Save Design"}
-                </button>
+                <div className="flex items-center">
+                    <button
+                        onClick={() => handleSave(false)}
+                        disabled={isSaving}
+                        className="bg-white rounded-l-md cursor-pointer text-black h-12 px-6 text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50 border-r border-black/5"
+                    >
+                        {isSaving ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                        onClick={() => handleSave(true)}
+                        disabled={isSaving}
+                        className="bg-white rounded-r-md cursor-pointer text-black h-12 px-2 text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50"
+                        title="Save As New"
+                    >
+                        <ChevronDown className="w-4 h-4 opacity-60" />
+                    </button>
+                </div>
             </div>
             <ConfirmDialog
                 isOpen={confirmDialog.isOpen}

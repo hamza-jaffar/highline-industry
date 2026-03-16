@@ -14,13 +14,31 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { productId, productHandle, color, elements, name } = body;
+        const { id, productId, productHandle, color, elements, name } = body;
 
         if (!productId || !color || !elements) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
         const userId = session.user.id;
+
+        if (id) {
+            const result = await db
+                .update(userDesigns)
+                .set({
+                    name: name || `${productHandle} - ${color}`,
+                    elements: JSON.stringify(elements),
+                    updatedAt: new Date(),
+                })
+                .where(and(eq(userDesigns.id, id), eq(userDesigns.userId, userId)))
+                .returning();
+
+            if (result.length === 0) {
+                return NextResponse.json({ error: "Design not found or unauthorized" }, { status: 404 });
+            }
+
+            return NextResponse.json({ success: true, design: result[0] });
+        }
 
         const result = await db.insert(userDesigns).values({
             userId,

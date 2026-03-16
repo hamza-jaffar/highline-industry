@@ -12,7 +12,8 @@ import {
     pasteElement,
     duplicateCurrentElement,
     undo,
-    redo
+    redo,
+    setCurrentDesignId
 } from "@/lib/store/customizerSlice";
 import ConfirmDialog from "@/components/admin/confirm-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,6 +29,7 @@ export default function CustomizerApp({ product, configResult }: { product: any,
     const router = useRouter();
     const searchParams = useSearchParams();
     const designId = searchParams.get('designId');
+    const isDirty = useAppSelector(state => state.customizer.isDirty);
     const designs = useAppSelector(state => state.customizer.designs);
     
     const [showExitDialog, setShowExitDialog] = useState(false);
@@ -49,6 +51,7 @@ export default function CustomizerApp({ product, configResult }: { product: any,
                             try {
                                 const elements = JSON.parse(data.design.elements);
                                 dispatch(loadDesign(elements));
+                                dispatch(setCurrentDesignId(data.design.id));
                                 if (data.design.color) {
                                     // Optionally set color if different
                                 }
@@ -124,6 +127,13 @@ export default function CustomizerApp({ product, configResult }: { product: any,
                         e.preventDefault();
                         dispatch(redo());
                         break;
+                    case 's':
+                        e.preventDefault();
+                        console.log('Save shortcut triggered', e.shiftKey ? 'Save As' : 'Save');
+                        window.dispatchEvent(new CustomEvent('customizer-save', { 
+                            detail: { isSaveAs: e.shiftKey } 
+                        }));
+                        break;
                 }
             }
         };
@@ -131,6 +141,20 @@ export default function CustomizerApp({ product, configResult }: { product: any,
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [dispatch]);
+
+    // Handle beforeunload to prevent data loss
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?'; 
+                return 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
 
     return (
         <div className="h-screen flex flex-col overflow-hidden">

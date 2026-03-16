@@ -43,6 +43,8 @@ export interface CustomizerAppState {
     future: DesignElement[][];
   };
   clipboard: DesignElement | null;
+  currentDesignId: string | null;
+  isDirty: boolean;
 }
 
 const initialState: CustomizerAppState = {
@@ -68,7 +70,9 @@ const initialState: CustomizerAppState = {
     past: [],
     future: []
   },
-  clipboard: null
+  clipboard: null,
+  currentDesignId: null,
+  isDirty: false
 };
 
 const updateHistory = (state: CustomizerAppState) => {
@@ -108,9 +112,11 @@ export const customizerSlice = createSlice({
       // Initialize History
       state.history.present = [];
       state.designs = [];
+      state.isDirty = false;
     },
     setColor: (state, action: PayloadAction<string>) => {
       state.selectedColor = action.payload;
+      state.isDirty = true;
     },
     setPart: (state, action: PayloadAction<string>) => {
       state.selectedPart = action.payload;
@@ -120,6 +126,7 @@ export const customizerSlice = createSlice({
       state.designs.push(action.payload);
       updateHistory(state);
       state.selectedElementId = action.payload.id;
+      state.isDirty = true;
       customizerSlice.caseReducers.recalculateAdditions(state);
     },
     updateElement: (state, action: PayloadAction<Partial<DesignElement> & { id: string }>) => {
@@ -127,6 +134,7 @@ export const customizerSlice = createSlice({
       if (index !== -1) {
         const hasChangeThatAffectsPrice = action.payload.areaId !== undefined || action.payload.partName !== undefined;
         state.designs[index] = { ...state.designs[index], ...action.payload };
+        state.isDirty = true;
         
         if (hasChangeThatAffectsPrice) {
             customizerSlice.caseReducers.recalculateAdditions(state);
@@ -139,6 +147,7 @@ export const customizerSlice = createSlice({
     removeElement: (state, action: PayloadAction<string>) => {
       state.designs = state.designs.filter(el => el.id !== action.payload);
       updateHistory(state);
+      state.isDirty = true;
       if (state.selectedElementId === action.payload) {
         state.selectedElementId = null;
       }
@@ -154,6 +163,7 @@ export const customizerSlice = createSlice({
         state.history.present = previous;
         state.designs = previous;
         state.selectedElementId = null;
+        state.isDirty = true;
         customizerSlice.caseReducers.recalculateAdditions(state);
       }
     },
@@ -164,6 +174,7 @@ export const customizerSlice = createSlice({
         state.history.present = next;
         state.designs = next;
         state.selectedElementId = null;
+        state.isDirty = true;
         customizerSlice.caseReducers.recalculateAdditions(state);
       }
     },
@@ -205,6 +216,7 @@ export const customizerSlice = createSlice({
       state.history.future = [];
       state.history.present = [];
       state.priceConfig.additions = 0;
+      state.isDirty = false;
     },
     setTab: (state, action: PayloadAction<string>) => {
       state.activeTab = action.payload as any;
@@ -212,6 +224,7 @@ export const customizerSlice = createSlice({
     loadDesign: (state, action: PayloadAction<DesignElement[]>) => {
       state.designs = action.payload;
       state.selectedElementId = null;
+      state.isDirty = false;
       updateHistory(state);
       customizerSlice.caseReducers.recalculateAdditions(state);
     },
@@ -219,6 +232,7 @@ export const customizerSlice = createSlice({
       if (state.selectedElementId) {
         state.designs = state.designs.filter(el => el.id !== state.selectedElementId);
         state.selectedElementId = null;
+        state.isDirty = true;
         updateHistory(state);
         customizerSlice.caseReducers.recalculateAdditions(state);
       }
@@ -238,6 +252,7 @@ export const customizerSlice = createSlice({
         };
         state.designs.push(newElement);
         state.selectedElementId = newElement.id;
+        state.isDirty = true;
         updateHistory(state);
         customizerSlice.caseReducers.recalculateAdditions(state);
       }
@@ -254,10 +269,17 @@ export const customizerSlice = createSlice({
           };
           state.designs.push(newElement);
           state.selectedElementId = newElement.id;
+          state.isDirty = true;
           updateHistory(state);
           customizerSlice.caseReducers.recalculateAdditions(state);
         }
       }
+    },
+    setCurrentDesignId: (state, action: PayloadAction<string | null>) => {
+      state.currentDesignId = action.payload;
+    },
+    setDirty: (state, action: PayloadAction<boolean>) => {
+      state.isDirty = action.payload;
     }
   },
 });
@@ -283,7 +305,9 @@ export const {
   removeCurrentElement,
   copyElement,
   pasteElement,
-  duplicateCurrentElement
+  duplicateCurrentElement,
+  setCurrentDesignId,
+  setDirty
 } = customizerSlice.actions;
 
 export default customizerSlice.reducer;

@@ -12,7 +12,8 @@ import {
     Trash2,
     Copy,
     ClipboardPaste,
-    Files
+    Files,
+    Save
 } from "lucide-react";
 
 const SHORTCUTS = [
@@ -27,6 +28,8 @@ const SHORTCUTS = [
     { key: 'Ctrl + C', label: 'Copy Item', icon: Copy, category: 'edit' },
     { key: 'Ctrl + V', label: 'Paste Item', icon: ClipboardPaste, category: 'edit' },
     { key: 'Ctrl + D', label: 'Duplicate Item', icon: Files, category: 'edit' },
+    { key: 'Ctrl + S', label: 'Save Design', icon: Save, category: 'edit' },
+    { key: 'Ctrl + Shift + S', label: 'Save As New', icon: Save, category: 'edit' },
 ];
 
 const ShortcutsPanel = () => {
