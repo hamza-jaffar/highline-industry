@@ -8,13 +8,17 @@ import {
     Grid,
     Maximize2,
     Undo2,
-    Redo2
+    Redo2,
+    Crop,
+    Eraser,
+    Check
 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import { setPart, setZoom, setPan, toggleGrid, undo, redo, selectElement, updateElement, saveHistoryState } from "@/lib/store/customizerSlice";
+import { setPart, setZoom, setPan, toggleGrid, undo, redo, selectElement, updateElement, saveHistoryState, removeElementBackground, setElementCrop, setTab } from "@/lib/store/customizerSlice";
 import { Stage, Layer, Image as KonvaImage, Rect, Group, Text, Transformer } from "react-konva";
 import useImage from "@/lib/hooks/useImage";
 import { DesignNode } from "./design-node";
+import { ImageEditModal } from "./image-edit-modal";
 
 const CANVAS_SIZE = 500;
 
@@ -46,6 +50,14 @@ const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+    const [isCropMode, setIsCropMode] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editModalTab, setEditModalTab] = useState<'crop' | 'removebg'>('crop');
+
+    // Exit crop mode when selection changes
+    useEffect(() => {
+        setIsCropMode(false);
+    }, [selectedElementId]);
 
     useEffect(() => {
         const attachTransformer = () => {
@@ -224,6 +236,7 @@ const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
     }, [dispatch, containerSize]);
 
     return (
+        <>
         <div className="bg-[#f5f6f7] w-full h-full relative flex flex-col overflow-hidden">
             {/* Top Canvas Toolbar */}
             <div className={`h-12 md:h-14 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between ${isMobile ? 'px-2' : 'px-6'} z-10 w-full shrink-0`}>
@@ -259,6 +272,29 @@ const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
                             <Redo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                         </button>
                     </div>
+
+                    {/* Image Editing Tools */}
+                    {selectedElementId && designs.find(d => d.id === selectedElementId)?.type === 'image' && (
+                        <div className="flex items-center gap-1 md:gap-2 ml-1">
+                            <button
+                                onClick={() => { setEditModalTab('crop'); setShowEditModal(true); }}
+                                className="p-1.5 md:p-2 cursor-pointer bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                                title="Crop Image"
+                            >
+                                <Crop className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                {!isMobile && <span className="text-[10px] font-bold uppercase">Crop</span>}
+                            </button>
+                            <button
+                                onClick={() => { setEditModalTab('removebg'); setShowEditModal(true); }}
+                                className="p-1.5 md:p-2 cursor-pointer bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors flex items-center gap-1.5"
+                                title="Remove Background"
+                            >
+                                <Eraser className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                {!isMobile && <span className="text-[10px] font-bold uppercase">Remove BG</span>}
+                            </button>
+                        </div>
+                    )}
+
                     {!isMobile && (
                         <>
                             <div className="w-[1px] h-6 bg-black/5 mx-2" />
@@ -312,11 +348,11 @@ const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
                                     height={CANVAS_SIZE}
                                 />
                             ) : (
-                                <Rect 
-                                    width={CANVAS_SIZE} 
-                                    height={CANVAS_SIZE} 
-                                    fill="#f8f9fa" 
-                                    stroke="#e9ecef" 
+                                <Rect
+                                    width={CANVAS_SIZE}
+                                    height={CANVAS_SIZE}
+                                    fill="#f8f9fa"
+                                    stroke="#e9ecef"
                                     strokeWidth={2}
                                 />
                             )}
@@ -462,6 +498,18 @@ const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
                 )}
             </div>
         </div>
+
+        {/* Image Edit Modal */}
+        {showEditModal && selectedElementId && !(()=>{
+            const d = designs.find(d => d.id === selectedElementId);
+            return !d;
+        })() && (
+            <ImageEditModal
+                design={designs.find(d => d.id === selectedElementId)!}
+                onClose={() => setShowEditModal(false)}
+            />
+        )}
+        </>
     );
 };
 
