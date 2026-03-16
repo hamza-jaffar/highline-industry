@@ -37,23 +37,23 @@ export async function saveCustomizerConfig(productId: string, state: CustomizerS
     // 1. Process all images and upload to Shopify if needed
     const processedCommonImages: { [key: string]: string } = {};
     for (const [name, url] of Object.entries(state.commonImages)) {
-        if (url && url.startsWith('data:')) {
-            processedCommonImages[name] = await uploadToShopify(url, `${productId}_${name}`, "image/png");
-        } else {
-            processedCommonImages[name] = url;
-        }
+      if (url && url.startsWith('data:')) {
+        processedCommonImages[name] = await uploadToShopify(url, `${productId}_${name}`, "image/png");
+      } else {
+        processedCommonImages[name] = url;
+      }
     }
 
     const processedColorImages: { [color: string]: { [name: string]: string } } = {};
     for (const [color, images] of Object.entries(state.colorImages)) {
-        processedColorImages[color] = {};
-        for (const [name, url] of Object.entries(images)) {
-            if (url && url.startsWith('data:')) {
-                processedColorImages[color][name] = await uploadToShopify(url, `${productId}_${color}_${name}`, "image/png");
-            } else {
-                processedColorImages[color][name] = url;
-            }
+      processedColorImages[color] = {};
+      for (const [name, url] of Object.entries(images)) {
+        if (url && url.startsWith('data:')) {
+          processedColorImages[color][name] = await uploadToShopify(url, `${productId}_${color}_${name}`, "image/png");
+        } else {
+          processedColorImages[color][name] = url;
         }
+      }
     }
 
     // 2. Database transaction to update Supabase
@@ -135,48 +135,49 @@ export async function saveCustomizerConfig(productId: string, state: CustomizerS
 }
 
 export async function getCustomizerConfig(productId: string) {
-    try {
-        const views = await db.select().from(ProductViews).where(eq(ProductViews.productId, productId));
-        const state: CustomizerState = {
-            parts: {},
-            commonImages: {},
-            colorImages: {}
+  try {
+    const views = await db.select().from(ProductViews).where(eq(ProductViews.productId, productId));
+
+    const state: CustomizerState = {
+      parts: {},
+      commonImages: {},
+      colorImages: {}
+    };
+
+    for (const view of views) {
+      const zones = await db.select().from(customizationZones).where(eq(customizationZones.viewId, view.id));
+      const areas: Area[] = zones.map(z => ({
+        id: Math.random().toString(36).substr(2, 9),
+        name: z.name || undefined,
+        x: z.x,
+        y: z.y,
+        width: z.width,
+        height: z.height,
+        allowedType: (z.allowedType as any) || "both",
+        imagePrice: z.imagePrice || 0,
+        textPrice: z.textPrice || 0
+      }));
+
+      if (!state.parts[view.name!]) {
+        state.parts[view.name!] = {
+          id: view.id,
+          name: view.name!,
+          isCommon: view.isCommon || false,
+          areas: areas // Use areas from the first view we find for this part
         };
+      }
 
-        for (const view of views) {
-            const zones = await db.select().from(customizationZones).where(eq(customizationZones.viewId, view.id));
-            const areas: Area[] = zones.map(z => ({
-                id: Math.random().toString(36).substr(2, 9),
-                name: z.name || undefined,
-                x: z.x,
-                y: z.y,
-                width: z.width,
-                height: z.height,
-                allowedType: (z.allowedType as any) || "both",
-                imagePrice: z.imagePrice || 0,
-                textPrice: z.textPrice || 0
-            }));
-
-            if (!state.parts[view.name!]) {
-                state.parts[view.name!] = {
-                    id: view.id,
-                    name: view.name!,
-                    isCommon: view.isCommon || false,
-                    areas: areas // Use areas from the first view we find for this part
-                };
-            }
-
-            if (view.isCommon) {
-                state.commonImages[view.name!] = view.imageUrl;
-            } else if (view.color) {
-                if (!state.colorImages[view.color]) state.colorImages[view.color] = {};
-                state.colorImages[view.color][view.name!] = view.imageUrl;
-            }
-        }
-
-        return { success: true, data: state };
-    } catch (error: any) {
-        console.error("Error fetching customizer config:", error);
-        return { success: false, error: error.message };
+      if (view.isCommon) {
+        state.commonImages[view.name!] = view.imageUrl;
+      } else if (view.color) {
+        if (!state.colorImages[view.color]) state.colorImages[view.color] = {};
+        state.colorImages[view.color][view.name!] = view.imageUrl;
+      }
     }
+
+    return { success: true, data: state };
+  } catch (error: any) {
+    console.error("Error fetching customizer config:", error);
+    return { success: false, error: error.message };
+  }
 }

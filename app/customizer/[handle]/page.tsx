@@ -4,6 +4,7 @@ import CustomizerLeftSidebar from "./left-sidebar";
 import CustomizerRightSidebar from "./right-sidebar";
 import CustomizerHeader from "./header";
 import CenterCanvas from "./canvas";
+import { getCustomizerConfig } from "@/app/actions/admin";
 
 const CustomizerPage = async (props: {
     params: Promise<{ handle: string }>;
@@ -14,6 +15,10 @@ const CustomizerPage = async (props: {
     if (!product) {
         notFound();
     }
+
+    const configration = await getCustomizerConfig(product.id.split("/").pop() || "");
+
+    console.log(configration);
 
     return (
         <div className="h-screen flex flex-col overflow-hidden">

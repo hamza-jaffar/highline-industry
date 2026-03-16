@@ -27,7 +27,7 @@ const AttributeInput = ({ label, value, unit, suffix }: { label: string, value: 
 
 const CustomizerRightSidebar = () => {
     return (
-        <aside className="w-full max-w-64 h-full bg-white border-l border-black/5 flex flex-col overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.02)]">
+        <aside className="w-full max-w-78 h-full bg-white border-l border-black/5 flex flex-col overflow-hidden shrink-0 shadow-[-20px_0_40px_rgba(0,0,0,0.02)]">
             <div className="p-6 border-b border-black/5">
                 <h2 className="text-xl font-black tracking-tight">Attributes</h2>
             </div>

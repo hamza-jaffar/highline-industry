@@ -294,121 +294,120 @@ function ProductsAdminPageInner() {
                 <tbody className="divide-y divide-black/5">
                   {isLoading
                     ? Array.from({ length: per_page }).map((_, i) => (
-                        <tr key={`skeleton-${i}`} className="animate-pulse">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-lg bg-black/5 shrink-0" />
-                              <div className="space-y-2">
-                                <div className="h-4 w-40 bg-black/20 rounded" />
-                                <div className="h-3 w-24 bg-black/20 rounded" />
-                              </div>
+                      <tr key={`skeleton-${i}`} className="animate-pulse">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-lg bg-black/5 shrink-0" />
+                            <div className="space-y-2">
+                              <div className="h-4 w-40 bg-black/20 rounded" />
+                              <div className="h-3 w-24 bg-black/20 rounded" />
                             </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-12 bg-black/20 rounded mx-auto" />
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="h-5 w-16 bg-black/20 rounded-full mx-auto" />
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="h-4 w-20 bg-black/20 rounded mx-auto" />
-                          </td>
-                          <td className="px-6 py-4 flex gap-2">
-                            <div className="h-8 w-8 bg-black/20 rounded-lg ml-auto" />
-                            <div className="h-8 w-8 bg-black/20 rounded-lg" />
-                            <div className="h-8 w-8 bg-black/20 rounded-lg" />
-                          </td>
-                        </tr>
-                      ))
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 w-12 bg-black/20 rounded mx-auto" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-5 w-16 bg-black/20 rounded-full mx-auto" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 w-20 bg-black/20 rounded mx-auto" />
+                        </td>
+                        <td className="px-6 py-4 flex gap-2">
+                          <div className="h-8 w-8 bg-black/20 rounded-lg ml-auto" />
+                          <div className="h-8 w-8 bg-black/20 rounded-lg" />
+                          <div className="h-8 w-8 bg-black/20 rounded-lg" />
+                        </td>
+                      </tr>
+                    ))
                     : products.map(({ node }) => (
-                        <tr
-                          key={node.id}
-                          className="group hover:bg-surface transition-colors cursor-pointer"
-                          onClick={() =>
-                            router.push(
-                              `/dashboard/admin/products/${node.id.split("/").pop()}`,
-                            )
-                          }
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 rounded-lg border border-black/5 bg-surface overflow-hidden shrink-0">
-                                {node.featuredImage ? (
-                                  <img
-                                    src={node.featuredImage.url}
-                                    alt={node.featuredImage.altText}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <PackageOpen className="w-5 h-5 text-black/10" />
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-[#111] leading-none mb-1 group-hover:text-black">
-                                  {node.title}
-                                </p>
-                                <div className="flex items-center gap-2">
-                                  <p className="text-[10px] text-muted font-mono">
-                                    {node.handle}
-                                  </p>
+                      <tr
+                        key={node.id}
+                        className="group hover:bg-surface transition-colors cursor-pointer"
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/admin/products/${node.id.split("/").pop()}`,
+                          )
+                        }
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-lg border border-black/5 bg-surface overflow-hidden shrink-0">
+                              {node.featuredImage ? (
+                                <img
+                                  src={node.featuredImage.url}
+                                  alt={node.featuredImage.altText}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <PackageOpen className="w-5 h-5 text-black/10" />
                                 </div>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-[#111] leading-none mb-1 group-hover:text-black">
+                                {node.title}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-[10px] text-muted font-mono">
+                                  {node.handle}
+                                </p>
                               </div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <p className="text-sm text-[#111] font-medium">
-                              {node.priceRangeV2.minVariantPrice.amount}{" "}
-                              {node.priceRangeV2.minVariantPrice.currencyCode}
-                            </p>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                node.status === "ACTIVE"
-                                  ? "bg-green-100 text-green-700 border border-green-200"
-                                  : "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <p className="text-sm text-[#111] font-medium">
+                            {node.priceRangeV2.minVariantPrice.amount}{" "}
+                            {node.priceRangeV2.minVariantPrice.currencyCode}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${node.status === "ACTIVE"
+                                ? "bg-green-100 text-green-700 border border-green-200"
+                                : "bg-yellow-100 text-yellow-700 border border-yellow-200"
                               }`}
+                          >
+                            {node.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <p className="text-[11px] text-muted font-mono">
+                            {node.updatedAt
+                              ? new Date(node.updatedAt).toLocaleDateString()
+                              : "N/A"}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={`/dashboard/admin/products/${node.id.split("/").pop()}/customizer`}
+                              className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              {node.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <p className="text-[11px] text-muted font-mono">
-                              {node.updatedAt
-                                ? new Date(node.updatedAt).toLocaleDateString()
-                                : "N/A"}
-                            </p>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Link
-                                href={`/dashboard/admin/products/${node.id.split("/").pop()}/customizer`}
-                                className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MousePointerClickIcon className="w-4 h-4" />
-                              </Link>
-                              <Link
-                                href={`/dashboard/admin/products/${node.id.split("/").pop()}/edit`}
-                                className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </Link>
-                              <button
-                                onClick={(e) =>
-                                  handleDelete(e, node.id, node.title)
-                                }
-                                className="p-2 hover:bg-red-700 cursor-pointer bg-red-500 text-white rounded-lg transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                              <MousePointerClickIcon className="w-4 h-4" />
+                            </Link>
+                            <Link
+                              href={`/dashboard/admin/products/${node.id.split("/").pop()}/edit`}
+                              className="p-2 cursor-pointer bg-blue-500 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </Link>
+                            <button
+                              onClick={(e) =>
+                                handleDelete(e, node.id, node.title)
+                              }
+                              className="p-2 hover:bg-red-700 cursor-pointer bg-red-500 text-white rounded-lg transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
