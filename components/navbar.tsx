@@ -7,6 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { signout } from "@/app/actions/signup.actions";
 import Image from "next/image";
 import AppLogo from "./app-logo";
+import { ShoppingBag } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { toggleCart } from "@/lib/store/cartSlice";
 
 export default function NavBar({ user }: { user?: any }) {
   const [open, setOpen] = useState(false);
@@ -14,6 +17,9 @@ export default function NavBar({ user }: { user?: any }) {
   const [searchTerm, setSearchTerm] = useState("");
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector(state => state.cart.data);
+  const cartItemsCount = cart?.lines?.edges?.length || 0;
 
   useEffect(() => {
     setOpen(false);
@@ -100,12 +106,19 @@ export default function NavBar({ user }: { user?: any }) {
               </Link>
             )}
 
-            <Link
-              href="/shop"
-              className="hidden md:flex items-center justify-center h-8 px-4 bg-black text-white text-xs font-semibold rounded-md hover:bg-black/80 transition-colors shadow-sm"
+
+            <button
+              onClick={() => dispatch(toggleCart())}
+              className="relative text-black/60 hover:text-black transition-colors"
+              aria-label="Cart"
             >
-              Shop Now
-            </Link>
+              <ShoppingBag className="w-5 h-5" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full animate-in zoom-in-0 duration-300">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
 
             {/* Mobile Toggle */}
             <button
@@ -155,11 +168,10 @@ export default function NavBar({ user }: { user?: any }) {
 
       {/* Search Modal (Precision Look) */}
       <div
-        className={`fixed inset-0 z-200 bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${
-          searchOpen
+        className={`fixed inset-0 z-200 bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${searchOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
-        }`}
+          }`}
       >
         <button
           onClick={() => setSearchOpen(false)}

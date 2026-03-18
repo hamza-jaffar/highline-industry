@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { id, productId, productHandle, color, elements, name } = body;
+        const { id, productId, productHandle, color, elements, name, price } = body;
 
         if (!productId || !color || !elements) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
                 .set({
                     name: name || `${productHandle} - ${color}`,
                     elements: JSON.stringify(elements),
+                    price: price ? Math.round(parseFloat(price) * 100) : undefined,
                     updatedAt: new Date(),
                 })
                 .where(and(eq(userDesigns.id, id), eq(userDesigns.userId, userId)))
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
             color,
             name: name || `${productHandle} - ${color}`,
             elements: JSON.stringify(elements),
+            price: price ? Math.round(parseFloat(price) * 100) : 0,
         }).returning();
 
         return NextResponse.json({ success: true, design: result[0] });

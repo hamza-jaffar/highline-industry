@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useState, useMemo, useEffect } from "react";
+import { addItemToCart } from "@/app/actions/cart.action";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { setCartOpen } from "@/lib/store/cartSlice";
 
 type Variant = {
   id: string;
@@ -39,6 +44,9 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
     });
     return initial;
   });
+
+  const dispatch = useAppDispatch();
+  const [isAdding, setIsAdding] = useState(false);
 
   const handleOptionChange = (name: string, value: string) => {
     setSelectedOptions((prev) => {
@@ -103,11 +111,33 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
 
   const currency = product.priceRange?.minVariantPrice?.currencyCode || "";
 
-  const handleAddToCart = () => {
-    if (!selectedVariant || !isInStock) return;
-    alert(
-      `Added ${product.title} (${Object.values(selectedOptions).join(" / ")}) to cart!`
-    );
+  const handleAddToCart = async () => {
+    if (!selectedVariant || !isInStock || isAdding) return;
+
+    setIsAdding(true);
+    try {
+      const result = await addItemToCart({
+        productId: product.id,
+        variantId: selectedVariant.id,
+        quantity: 1, // Default quantity
+        isDesigned: false,
+        price: Math.round(parseFloat(selectedVariant.price) * 100), // convert to cents
+        color: selectedOptions["Color"] || "",
+        size: selectedOptions["Size"] || "",
+      });
+
+      if (result.success) {
+        toast.success(`Added ${product.title} to cart!`);
+        dispatch(setCartOpen(true));
+      } else {
+        toast.error(result.error || "Failed to add to cart");
+      }
+    } catch (error) {
+      console.error("Cart error:", error);
+      toast.error("An error occurred");
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -186,9 +216,11 @@ export default function ProductForm({ product, onVariantSelect }: { product: any
           </Link>
           <button
             onClick={handleAddToCart}
-            className={`w-full py-4 rounded-xl text-sm font-semibold transition-all shadow-sm bg-[#111] text-white hover:bg-black`}
+            disabled={isAdding}
+            className={`w-full py-4 rounded-xl text-sm font-semibold transition-all shadow-sm bg-[#111] text-white hover:bg-black flex items-center justify-center gap-2`}
           >
-            Add to Cart
+            {isAdding && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isAdding ? "Adding..." : "Add to Cart"}
           </button>
         </>
       ) : (

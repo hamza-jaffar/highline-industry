@@ -10,6 +10,10 @@ import { setColor, resetCustomizer, setCurrentDesignId, setDirty } from "@/lib/s
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
+import { addItemToCart, getVariantIdByOptions } from "@/app/actions/cart.action";
+import { ShoppingBag, Loader2 } from "lucide-react";
+import { useMemo } from "react";
+import { setCartOpen } from "@/lib/store/cartSlice";
 
 interface ConfirmDialogProps {
     isOpen: boolean;
@@ -28,7 +32,7 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
     const params = useParams();
     const dispatch = useAppDispatch();
     const handle = params.handle as string;
-    
+
     const product = useAppSelector((state) => state.customizer.product);
     const colors = useAppSelector((state) => state.customizer.colors);
     const selectedColor = useAppSelector((state) => state.customizer.selectedColor);
@@ -38,6 +42,9 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
     const totalPrice = (priceConfig.basePrice + priceConfig.additions).toFixed(2);
 
     const [isSaving, setIsSaving] = useState(false);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [showSizeModal, setShowSizeModal] = useState(false);
+    const [selectedSize, setSelectedSize] = useState("");
     const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogProps>({
         isOpen: false,
@@ -64,6 +71,16 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
             variant: "danger",
         })
     }
+
+    const sizes = useMemo(() => {
+        if (!product) return [];
+        const allSizes = new Set<string>();
+        product.variants.edges.forEach(({ node }: any) => {
+            const sizeOption = node.selectedOptions.find((o: any) => o.name.toLowerCase() === "size");
+            if (sizeOption) allSizes.add(sizeOption.value);
+        });
+        return Array.from(allSizes);
+    }, [product]);
 
     const handleReset = () => {
         setConfirmDialog({
@@ -100,6 +117,7 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
             productHandle: handle,
             color: selectedColor,
             elements: designs,
+            price: totalPrice
         };
 
         // If not saving as new and we have a current ID, pass it for update
@@ -127,14 +145,14 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
                     const newDesignId = data.design.id;
                     dispatch(setCurrentDesignId(newDesignId));
                     dispatch(setDirty(false));
-                    
+
                     // Sync designId to URL without full reload
                     const url = new URL(window.location.href);
                     url.searchParams.set('designId', newDesignId);
                     window.history.replaceState({}, '', url.toString());
 
                     toast.success(isSaveAs || !currentDesignId ? "Design saved successfully" : "Design updated successfully");
-                    
+
                     // Removed redirect to dashboard to allow continuous editing
                     // setTimeout(() => {
                     //    router.push('/dashboard/user');
@@ -151,6 +169,100 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
             setIsSaving(false);
         }
     }
+
+    const handleAddToCart = async () => {
+        if (!selectedSize) {
+            toast.error("Please select a size");
+            return;
+        }
+
+        setIsAddingToCart(true);
+        try {
+            // 1. Save or Update design first if needed
+            // (We'll save every time to be sure we have the latest)
+            let designIdToUse = currentDesignId;
+
+            // If dirty or no design ID, save it
+            if (true) { // Always save to ensure we have the latest for the cart
+                const supabase = createClient();
+                const { data: { session } } = await supabase.auth.getSession();
+
+                // If not logged in, we can't save to Supabase yet, 
+                // but the requirements say designId and price in Supabase.
+                // For guest users, we might need a different flow or force login.
+                if (!session) {
+                    toast.info("Please sign in to complete your purchase");
+                    // Store intent to add to cart
+                    const cartIntent = {
+                        productId: product.id,
+                        color: selectedColor,
+                        size: selectedSize,
+                        elements: designs,
+                        price: totalPrice
+                    };
+                    sessionStorage.setItem('pending_cart_add', JSON.stringify(cartIntent));
+                    router.push(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+                    return;
+                }
+
+                const designData: any = {
+                    productId: product.id,
+                    productHandle: handle,
+                    color: selectedColor,
+                    elements: designs,
+                    price: totalPrice
+                };
+                if (currentDesignId) designData.id = currentDesignId;
+
+                const saveRes = await fetch('/api/user-designs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(designData),
+                });
+
+                if (saveRes.ok) {
+                    const data = await saveRes.json();
+                    designIdToUse = data.design.id;
+                    dispatch(setCurrentDesignId(designIdToUse));
+                    dispatch(setDirty(false));
+                } else {
+                    throw new Error("Failed to save design before adding to cart");
+                }
+            }
+
+            if (!designIdToUse) throw new Error("Could not find design ID");
+
+            // 2. Resolve Variant ID
+            const variantId = await getVariantIdByOptions(handle, selectedColor, selectedSize);
+            if (!variantId) throw new Error("Could not find a variant for this color and size");
+
+            // 3. Add to Cart
+            const result = await addItemToCart({
+                productId: product.id,
+                variantId: variantId,
+                quantity: 1,
+                designId: designIdToUse,
+                isDesigned: true,
+                price: Math.round(parseFloat(totalPrice) * 100),
+                color: selectedColor,
+                size: selectedSize
+            });
+
+            if (result.success) {
+                toast.success("Added to cart successfully!");
+                setShowSizeModal(false);
+                dispatch(setCartOpen(true));
+            } else {
+                toast.error(result.error || "Failed to add to cart");
+            }
+
+        } catch (error: any) {
+            console.error("Cart error:", error);
+            toast.error(error.message || "An error occurred while adding to cart");
+        } finally {
+            setIsAddingToCart(false);
+        }
+    };
 
     // Listen for save shortcuts via custom event
     useEffect(() => {
@@ -264,7 +376,65 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
                         <ChevronDown className="w-4 h-4 opacity-60" />
                     </button>
                 </div>
+
+                <button
+                    onClick={() => setShowSizeModal(true)}
+                    className={`bg-white text-black rounded-md cursor-pointer ${isMobile ? 'h-10 px-3' : 'h-12 px-6'} text-sm font-black uppercase tracking-wider flex items-center gap-2 hover:bg-gray-100 active:scale-95 transition-all ml-1 md:ml-2`}
+                >
+                    <ShoppingBag className="w-4 h-4" />
+                    {!isMobile && "Add to Cart"}
+                </button>
             </div>
+
+            {/* Size Selection Modal */}
+            {showSizeModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowSizeModal(false)} />
+                    <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-black/10 overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-6 border-b border-black/5 bg-gray-50/50">
+                            <h3 className="text-lg font-black uppercase tracking-widest text-black">Select Size</h3>
+                            <p className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-tighter">Choose your size to add to cart</p>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-3 gap-2">
+                                {sizes.map(size => (
+                                    <button
+                                        key={size}
+                                        onClick={() => setSelectedSize(size)}
+                                        className={`py-3 rounded-xl text-sm font-bold cursor-pointer transition-all border-2 ${selectedSize === size
+                                            ? 'bg-black text-white border-black shadow-lg shadow-black/10'
+                                            : 'bg-white text-gray-400 border-gray-100 hover:border-black/10 hover:text-black'}`}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isAddingToCart || !selectedSize}
+                                className="w-full mt-6 py-4 bg-black rounded-xl text-sm font-semibold uppercase tracking-[0.2em] shadow-xl hover:bg-gray-800 disabled:opacity-50 disabled:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                            >
+                                {isAddingToCart ? (
+                                    <div className="text-black flex gap-2 items-center">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Adding...
+                                    </div>
+                                ) : (
+                                    "Confirm & Add"
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => setShowSizeModal(false)}
+                                className="w-full mt-2 py-3 text-gray-400 text-[10px] font-black uppercase tracking-widest hover:text-black transition-colors"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <ConfirmDialog
                 isOpen={confirmDialog.isOpen}
                 title={confirmDialog.title}
