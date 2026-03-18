@@ -1,11 +1,12 @@
 import { createServerClient } from '@/lib/supabase/server-client';
 import { redirect } from 'next/navigation';
-import { Box, MapPin, CreditCard, Edit2, Clock, Package } from 'lucide-react';
+import { PlusCircle, Search, SlidersHorizontal, Package } from 'lucide-react';
 import Link from 'next/link';
 import { getUserRole } from '@/lib/queries/userRole';
 import { db } from '@/db';
 import { userDesigns } from '@/db/schemas/product-customization.schema';
 import { eq, desc } from 'drizzle-orm';
+import { DesignCard } from '@/components/dashboard/design-card';
 
 export default async function UserDashboard() {
   const supabase = await createServerClient();
@@ -23,99 +24,89 @@ export default async function UserDashboard() {
     .orderBy(desc(userDesigns.updatedAt));
 
   return (
-    <div className="min-h-screen bg-surface pt-24 pb-20 px-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 border border-black/10 text-xs font-semibold text-black tracking-wide mb-4">
-              <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
-              Standard Account
-            </div>
-            <h1 className="text-3xl font-sora font-semibold text-[#111]">Dashboard</h1>
-            <p className="text-muted text-sm mt-1">Manage your active manufacturing orders.</p>
+    <div className="space-y-10 animate-in fade-in duration-700">
+
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 border-b border-black/[0.03]">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-sora font-semibold tracking-tight text-[#111]">Overview</h1>
+          <p className="text-sm text-black/40 font-medium tracking-tight">Manage your designs and production projects.</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative group hidden sm:block">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/20 group-hover:text-black/40 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              className="pl-9 pr-4 py-2 bg-white border border-black/5 rounded-md text-xs font-semibold focus:outline-none focus:border-black/10 transition-all w-48 focus:w-64"
+            />
           </div>
-          <Link href="/shop" className="px-4 py-2 bg-[#111] text-white text-sm font-semibold rounded-md shadow-sm hover:bg-black transition-colors">
-            New Project
+          <Link
+            href="/shop"
+            className="flex items-center gap-2 px-5 py-2.5 bg-black text-white text-xs font-bold rounded-md shadow-premium hover:shadow-elevated hover:bg-black/90 transition-all active:scale-[0.98]"
+          >
+            <PlusCircle className="w-4 h-4" />
+            New Design
           </Link>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { label: 'Order Pipeline', desc: 'Track active physical production.', icon: Box },
-            { label: 'Saved Addresses', desc: 'Manage your distribution hubs.', icon: MapPin },
-            { label: 'Billing Settings', desc: 'Update payment instruments.', icon: CreditCard },
-          ].map((item, i) => (
-            <button key={i} className="flex flex-col text-left p-6 bg-white border border-black/10 rounded-xl shadow-sm hover:border-black/30 hover:shadow-premium transition-all">
-               <div className="w-10 h-10 rounded-lg bg-surface border border-black/5 flex items-center justify-center mb-4">
-                 <item.icon className="w-5 h-5 text-black" />
-               </div>
-               <h3 className="text-base font-sora font-semibold text-[#111] mb-1">{item.label}</h3>
-               <p className="text-sm text-muted">{item.desc}</p>
-            </button>
-          ))}
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-xl font-sora font-semibold text-[#111]">Saved Designs</h2>
-            <Link href="/shop" className="text-xs font-semibold text-black hover:underline">View Catalog</Link>
-          </div>
-
-          {designs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {designs.map((design) => (
-                <div key={design.id} className="group bg-white border border-black/10 rounded-xl overflow-hidden hover:border-black/20 transition-all shadow-sm">
-                  <div className="aspect-video bg-surface relative flex items-center justify-center p-4">
-                    {design.previewUrl ? (
-                      <img src={design.previewUrl} alt={design.name || 'Design'} className="max-h-full object-contain" />
-                    ) : (
-                      <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center">
-                        <Package className="w-8 h-8 text-black/20" />
-                      </div>
-                    )}
-                    <Link 
-                      href={`/customizer/${design.productHandle}?designId=${design.id}`}
-                      className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                    >
-                      <button className="px-4 py-2 bg-white text-black text-xs font-bold rounded-full flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                        <Edit2 className="w-3 h-3" />
-                        Edit Design
-                      </button>
-                    </Link>
-                  </div>
-                  <div className="p-4 border-t border-black/5">
-                    <div className="flex justify-between items-start mb-2">
-                       <h3 className="text-sm font-semibold text-[#111] truncate max-w-[150px]">
-                         {design.name || `${design.productHandle} - ${design.color}`}
-                       </h3>
-                       <span className="text-[10px] font-bold text-black/40 px-2 py-0.5 rounded bg-black/5 uppercase tracking-wider">
-                         {design.color}
-                       </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-muted font-medium">
-                       <Clock className="w-3 h-3" />
-                       {new Date(design.updatedAt!).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-12 bg-white border border-black/10 rounded-xl shadow-sm text-center">
-                <div className="w-12 h-12 rounded-full bg-surface border border-black/5 flex items-center justify-center mx-auto mb-4">
-                  <Package className="w-6 h-6 text-black/20" />
-                </div>
-                <h3 className="text-base font-sora font-semibold text-[#111] mb-1">No saved designs</h3>
-                <p className="text-sm text-muted mb-6">Your customized projects will appear here for future editing.</p>
-                <Link href="/shop" className="inline-flex px-4 py-2 bg-black text-white text-xs font-bold rounded-md hover:bg-black/90 transition-colors">
-                    Start Customizing
-                </Link>
-            </div>
-          )}
-        </div>
-
       </div>
+
+      {/* Stats/Quick Access - Refined Shadcn style */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Active Projects', value: designs.length.toString(), growth: '+2 this week' },
+          { label: 'Orders in Production', value: '0', growth: 'Ready to ship' },
+          { label: 'Saved Templates', value: '12', growth: 'Standard catalog' },
+          { label: 'Unread Messages', value: '4', growth: 'From Factory' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white p-5 rounded-xl border border-black/5 shadow-sm hover:border-black/10 transition-all">
+            <p className="text-[10px] font-bold text-black/30 uppercase tracking-[0.05em] mb-1">{stat.label}</p>
+            <div className="flex items-end justify-between">
+              <h4 className="text-2xl font-sora font-semibold text-[#111]">{stat.value}</h4>
+              <span className="text-[10px] font-bold text-black/40 px-2 py-0.5 rounded-full bg-black/5">{stat.growth}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Designs Section */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-sora font-semibold text-[#111]">Saved Designs</h2>
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#111] text-white uppercase tracking-wider">
+              {designs.length} Total
+            </span>
+          </div>
+          <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-black/5 text-[10px] font-bold text-black/60 hover:bg-black/5 transition-colors">
+            <SlidersHorizontal className="w-3 h-3" />
+            Filter View
+          </button>
+        </div>
+
+        {designs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {designs.map((design) => (
+              <DesignCard key={design.id} design={design} />
+            ))}
+          </div>
+        ) : (
+          <div className="py-20 bg-white border border-dashed border-black/10 rounded-3xl text-center flex flex-col items-center">
+            <div className="w-16 h-16 rounded-3xl bg-surface border border-black/5 flex items-center justify-center mb-6 transform rotate-3">
+              <Package className="w-8 h-8 text-black/20" />
+            </div>
+            <h3 className="text-xl font-sora font-semibold text-[#111] mb-2">Create your first design</h3>
+            <p className="text-sm text-black/40 font-medium max-w-xs mb-8">
+              Customize your favorite products and save them here for easy ordering and team review.
+            </p>
+            <Link href="/shop" className="inline-flex items-center gap-2 px-8 py-3 bg-black text-white text-xs font-bold rounded-full shadow-premium hover:shadow-elevated transition-all">
+              Get Started <PlusCircle className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

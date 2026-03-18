@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams } from "next/navigation";
 import { getAdminProduct, saveCustomizerConfig, getCustomizerConfig } from "@/app/actions/admin";
 import CustomizerSidebar from "./customizer-sidebar";
@@ -8,6 +8,7 @@ import { Loader2, Upload, Trash2, Crosshair, CheckCircle2, AlertCircle, X } from
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Area, CustomizerState } from "./types";
+import ConfirmDialog from "@/components/admin/confirm-dialog";
 
 const AreaSelector = dynamic(() => import("./area-selector"), { ssr: false }) as any;
 
@@ -21,6 +22,9 @@ const CustomizerPage = () => {
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [selectedPart, setSelectedPart] = useState<string>("Front");
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDeletingPart, setIsDeletingPart] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [state, setState] = useState<CustomizerState>({
     parts: {
@@ -122,9 +126,15 @@ const CustomizerPage = () => {
             };
           }
         });
+        // Reset input value to allow uploading the same file again if needed
+        if (fileInputRef.current) fileInputRef.current.value = "";
       };
       reader.readAsDataURL(file);
     };
+  };
+
+  const handleReplaceImage = () => {
+    fileInputRef.current?.click();
   };
 
   const removeImage = () => {
@@ -141,6 +151,40 @@ const CustomizerPage = () => {
         return { ...prev, colorImages: newColorImages };
       }
     });
+  };
+
+  const deletePart = () => {
+    if (!selectedPart) return;
+    setIsDeletingPart(true);
+    setState(prev => {
+      const newParts = { ...prev.parts };
+      delete newParts[selectedPart];
+
+      const newCommonImages = { ...prev.commonImages };
+      delete newCommonImages[selectedPart];
+
+      const newColorImages = { ...prev.colorImages };
+      Object.keys(newColorImages).forEach(color => {
+        delete newColorImages[color][selectedPart];
+      });
+
+      return {
+        ...prev,
+        parts: newParts,
+        commonImages: newCommonImages,
+        colorImages: newColorImages
+      };
+    });
+
+    const remainingParts = Object.keys(state.parts).filter(n => n !== selectedPart);
+    if (remainingParts.length > 1) {
+      setSelectedPart(remainingParts[0]);
+    } else {
+      setSelectedPart("");
+    }
+    setShowDeleteConfirm(false);
+    setIsDeletingPart(false);
+    toast.success(`Part "${selectedPart}" deleted`);
   };
 
   const updateAreas = (areas: Area[]) => {
@@ -241,6 +285,13 @@ const CustomizerPage = () => {
               Size Locked: 500x500px
             </div>
             <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg text-sm font-bold transition-all flex items-center gap-2 border border-red-100"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Part
+            </button>
+            <button
               onClick={handleSubmit}
               disabled={isSaving}
               className="px-6 py-2 bg-black text-white rounded-lg cursor-pointer text-sm font-bold hover:bg-black/80 transition-all active:scale-95 shadow-lg shadow-black/10 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -268,12 +319,20 @@ const CustomizerPage = () => {
                   selectedAreaId={selectedAreaId}
                   onSelectArea={setSelectedAreaId}
                 />
-                <div className="absolute -top-4 -right-4 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <div className="absolute -top-4 -right-4 z-20 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <button
+                    onClick={handleReplaceImage}
+                    title="Replace Image"
+                    className="p-3 bg-white text-black rounded-2xl shadow-2xl border border-black/5 hover:bg-gray-50 hover:scale-110 active:scale-95 transition-all"
+                  >
+                    <Upload className="w-5 h-5" />
+                  </button>
                   <button
                     onClick={removeImage}
-                    className="p-4 bg-white text-red-500 rounded-3xl shadow-2xl border border-black/5 hover:bg-red-50 hover:scale-110 active:scale-95 transition-all"
+                    title="Remove Image"
+                    className="p-3 bg-white text-red-500 rounded-2xl shadow-2xl border border-black/5 hover:bg-red-50 hover:scale-110 active:scale-95 transition-all"
                   >
-                    <Trash2 className="w-6 h-6" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -290,9 +349,16 @@ const CustomizerPage = () => {
                     Choose File
                   </div>
                 </div>
-                <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                <button type="button" onClick={() => fileInputRef.current?.click()} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
               </label>
             )}
+            <input 
+              ref={fileInputRef} 
+              type="file" 
+              className="hidden" 
+              accept="image/*" 
+              onChange={handleImageUpload} 
+            />
           </div>
 
           <div className="mt-auto p-8 border-t border-black/5 flex items-center gap-6 bg-white/80 backdrop-blur-md">
@@ -388,6 +454,16 @@ const CustomizerPage = () => {
           </div>
         )}
       </main>
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Part"
+        message={`Are you sure you want to delete the part "${selectedPart}"? This will also remove all images and zones associated with this part across all colors.`}
+        confirmLabel="Delete Part"
+        onConfirm={deletePart}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isLoading={isDeletingPart}
+        variant="danger"
+      />
     </section>
   );
 };
