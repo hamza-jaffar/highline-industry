@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             key={item.href}
             href={item.href}
             onClick={() => mobile && setMobileMenuOpen(false)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+            className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-all duration-200 ${isActive
               ? "bg-linear-to-r from-black to-gray-900 text-white shadow-lg"
               : "text-muted hover:text-black hover:bg-linear-to-r hover:from-black/5 hover:to-gray-50"
               } ${sidebarCollapsed && !mobile ? "justify-center px-2" : ""}`}
@@ -69,7 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-2 rounded-lg hover:bg-black/5 transition-colors group"
+              className="p-2 rounded-md hover:bg-black/5 transition-colors group"
             >
               <ChevronLeft className={`w-4 h-4 transition-transform duration-200 ${sidebarCollapsed ? "rotate-180" : ""
                 }`} />

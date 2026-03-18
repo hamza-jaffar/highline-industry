@@ -30,8 +30,9 @@ export function SidebarNav({ user }: { user: any }) {
 
   return (
     <div className="flex flex-col h-screen border-r border-black/5 bg-white w-64 fixed left-0 top-0 overflow-y-auto z-50">
-      <div className="p-6">
-        <AppLogo />
+      <div className="p-6 flex gap-2 items-center">
+        <AppLogo size={32} />
+        <span className="text-lg font-sora font-bold tracking-tight text-black">HIGHLINE</span>
       </div>
 
       <nav className="flex-1 px-4 space-y-1">
@@ -42,7 +43,7 @@ export function SidebarNav({ user }: { user: any }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-all",
+                "group flex items-center justify-between p-2 text-sm font-medium rounded-lg transition-all",
                 isActive
                   ? "bg-black text-white shadow-sm"
                   : "text-black/60 hover:text-black hover:bg-black/5"
@@ -52,7 +53,7 @@ export function SidebarNav({ user }: { user: any }) {
                 <item.icon className={cn("w-4 h-4", isActive ? "text-white" : "text-black/40 group-hover:text-black")} />
                 {item.name}
               </div>
-              {isActive && <ChevronRight className="w-3.5 h-3.5 text-white/50" />}
+              {/* {isActive && <ChevronRight className="w-3.5 h-3.5 text-white/50" />} */}
             </Link>
           );
         })}

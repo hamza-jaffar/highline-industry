@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { CustomizerState, PartDefinition } from './types';
 import { Palette, Box, CheckCircle2, Circle, Plus, Trash2, Edit3, Globe, Layers } from 'lucide-react';
 import { toast } from 'sonner';
+import ConfirmDialog from '@/components/admin/confirm-dialog';
 
 interface CustomizerSidebarProps {
   colors: string[];
@@ -28,6 +29,8 @@ const CustomizerSidebar = ({
   const [newPartName, setNewPartName] = useState("");
   const [editingPart, setEditingPart] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [partToDelete, setPartToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleAddPart = () => {
     if (!newPartName.trim()) return;
@@ -94,6 +97,7 @@ const CustomizerSidebar = ({
   };
 
   const handleDeletePart = (name: string) => {
+    setIsDeleting(true);
     setState(prev => {
       const newParts = { ...prev.parts };
       delete newParts[name];
@@ -118,6 +122,9 @@ const CustomizerSidebar = ({
     if (selectedPart === name && remainingParts.length > 0) {
       setSelectedPart(remainingParts[0]);
     }
+    setPartToDelete(null);
+    setIsDeleting(false);
+    toast.success(`Part "${name}" deleted`);
   };
 
   const toggleCommon = (name: string) => {
@@ -279,7 +286,7 @@ const CustomizerSidebar = ({
                   </button>
                   <div className="flex-1" />
                   <button
-                    onClick={() => handleDeletePart(part.name)}
+                    onClick={() => setPartToDelete(part.name)}
                     className="p-2 hover:bg-red-50 rounded-xl transition-all text-gray-300 hover:text-red-500"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -290,6 +297,17 @@ const CustomizerSidebar = ({
           })}
         </div>
       </div>
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!partToDelete}
+        title="Delete Part"
+        message={`Are you sure you want to delete the part "${partToDelete}"? This will also remove all images and zones associated with this part across all colors.`}
+        confirmLabel="Delete Part"
+        onConfirm={() => partToDelete && handleDeletePart(partToDelete)}
+        onCancel={() => setPartToDelete(null)}
+        isLoading={isDeleting}
+        variant="danger"
+      />
     </aside>
   );
 };
