@@ -33,6 +33,22 @@ export const userDesigns = pgTable("user_designs", {
   name: text("name"), // Optional name for the design
   elements: text("elements").notNull(), // JSON stringified DesignElement[]
   previewUrl: text("preview_url"), // URL to a preview image
+  price: integer("price").default(0), // Total price at the time of design
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const cartItems = pgTable("cart_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id"), // Nullable for guest users
+  shopifyCartId: text("shopify_cart_id").notNull(),
+  productId: text("product_id").notNull(),
+  variantId: text("variant_id").notNull(),
+  quantity: integer("quantity").default(1),
+  designId: uuid("design_id").references(() => userDesigns.id),
+  isDesigned: boolean("is_designed").default(false),
+  price: integer("price").notNull(), // Price per item in cents
+  color: text("color"),
+  size: text("size"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
