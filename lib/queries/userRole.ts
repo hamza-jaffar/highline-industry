@@ -1,25 +1,23 @@
+import { db } from "@/db";
+import { userRoles } from "@/db/schemas/user-roles.schema";
+import { eq } from "drizzle-orm";
+
 export async function getUserRole(userId: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/user-role?userId=${userId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const result = await db
+      .select({ role: userRoles.role })
+      .from(userRoles)
+      .where(eq(userRoles.userId, userId))
+      .limit(1);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.role;
+    return result[0]?.role || "user";
   } catch (error) {
-    console.error('Error fetching user role from API:', error);
+    console.error("Error fetching user role from database:", error);
 
     // Fallback to default role in production
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('API error in production, returning default user role');
-      return 'user';
+    if (process.env.NODE_ENV === "production") {
+      console.warn("Database error in production, returning default user role");
+      return "user";
     }
 
     throw error;
