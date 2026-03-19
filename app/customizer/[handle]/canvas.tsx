@@ -237,278 +237,277 @@ const CenterCanvas = ({ isMobile }: { isMobile?: boolean }) => {
 
     return (
         <>
-        <div className="bg-[#f5f6f7] w-full h-full relative flex flex-col overflow-hidden">
-            {/* Top Canvas Toolbar */}
-            <div className={`h-12 md:h-14 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between ${isMobile ? 'px-2' : 'px-6'} z-10 w-full shrink-0`}>
-                <div className="flex items-center gap-1.5 md:gap-3 overflow-x-auto hide-scrollbar">
-                    {parts.map(part => (
-                        <button
-                            key={part}
-                            onClick={() => dispatch(setPart(part))}
-                            className={`cursor-pointer px-3 md:px-4 py-1.5 rounded-md text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${selectedPart === part
-                                ? 'bg-black text-white shadow-md'
-                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                                }`}
-                        >
-                            {isMobile ? (config?.parts[part].name || part).split(' ')[0] : (config?.parts[part].name || part)}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="flex items-center gap-1 md:gap-2 shrink-0 ml-2">
-                    <div className="flex items-center bg-gray-100 p-0.5 md:p-1 rounded-lg">
-                        <button
-                            onClick={() => dispatch(undo())}
-                            disabled={past.length === 0}
-                            className="p-1 md:p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black disabled:opacity-30"
-                        >
-                            <Undo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                        </button>
-                        <button
-                            onClick={() => dispatch(redo())}
-                            disabled={future.length === 0}
-                            className="p-1 md:p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black disabled:opacity-30"
-                        >
-                            <Redo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                        </button>
+            <div className="bg-[#f5f6f7] w-full h-full relative flex flex-col overflow-hidden">
+                {/* Top Canvas Toolbar */}
+                <div className={`h-12 md:h-14 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between ${isMobile ? 'px-2' : 'px-6'} z-10 w-full shrink-0`}>
+                    <div className="flex items-center gap-1.5 md:gap-3 overflow-x-auto hide-scrollbar">
+                        {parts.map(part => (
+                            <button
+                                key={part}
+                                onClick={() => dispatch(setPart(part))}
+                                className={`cursor-pointer px-3 md:px-4 py-1.5 rounded-md text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${selectedPart === part
+                                    ? 'bg-black text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                    }`}
+                            >
+                                {isMobile ? (config?.parts[part].name || part).split(' ')[0] : (config?.parts[part].name || part)}
+                            </button>
+                        ))}
                     </div>
 
-                    {/* Image Editing Tools */}
-                    {selectedElementId && designs.find(d => d.id === selectedElementId)?.type === 'image' && (
-                        <div className="flex items-center gap-1 md:gap-2 ml-1">
+                    <div className="flex items-center gap-1 md:gap-2 shrink-0 ml-2">
+                        <div className="flex items-center bg-gray-100 p-0.5 md:p-1 rounded-lg">
                             <button
-                                onClick={() => { setEditModalTab('crop'); setShowEditModal(true); }}
-                                className="p-1.5 md:p-2 cursor-pointer bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5"
-                                title="Crop Image"
+                                onClick={() => dispatch(undo())}
+                                disabled={past.length === 0}
+                                className="p-1 md:p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black disabled:opacity-30"
                             >
-                                <Crop className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                {!isMobile && <span className="text-[10px] font-bold uppercase">Crop</span>}
+                                <Undo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             </button>
                             <button
-                                onClick={() => { setEditModalTab('removebg'); setShowEditModal(true); }}
-                                className="p-1.5 md:p-2 cursor-pointer bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors flex items-center gap-1.5"
-                                title="Remove Background"
+                                onClick={() => dispatch(redo())}
+                                disabled={future.length === 0}
+                                className="p-1 md:p-1.5 hover:bg-white cursor-pointer rounded-md transition-all text-gray-500 hover:text-black disabled:opacity-30"
                             >
-                                <Eraser className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                {!isMobile && <span className="text-[10px] font-bold uppercase">Remove BG</span>}
+                                <Redo2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             </button>
                         </div>
-                    )}
 
-                    {!isMobile && (
-                        <>
-                            <div className="w-[1px] h-6 bg-black/5 mx-2" />
-                            <button
-                                onClick={() => dispatch(toggleGrid())}
-                                className={`p-2 rounded-lg cursor-pointer transition-colors ${showGrid ? 'bg-black text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-black'}`}
-                            >
-                                <Grid className="w-5 h-5" />
-                            </button>
-                            <button
-                                onClick={() => dispatch(setZoom(zoom * 1.2))}
-                                className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors text-gray-400 hover:text-black"
-                            >
-                                <Maximize2 className="w-5 h-5" />
-                            </button>
-                        </>
-                    )}
+                        {/* Image Editing Tools */}
+                        {selectedElementId && designs.find(d => d.id === selectedElementId)?.type === 'image' && (
+                            <div className="flex items-center gap-1 md:gap-2 ml-1">
+                                <button
+                                    onClick={() => { setEditModalTab('crop'); setShowEditModal(true); }}
+                                    className="p-1.5 md:p-2 cursor-pointer bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+                                    title="Crop Image"
+                                >
+                                    <Crop className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                    {!isMobile && <span className="text-[10px] font-bold uppercase">Crop</span>}
+                                </button>
+                                <button
+                                    onClick={() => { setEditModalTab('removebg'); setShowEditModal(true); }}
+                                    className="p-1.5 md:p-2 cursor-pointer bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors flex items-center gap-1.5"
+                                    title="Remove Background"
+                                >
+                                    <Eraser className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                    {!isMobile && <span className="text-[10px] font-bold uppercase">Remove BG</span>}
+                                </button>
+                            </div>
+                        )}
+
+                        {!isMobile && (
+                            <>
+                                <div className="w-px h-6 bg-black/5 mx-2" />
+                                <button
+                                    onClick={() => dispatch(toggleGrid())}
+                                    className={`p-2 rounded-lg cursor-pointer transition-colors ${showGrid ? 'bg-black text-white' : 'hover:bg-gray-100 text-gray-400 hover:text-black'}`}
+                                >
+                                    <Grid className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => dispatch(setZoom(zoom * 1.2))}
+                                    className="p-2 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors text-gray-400 hover:text-black"
+                                >
+                                    <Maximize2 className="w-5 h-5" />
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* Main Stage */}
-            <div
-                className="flex-1 relative flex items-center justify-center p-0 overflow-hidden"
-                id="canvas-container"
-                ref={containerRef}
-            >
-                {containerSize.width > 0 && (
-                    <Stage
-                        ref={stageRef}
-                        width={containerSize.width}
-                        height={containerSize.height}
-                        onWheel={handleWheel}
-                        scaleX={zoom}
-                        scaleY={zoom}
-                        x={pan.x}
-                        y={pan.y}
-                        draggable
-                        onDragEnd={handleDragEnd}
-                        onMouseDown={handleStageInteraction}
-                        onTouchStart={handleStageInteraction}
-                    >
-                        <Layer>
-                            {/* Base Image Background */}
-                            <Rect name="background-rect" width={CANVAS_SIZE} height={CANVAS_SIZE} fill="#ffffff" />
+                {/* Main Stage */}
+                <div
+                    className="flex-1 relative flex items-center justify-center p-0 overflow-hidden"
+                    id="canvas-container"
+                    ref={containerRef}
+                >
+                    {containerSize.width > 0 && (
+                        <Stage
+                            ref={stageRef}
+                            width={containerSize.width}
+                            height={containerSize.height}
+                            onWheel={handleWheel}
+                            scaleX={zoom}
+                            scaleY={zoom}
+                            x={pan.x}
+                            y={pan.y}
+                            draggable
+                            onDragEnd={handleDragEnd}
+                            onMouseDown={handleStageInteraction}
+                            onTouchStart={handleStageInteraction}
+                        >
+                            <Layer>
+                                {/* Base Image Background */}
+                                <Rect name="background-rect" width={CANVAS_SIZE} height={CANVAS_SIZE} fill="#ffffff" />
 
-                            {/* Base Product Image */}
-                            {baseImage ? (
-                                <KonvaImage
-                                    image={baseImage}
-                                    width={CANVAS_SIZE}
-                                    height={CANVAS_SIZE}
-                                />
-                            ) : (
-                                <Rect
-                                    width={CANVAS_SIZE}
-                                    height={CANVAS_SIZE}
-                                    fill="#f8f9fa"
-                                    stroke="#e9ecef"
-                                    strokeWidth={2}
-                                />
-                            )}
+                                {/* Base Product Image */}
+                                {baseImage ? (
+                                    <KonvaImage
+                                        image={baseImage}
+                                        width={CANVAS_SIZE}
+                                        height={CANVAS_SIZE}
+                                    />
+                                ) : (
+                                    <Rect
+                                        width={CANVAS_SIZE}
+                                        height={CANVAS_SIZE}
+                                        fill="#f8f9fa"
+                                        stroke="#e9ecef"
+                                        strokeWidth={2}
+                                    />
+                                )}
 
-                            {/* Grid (if enabled) */}
-                            {showGrid && (
-                                <Group opacity={0.15} listening={false}>
-                                    {Array.from({ length: 20 }).map((_, i) => (
-                                        <Rect
-                                            key={`grid-v-${i}`}
-                                            x={(CANVAS_SIZE / 20) * i}
-                                            y={0}
-                                            width={1}
-                                            height={CANVAS_SIZE}
-                                            fill="black"
-                                        />
-                                    ))}
-                                    {Array.from({ length: 20 }).map((_, i) => (
-                                        <Rect
-                                            key={`grid-h-${i}`}
-                                            x={0}
-                                            y={(CANVAS_SIZE / 20) * i}
-                                            width={CANVAS_SIZE}
-                                            height={1}
-                                            fill="black"
-                                        />
-                                    ))}
-                                </Group>
-                            )}
-
-                            {/* Global Design Layer Clipped to Product Square */}
-                            <Group
-                                key={`global-product-clipping-${selectedPart}`}
-                                clipX={0}
-                                clipY={0}
-                                clipWidth={CANVAS_SIZE}
-                                clipHeight={CANVAS_SIZE}
-                            >
-                                {/* Render Areas Borders/Labels */}
-                                {partDef?.areas.map(area => (
-                                    <Group
-                                        key={`area-guide-${area.id}`}
-                                        x={(area.x / 100) * CANVAS_SIZE}
-                                        y={(area.y / 100) * CANVAS_SIZE}
-                                        listening={false}
-                                    >
-                                        <Rect
-                                            width={(area.width / 100) * CANVAS_SIZE}
-                                            height={(area.height / 100) * CANVAS_SIZE}
-                                            stroke="#000"
-                                            strokeWidth={1}
-                                            dash={[4, 4]}
-                                            opacity={0.3}
-                                        />
-                                        <Text
-                                            text={area.name || `Zone: ${area.allowedType}`}
-                                            fontSize={10}
-                                            fontStyle="bold"
-                                            fill="black"
-                                            opacity={0.4}
-                                            y={-14}
-                                        />
+                                {/* Grid (if enabled) */}
+                                {showGrid && (
+                                    <Group opacity={0.15} listening={false}>
+                                        {Array.from({ length: 20 }).map((_, i) => (
+                                            <Rect
+                                                key={`grid-v-${i}`}
+                                                x={(CANVAS_SIZE / 20) * i}
+                                                y={0}
+                                                width={1}
+                                                height={CANVAS_SIZE}
+                                                fill="black"
+                                            />
+                                        ))}
+                                        {Array.from({ length: 20 }).map((_, i) => (
+                                            <Rect
+                                                key={`grid-h-${i}`}
+                                                x={0}
+                                                y={(CANVAS_SIZE / 20) * i}
+                                                width={CANVAS_SIZE}
+                                                height={1}
+                                                fill="black"
+                                            />
+                                        ))}
                                     </Group>
-                                ))}
+                                )}
 
-                                {/* 
+                                {/* Global Design Layer Clipped to Product Square */}
+                                <Group
+                                    key={`global-product-clipping-${selectedPart}`}
+                                    clipX={0}
+                                    clipY={0}
+                                    clipWidth={CANVAS_SIZE}
+                                    clipHeight={CANVAS_SIZE}
+                                >
+                                    {/* Render Areas Borders/Labels */}
+                                    {partDef?.areas.map(area => (
+                                        <Group
+                                            key={`area-guide-${area.id}`}
+                                            x={(area.x / 100) * CANVAS_SIZE}
+                                            y={(area.y / 100) * CANVAS_SIZE}
+                                            listening={false}
+                                        >
+                                            <Rect
+                                                width={(area.width / 100) * CANVAS_SIZE}
+                                                height={(area.height / 100) * CANVAS_SIZE}
+                                                stroke="#000"
+                                                strokeWidth={1}
+                                                dash={[4, 4]}
+                                                opacity={0.3}
+                                            />
+                                            <Text
+                                                fontSize={10}
+                                                fontStyle="bold"
+                                                fill="black"
+                                                opacity={0.4}
+                                                y={-14}
+                                            />
+                                        </Group>
+                                    ))}
+
+                                    {/* 
                                     Unified Design Rendering:
                                     1. Render designs assigned to existing areas (clipped).
                                     2. Render any remaining designs (floating) clipped to the product square.
                                 */}
-                                {(() => {
-                                    const areaIdsInPart = new Set(partDef?.areas.map(a => a.id));
+                                    {(() => {
+                                        const areaIdsInPart = new Set(partDef?.areas.map(a => a.id));
 
-                                    return (
-                                        <>
-                                            {/* Render User Designs inside Clipped Areas */}
-                                            {partDef?.areas.map(area => {
-                                                const areaDesigns = currentDesigns.filter(d => d.areaId === area.id);
-                                                const areaX = (area.x / 100) * CANVAS_SIZE;
-                                                const areaY = (area.y / 100) * CANVAS_SIZE;
-                                                const areaWidth = (area.width / 100) * CANVAS_SIZE;
-                                                const areaHeight = (area.height / 100) * CANVAS_SIZE;
+                                        return (
+                                            <>
+                                                {/* Render User Designs inside Clipped Areas */}
+                                                {partDef?.areas.map(area => {
+                                                    const areaDesigns = currentDesigns.filter(d => d.areaId === area.id);
+                                                    const areaX = (area.x / 100) * CANVAS_SIZE;
+                                                    const areaY = (area.y / 100) * CANVAS_SIZE;
+                                                    const areaWidth = (area.width / 100) * CANVAS_SIZE;
+                                                    const areaHeight = (area.height / 100) * CANVAS_SIZE;
 
-                                                return (
-                                                    <Group
-                                                        key={`clipped-area-${area.id}`}
-                                                        clipX={areaX}
-                                                        clipY={areaY}
-                                                        clipWidth={areaWidth}
-                                                        clipHeight={areaHeight}
-                                                    >
-                                                        {areaDesigns.map(design => (
-                                                            <DesignNode
-                                                                key={design.id}
-                                                                design={design}
-                                                                isSelected={design.id === selectedElementId}
-                                                            />
-                                                        ))}
-                                                    </Group>
-                                                );
-                                            })}
+                                                    return (
+                                                        <Group
+                                                            key={`clipped-area-${area.id}`}
+                                                            clipX={areaX}
+                                                            clipY={areaY}
+                                                            clipWidth={areaWidth}
+                                                            clipHeight={areaHeight}
+                                                        >
+                                                            {areaDesigns.map(design => (
+                                                                <DesignNode
+                                                                    key={design.id}
+                                                                    design={design}
+                                                                    isSelected={design.id === selectedElementId}
+                                                                />
+                                                            ))}
+                                                        </Group>
+                                                    );
+                                                })}
 
-                                            {/* Render floating designs or designs with orphaned areaIds for this perspective */}
-                                            {/* We use a clipFunc to ensure they are only visible within the union of all valid areas */}
-                                            <Group
-                                                key={`floating-clipped-${selectedPart}`}
-                                                clipFunc={(ctx) => {
-                                                    if (!partDef) return;
-                                                    ctx.beginPath();
-                                                    partDef.areas.forEach(area => {
-                                                        const ax = (area.x / 100) * CANVAS_SIZE;
-                                                        const ay = (area.y / 100) * CANVAS_SIZE;
-                                                        const aw = (area.width / 100) * CANVAS_SIZE;
-                                                        const ah = (area.height / 100) * CANVAS_SIZE;
-                                                        ctx.rect(ax, ay, aw, ah);
-                                                    });
-                                                    ctx.closePath();
-                                                }}
-                                            >
-                                                {currentDesigns.filter(d => !d.areaId || !areaIdsInPart.has(d.areaId)).map(design => (
-                                                    <DesignNode
-                                                        key={design.id}
-                                                        design={design}
-                                                        isSelected={design.id === selectedElementId}
-                                                    />
-                                                ))}
-                                            </Group>
-                                        </>
-                                    );
-                                })()}
-                            </Group>
+                                                {/* Render floating designs or designs with orphaned areaIds for this perspective */}
+                                                {/* We use a clipFunc to ensure they are only visible within the union of all valid areas */}
+                                                <Group
+                                                    key={`floating-clipped-${selectedPart}`}
+                                                    clipFunc={(ctx) => {
+                                                        if (!partDef) return;
+                                                        ctx.beginPath();
+                                                        partDef.areas.forEach(area => {
+                                                            const ax = (area.x / 100) * CANVAS_SIZE;
+                                                            const ay = (area.y / 100) * CANVAS_SIZE;
+                                                            const aw = (area.width / 100) * CANVAS_SIZE;
+                                                            const ah = (area.height / 100) * CANVAS_SIZE;
+                                                            ctx.rect(ax, ay, aw, ah);
+                                                        });
+                                                        ctx.closePath();
+                                                    }}
+                                                >
+                                                    {currentDesigns.filter(d => !d.areaId || !areaIdsInPart.has(d.areaId)).map(design => (
+                                                        <DesignNode
+                                                            key={design.id}
+                                                            design={design}
+                                                            isSelected={design.id === selectedElementId}
+                                                        />
+                                                    ))}
+                                                </Group>
+                                            </>
+                                        );
+                                    })()}
+                                </Group>
 
-                            {/* Transformer rendered outside ALL groups to ensure handles are never clipped */}
-                            <Transformer
-                                ref={trRef}
-                                boundBoxFunc={(oldBox, newBox) => {
-                                    if (newBox.width < 5 || newBox.height < 5) return oldBox;
-                                    return newBox;
-                                }}
-                            />
-                        </Layer>
-                    </Stage>
-                )}
+                                {/* Transformer rendered outside ALL groups to ensure handles are never clipped */}
+                                <Transformer
+                                    ref={trRef}
+                                    boundBoxFunc={(oldBox, newBox) => {
+                                        if (newBox.width < 5 || newBox.height < 5) return oldBox;
+                                        return newBox;
+                                    }}
+                                />
+                            </Layer>
+                        </Stage>
+                    )}
+                </div>
             </div>
-        </div>
 
-        {/* Image Edit Modal */}
-        {showEditModal && selectedElementId && !(()=>{
-            const d = designs.find(d => d.id === selectedElementId);
-            return !d;
-        })() && (
-            <ImageEditModal
-                design={designs.find(d => d.id === selectedElementId)!}
-                onClose={() => setShowEditModal(false)}
-            />
-        )}
+            {/* Image Edit Modal */}
+            {showEditModal && selectedElementId && !(() => {
+                const d = designs.find(d => d.id === selectedElementId);
+                return !d;
+            })() && (
+                    <ImageEditModal
+                        design={designs.find(d => d.id === selectedElementId)!}
+                        onClose={() => setShowEditModal(false)}
+                    />
+                )}
         </>
     );
 };
