@@ -1,7 +1,7 @@
 "use client";
 
 import ConfirmDialog from "@/components/admin/confirm-dialog";
-import { LogOut, ChevronDown, RefreshCw, Palette } from "lucide-react";
+import { LogOut, ChevronDown, RefreshCw, Palette, ArrowLeft, ArrowRightLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
@@ -275,29 +275,34 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
     }, [handleSave]);
 
     return (
-        <header className="h-14 bg-black text-white flex items-center justify-between px-2 md:px-4 z-50 overflow-visible shrink-0 relative">
+        <header className="p-1 m-1 rounded-lg bg-black text-white flex items-center justify-between z-50 overflow-visible shrink-0 relative">
             {/* Left Section: Exit and Title */}
-            <div className="flex items-center gap-2 md:gap-4">
-                <button onClick={handleBack} className="w-8 h-8 flex cursor-pointer items-center justify-center border border-white/20 rounded hover:bg-white/10 transition-colors">
-                    <LogOut className="w-4 h-4" />
+            <div className="flex items-center gap-2 md:gap-4 h-full">
+                <button
+                    onClick={handleBack}
+                    className="h-10 px-3 flex cursor-pointer items-center justify-center border border-white/20 rounded-lg hover:bg-white/10 transition-colors group"
+                >
+                    <div className="flex items-center gap-1 text-white/50 group-hover:text-white transition-colors">
+                        <LogOut className="w-4 h-4 rotate-180" />
+                    </div>
                 </button>
-                <div className="hidden md:block w-[1px] h-6 bg-white/20 mx-1" />
-                <div className="flex items-center gap-2">
-                    <span className="text-xs md:text-sm font-medium tracking-tight truncate max-w-[120px] md:max-w-[250px]">
+
+                <div className="flex items-center gap-3 ml-2">
+                    <span className="text-sm md:text-base font-semibold tracking-tight text-white whitespace-nowrap">
                         {product?.title || "Loading..."}
                     </span>
                     <button
                         onClick={handleReset}
-                        className="p-1 hover:bg-white/10 rounded-full transition-colors text-white/60"
+                        className="p-1 hover:bg-white/10 rounded-full transition-colors text-white/40 hover:text-white"
                         title="Reset design"
                     >
-                        <RefreshCw className="w-3 h-3 md:w-3.5 md:h-3.5 cursor-pointer" />
+                        <ArrowRightLeft className="w-3.5 h-3.5 cursor-pointer" />
                     </button>
                 </div>
             </div>
 
-            {/* Middle Section: Color Selection */}
-            {colors.length > 0 && (
+            {/* Middle Section: Color Selection (Commented out) */}
+            {/* {colors.length > 0 && (
                 <div className={`${isMobile ? 'relative ml-2' : 'absolute left-1/2 -translate-x-1/2'} flex items-center`}>
                     <div className="relative">
                         <button
@@ -331,15 +336,17 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
                         )}
                     </div>
                 </div>
-            )}
+            )} */}
 
             {/* Right Section: Price and Save */}
-            <div className="flex items-center gap-1 md:gap-2">
-                <div className="flex border border-white/50 items-center gap-1 md:gap-2 h-10 md:h-12 cursor-pointer hover:bg-white/5 p-1.5 md:p-2 rounded transition-colors group relative">
-                    <div className="text-right">
-                        {!isMobile && <p className="text-[10px] text-white/40 uppercase font-bold leading-none mb-1">Total Price:</p>}
-                        <p className="text-xs md:text-sm font-black leading-none">${totalPrice}</p>
+            <div className="flex items-center gap-2">
+                <div className="flex border border-white/20 items-center gap-3 cursor-pointer hover:bg-white/5 p-2 px-3 rounded-lg transition-colors group relative h-10">
+                    <div className="flex flex-col justify-center">
+                        <p className="text-[13px] text-white/60 font-medium leading-none mb-0.5">Total Price:</p>
+                        <p className="text-xs font-bold leading-none text-white">${totalPrice}</p>
                     </div>
+                    <ChevronDown className="w-4 h-4 text-white/40 group-hover:text-white/80 transition-colors group-hover:rotate-180" />
+
                     {/* Additions Breakdown Tooltip */}
                     {priceConfig.additions > 0 && !isMobile && (
                         <div className="absolute right-0 top-full mt-2 w-48 bg-white text-black p-3 rounded-xl shadow-2xl border border-black/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
@@ -359,31 +366,25 @@ const CustomizerHeader = ({ isMobile }: { isMobile?: boolean }) => {
                     )}
                 </div>
 
-                <div className="flex items-center">
-                    <button
-                        onClick={() => handleSave(false)}
-                        disabled={isSaving}
-                        className={`bg-white rounded-l-md cursor-pointer text-black ${isMobile ? 'h-10 px-3' : 'h-12 px-6'} text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50 border-r border-black/5`}
-                    >
-                        {isSaving ? "..." : "Save"}
-                    </button>
-                    <button
-                        onClick={() => handleSave(true)}
-                        disabled={isSaving}
-                        className={`bg-white rounded-r-md cursor-pointer text-black ${isMobile ? 'h-10 px-2' : 'h-12 px-2'} text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50`}
-                        title="Save As New"
-                    >
-                        <ChevronDown className="w-4 h-4 opacity-60" />
-                    </button>
-                </div>
-
                 <button
-                    onClick={() => setShowSizeModal(true)}
-                    className={`bg-white text-black rounded-md cursor-pointer ${isMobile ? 'h-10 px-3' : 'h-12 px-6'} text-sm font-black uppercase tracking-wider flex items-center gap-2 hover:bg-gray-100 active:scale-95 transition-all ml-1 md:ml-2`}
+                    onClick={() => handleSave(false)}
+                    disabled={isSaving}
+                    className="bg-white text-black h-10 px-4 rounded-lg cursor-pointer font-[505] hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center"
                 >
-                    <ShoppingBag className="w-4 h-4" />
-                    {!isMobile && "Add to Cart"}
+                    {isSaving ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                        "Save Design"
+                    )}
                 </button>
+                {/* <button
+                    onClick={() => handleSave(true)}
+                    disabled={isSaving}
+                    className={`bg-white rounded-r-md cursor-pointer text-black ${isMobile ? 'h-10 px-2' : 'h-12 px-2'} text-sm font-bold hover:bg-gray-100 active:scale-95 transition-all disabled:opacity-50`}
+                    title="Save As New"
+                >
+                    <ChevronDown className="w-4 h-4 opacity-60" />
+                </button> */}
             </div>
 
             {/* Size Selection Modal */}

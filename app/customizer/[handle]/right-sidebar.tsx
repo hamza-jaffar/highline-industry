@@ -1,19 +1,18 @@
 "use client";
 
-import React from 'react';
-import { Link2, ChevronDown, List, Trash2, Lock, Unlock, Eye, EyeOff } from "lucide-react";
+import { ChevronDown, Trash2, Lock, Unlock } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { updateElement, removeElement, selectElement, saveHistoryState } from "@/lib/store/customizerSlice";
 
 const AttributeInput = ({ label, value, unit, suffix, onChange }: { label: string, value: string | number, unit?: string, suffix?: string, onChange?: (val: string) => void }) => (
     <div className="space-y-1.5 flex-1">
-        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{label}</label>
-        <div className="relative flex items-center bg-[#f5f6f7] rounded-lg h-10 px-3 border border-transparent focus-within:border-black/10 transition-all">
+        <label className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">{label}</label>
+        <div className="relative flex items-center bg-[#f5f6f7] rounded-lg h-10 px-3 border border-black/10 focus-within:border-black/10 transition-all">
             <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange?.(e.target.value)}
-                className="bg-transparent w-full text-sm font-bold outline-none text-black/80"
+                className="bg-transparent w-full text-sm outline-none text-black/80"
             />
             {unit && (
                 <div className="flex items-center gap-1 text-[10px] font-black text-black/20 uppercase cursor-pointer hover:text-black/40 transition-colors">
@@ -52,10 +51,10 @@ const CustomizerRightSidebar = ({ isMobile }: { isMobile?: boolean }) => {
     };
 
     return (
-        <aside className="w-full h-full bg-white border-l border-black/5 flex flex-col overflow-hidden shrink-0">
-            <div className="p-4 md:p-6 border-b border-black/5 flex items-center justify-between">
-                <h2 className="text-lg md:text-xl font-black tracking-tight">Attributes</h2>
-                {selectedElementId && (
+        <aside className="w-full h-full bg-white border rounded-lg border-gray-100/50 flex flex-col overflow-hidden shrink-0">
+            <div className="p-3 py-4 border-b border-gray-100/50 flex items-center justify-between">
+                <h2 className="text-md font-semibold tracking-tight">Attributes</h2>
+                {/* {selectedElementId && (
                     <button
                         onClick={() => {
                             dispatch(removeElement(selectedElementId));
@@ -65,12 +64,12 @@ const CustomizerRightSidebar = ({ isMobile }: { isMobile?: boolean }) => {
                     >
                         <Trash2 className="w-4 h-4" />
                     </button>
-                )}
+                )} */}
             </div>
 
-            <div className={`flex-1 overflow-y-auto ${isMobile ? 'p-4 space-y-6' : 'p-6 space-y-8'} custom-scrollbar`}>
+            <div className={`flex-1 overflow-y-auto space-y-4 px-4 custom-scrollbar`}>
                 {/* Size Controls */}
-                <section className={`space-y-6 ${!selectedElement ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
+                <section className={`${!selectedElement ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
                     <div className="flex items-end gap-3">
                         <AttributeInput
                             label="Width"
@@ -83,9 +82,9 @@ const CustomizerRightSidebar = ({ isMobile }: { isMobile?: boolean }) => {
                                 }
                             }}
                         />
-                        <div className="mb-2 shrink-0 p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-300 hover:text-black">
+                        {/* <div className="mb-2 shrink-0 p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-gray-300 hover:text-black">
                             <Link2 className="w-4 h-4" />
-                        </div>
+                        </div> */}
                         <AttributeInput
                             label="Height"
                             value={selectedElement?.height ? Math.round(selectedElement.height * selectedElement.scaleY) : 0}
@@ -241,7 +240,7 @@ const CustomizerRightSidebar = ({ isMobile }: { isMobile?: boolean }) => {
 
             {/* Bottom Help/Hints */}
             {!selectedElementId && (
-                <div className="p-6 bg-[#fafafa] border-t border-black/5">
+                <div className="p-6 bg-surface border-t border-black/5">
                     <div className="flex items-center gap-3 p-4 bg-white border border-black/5 rounded-2xl shadow-sm">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-normal">

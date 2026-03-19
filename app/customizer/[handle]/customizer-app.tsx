@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
-import { 
-    initCustomizer, 
-    setTab, 
-    removeCurrentElement, 
+import {
+    initCustomizer,
+    setTab,
+    removeCurrentElement,
     loadDesign,
     copyElement,
     pasteElement,
@@ -36,17 +36,17 @@ export default function CustomizerApp({ product, configResult }: { product: any,
     const designs = useAppSelector(state => state.customizer.designs);
     const activeTab = useAppSelector(state => state.customizer.activeTab);
     const selectedElementId = useAppSelector(state => state.customizer.selectedElementId);
-    
+
     const [showExitDialog, setShowExitDialog] = useState(false);
 
     useEffect(() => {
         if (configResult.success && configResult.data && product) {
             dispatch(initCustomizer({ config: configResult.data, product }));
-            
+
             // Recovery logic
             // Recovery / Loading logic
             const pendingDesign = sessionStorage.getItem('pending_design');
-            
+
             if (designId) {
                 // Fetch design from API
                 fetch(`/api/user-designs?id=${designId}`)
@@ -96,10 +96,12 @@ export default function CustomizerApp({ product, configResult }: { product: any,
                 return;
             }
 
-            if (e.key === '1') dispatch(setTab('upload'));
-            if (e.key === '2') dispatch(setTab('text'));
-            if (e.key === '3') dispatch(setTab('shortcuts'));
-            
+            if (e.key === 'u') dispatch(setTab('upload'));
+            if (e.key === 't') dispatch(setTab('text'));
+            if (e.key === 'k') dispatch(setTab('shortcuts'));
+            if (e.key === 'm') dispatch(setTab('mockup'));
+            if (e.key === 'p') dispatch(setTab('products'));
+
             // Edit actions
             if (e.key === 'Delete' || e.key === 'Backspace') {
                 dispatch(removeCurrentElement());
@@ -135,8 +137,8 @@ export default function CustomizerApp({ product, configResult }: { product: any,
                     case 's':
                         e.preventDefault();
                         console.log('Save shortcut triggered', e.shiftKey ? 'Save As' : 'Save');
-                        window.dispatchEvent(new CustomEvent('customizer-save', { 
-                            detail: { isSaveAs: e.shiftKey } 
+                        window.dispatchEvent(new CustomEvent('customizer-save', {
+                            detail: { isSaveAs: e.shiftKey }
                         }));
                         break;
                 }
@@ -152,7 +154,7 @@ export default function CustomizerApp({ product, configResult }: { product: any,
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (isDirty) {
                 e.preventDefault();
-                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?'; 
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
                 return 'You have unsaved changes. Are you sure you want to leave?';
             }
         };
@@ -171,12 +173,12 @@ export default function CustomizerApp({ product, configResult }: { product: any,
     }, []);
 
     return (
-        <div className="h-screen flex flex-col overflow-hidden bg-[#f5f6f7]">
+        <div className="h-screen flex flex-col p-1 overflow-hidden bg-gray-200">
             {/* Global Header */}
             <CustomizerHeader isMobile={isMobile} />
 
             {/* Main Workspace */}
-            <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+            <main className="flex-1 flex flex-col gap-1 md:flex-row overflow-hidden relative">
                 {/* Desktop Navigation & Assets */}
                 <div className="hidden md:block w-1/4 h-full shrink-0">
                     <CustomizerLeftSidebar isMobile={isMobile} />
@@ -195,15 +197,15 @@ export default function CustomizerApp({ product, configResult }: { product: any,
                 {/* Mobile Overlays/Drawers */}
                 {isMobile && activeTab && (
                     <>
-                        <div 
-                            className="absolute inset-0 bg-black/20 z-30 md:hidden animate-in fade-in duration-300" 
+                        <div
+                            className="absolute inset-0 bg-black/20 z-30 md:hidden animate-in fade-in duration-300"
                             onClick={() => dispatch(setTab(''))}
                         />
                         <div className="absolute bottom-0 left-0 right-0 z-40 bg-white md:hidden animate-in slide-in-from-bottom duration-300 h-[80%] rounded-t-3xl shadow-2xl overflow-hidden">
                             <div className="flex flex-col h-full bg-[#f0f1f2]">
                                 <div className="h-14 flex items-center justify-between px-6 border-b border-black/5 bg-white shrink-0">
                                     <span className="text-xs font-black uppercase tracking-widest">{activeTab}</span>
-                                    <button 
+                                    <button
                                         onClick={() => dispatch(setTab(''))}
                                         className="p-2 hover:bg-black/5 rounded-full flex items-center gap-1.5 text-black/60"
                                     >
@@ -234,7 +236,7 @@ export default function CustomizerApp({ product, configResult }: { product: any,
             {/* Mobile Bottom Navigation */}
             {isMobile && <MobileNav />}
 
-            <ConfirmDialog 
+            <ConfirmDialog
                 isOpen={showExitDialog}
                 title="Unsaved Changes"
                 message="You have unsaved design changes. Are you sure you want to leave?"

@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import {
     Undo2,
     Redo2,
@@ -13,7 +12,9 @@ import {
     Copy,
     ClipboardPaste,
     Files,
-    Save
+    Save,
+    Package,
+    Shirt
 } from "lucide-react";
 
 const SHORTCUTS = [
@@ -21,9 +22,11 @@ const SHORTCUTS = [
     { key: 'Ctrl + Y / Shift + Z', label: 'Redo', icon: Redo2, category: 'canvas' },
     { key: 'G', label: 'Toggle Grid', icon: Grid, category: 'canvas' },
     { key: 'F', label: 'Fit to Screen', icon: Maximize2, category: 'canvas' },
-    { key: '1', label: 'Upload Panel', icon: Upload, category: 'nav' },
-    { key: '2', label: 'Text Panel', icon: Type, category: 'nav' },
-    { key: '3', label: 'Shortcuts Panel', icon: Keyboard, category: 'nav' },
+    { key: 'M', label: 'Mockup Panel', icon: Shirt, category: 'nav' },
+    { key: 'U', label: 'Upload Panel', icon: Upload, category: 'nav' },
+    { key: 'T', label: 'Text Panel', icon: Type, category: 'nav' },
+    { key: 'K', label: 'Shortcuts Panel', icon: Keyboard, category: 'nav' },
+    { key: 'P', label: 'Products Panel', icon: Package, category: 'nav' },
     { key: 'Del / Backspace', label: 'Delete Item', icon: Trash2, category: 'edit' },
     { key: 'Ctrl + C', label: 'Copy Item', icon: Copy, category: 'edit' },
     { key: 'Ctrl + V', label: 'Paste Item', icon: ClipboardPaste, category: 'edit' },
@@ -49,7 +52,7 @@ const ShortcutsPanel = () => {
                 {['canvas', 'nav', 'edit'].map((category) => {
                     const filteredShortcuts = SHORTCUTS.filter(s => s.category === category);
                     if (filteredShortcuts.length === 0) return null;
-                    
+
                     return (
                         <div key={category} className="space-y-2">
                             <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-1">
