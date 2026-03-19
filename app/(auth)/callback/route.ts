@@ -17,31 +17,30 @@ export async function GET(request: Request) {
 
       if (user) {
         try {
-          console.log("Setting user role for user:", user.id);
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/user-role`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userId: user.id,
-                role: "user",
-              }),
-            },
-          );
+          const { db } = await import("@/db");
+          const { userRoles } = await import("@/db/schemas/user-roles.schema");
+          const { eq } = await import("drizzle-orm");
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          // Check if user role already exists
+          const existingRole = await db
+            .select()
+            .from(userRoles)
+            .where(eq(userRoles.userId, user.id))
+            .limit(1);
+
+          if (existingRole.length === 0) {
+            console.log("Setting default 'user' role for new user:", user.id);
+            await db.insert(userRoles).values({
+              userId: user.id,
+              role: "user",
+            });
+          } else {
+            console.log("User already has a role, skipping default role assignment.");
           }
-
-          const data = await response.json();
-          console.log("User role set successfully:", data.message);
-        } catch (apiError) {
+        } catch (dbError) {
           console.error(
-            "Failed to set user role during email verification:",
-            apiError,
+            "Failed to handle user role during auth callback:",
+            dbError,
           );
         }
       }
