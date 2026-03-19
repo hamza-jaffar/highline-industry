@@ -50,12 +50,12 @@ export default function NavBar({ user }: { user?: any }) {
   return (
     <>
       <nav className="fixed top-0 w-full z-100 bg-white border-b border-black/5">
-        <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
+        <div className="mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
-          <AppLogo />
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
+            <AppLogo size={40} />
             {links.map((link) => (
               <Link
                 key={link.name}
@@ -169,8 +169,8 @@ export default function NavBar({ user }: { user?: any }) {
       {/* Search Modal (Precision Look) */}
       <div
         className={`fixed inset-0 z-200 bg-white/95 backdrop-blur-sm transition-opacity duration-300 flex flex-col items-center pt-32 px-6 ${searchOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
           }`}
       >
         <button
