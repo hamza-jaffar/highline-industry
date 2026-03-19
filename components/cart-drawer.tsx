@@ -17,6 +17,10 @@ export default function CartDrawer() {
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
   useEffect(() => {
+    refreshCart();
+  }, []);
+
+  useEffect(() => {
     if (isOpen) {
       refreshCart();
     }

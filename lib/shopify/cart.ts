@@ -12,6 +12,7 @@ export async function createCart(lines: { variantId: string, quantity: number, p
         draftOrder {
           id
           invoiceUrl
+          currencyCode
         }
         userErrors {
           field
@@ -21,12 +22,17 @@ export async function createCart(lines: { variantId: string, quantity: number, p
     }
   `;
   
+  // Note: For variants, we MUST used priceOverride (MoneyInput).
+  // For custom line items (without variantId), we use originalUnitPriceWithCurrency.
   const variables = {
     input: {
       lineItems: lines.map(line => ({
         variantId: line.variantId,
         quantity: line.quantity,
-        originalUnitPrice: line.price, // Custom price support
+        priceOverride: line.price ? {
+          amount: line.price,
+          currencyCode: "USD" // Default to USD for now, or we could fetch it
+        } : undefined,
         customAttributes: line.attributes
       }))
     }
@@ -40,7 +46,8 @@ export async function createCart(lines: { variantId: string, quantity: number, p
   
   return {
     id: data.draftOrder.id,
-    checkoutUrl: data.draftOrder.invoiceUrl
+    checkoutUrl: data.draftOrder.invoiceUrl,
+    currencyCode: data.draftOrder.currencyCode
   };
 }
 
@@ -59,6 +66,7 @@ export async function getCart(cartId: string) {
               variant {
                 id
                 title
+                price
                 product {
                   title
                   handle
@@ -86,6 +94,7 @@ export async function getCart(cartId: string) {
   return {
     id: draftOrder.id,
     checkoutUrl: draftOrder.invoiceUrl,
+    currencyCode: draftOrder.currencyCode,
     lines: {
       edges: draftOrder.lineItems.edges.map((edge: any) => ({
         node: {
@@ -94,12 +103,13 @@ export async function getCart(cartId: string) {
           merchandise: {
             id: edge.node.variant?.id,
             title: edge.node.variant?.title,
-            product: edge.node.variant?.product
+            product: edge.node.variant?.product,
+            price: edge.node.variant?.price
           },
           attributes: edge.node.customAttributes,
           cost: {
             totalAmount: {
-              amount: (parseFloat(edge.node.originalUnitPrice) * edge.node.quantity).toString(),
+              amount: (parseFloat(edge.node.originalUnitPrice) * edge.node.quantity).toFixed(2),
               currencyCode: draftOrder.currencyCode
             }
           }
@@ -123,17 +133,25 @@ export async function addToCart(cartId: string, lines: { variantId: string, quan
   const currentCart = await getCart(cartId);
   if (!currentCart) throw new Error("Cart not found");
 
+  const currencyCode = currentCart.currencyCode || "USD";
+
   const currentLines = currentCart.lines.edges.map((edge: any) => ({
     variantId: edge.node.merchandise.id,
     quantity: edge.node.quantity,
-    originalUnitPrice: (parseFloat(edge.node.cost.totalAmount.amount) / edge.node.quantity).toFixed(2),
+    priceOverride: {
+      amount: (parseFloat(edge.node.cost.totalAmount.amount) / edge.node.quantity).toFixed(2),
+      currencyCode: currencyCode
+    },
     customAttributes: edge.node.attributes
   }));
 
   const newLines = lines.map(line => ({
     variantId: line.variantId,
     quantity: line.quantity,
-    originalUnitPrice: line.price,
+    priceOverride: line.price ? {
+      amount: line.price,
+      currencyCode: currencyCode
+    } : undefined,
     customAttributes: line.attributes
   }));
 
@@ -170,12 +188,17 @@ export async function removeFromCart(cartId: string, lineIds: string[]) {
   const currentCart = await getCart(cartId);
   if (!currentCart) throw new Error("Cart not found");
 
+  const currencyCode = currentCart.currencyCode || "USD";
+
   const linesToKeep = currentCart.lines.edges
     .filter((edge: any) => !lineIds.includes(edge.node.id))
     .map((edge: any) => ({
       variantId: edge.node.merchandise.id,
       quantity: edge.node.quantity,
-      originalUnitPrice: (parseFloat(edge.node.cost.totalAmount.amount) / edge.node.quantity).toFixed(2),
+      priceOverride: {
+        amount: (parseFloat(edge.node.cost.totalAmount.amount) / edge.node.quantity).toFixed(2),
+        currencyCode: currencyCode
+      },
       customAttributes: edge.node.attributes
     }));
 
@@ -204,12 +227,17 @@ export async function updateCartLines(cartId: string, lines: { id: string, quant
   const currentCart = await getCart(cartId);
   if (!currentCart) throw new Error("Cart not found");
 
+  const currencyCode = currentCart.currencyCode || "USD";
+
   const updatedLines = currentCart.lines.edges.map((edge: any) => {
     const update = lines.find(l => l.id === edge.node.id);
     return {
       variantId: edge.node.merchandise.id,
       quantity: update ? update.quantity : edge.node.quantity,
-      originalUnitPrice: (parseFloat(edge.node.cost.totalAmount.amount) / edge.node.quantity).toFixed(2),
+      priceOverride: {
+        amount: (parseFloat(edge.node.cost.totalAmount.amount) / edge.node.quantity).toFixed(2),
+        currencyCode: currencyCode
+      },
       customAttributes: edge.node.attributes
     };
   });
