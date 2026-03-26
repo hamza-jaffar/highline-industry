@@ -1,7 +1,6 @@
 import { getSingleProduct } from "@/lib/shopify/product.query"
 import { notFound } from "next/navigation";
 import { getCustomizerConfig } from "@/app/actions/admin";
-import StoreProvider from "@/lib/store/provider";
 import CustomizerApp from "./customizer-app";
 
 const CustomizerPage = async (props: {
@@ -18,9 +17,7 @@ const CustomizerPage = async (props: {
     ]);
 
     return (
-        <StoreProvider>
-            <CustomizerApp product={product} configResult={configResult} />
-        </StoreProvider>
+        <CustomizerApp product={product} configResult={configResult} />
     )
 }
 

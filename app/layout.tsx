@@ -12,6 +12,7 @@ import {
 } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import StoreProvider from "@/lib/store/provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
@@ -39,7 +40,9 @@ export default function RootLayout({
         className={`${inter.variable} ${sora.variable} ${permanentMarker.variable} ${dancingScript.variable} ${bungee.variable} ${pressStart2P.variable} ${bebasNeue.variable} ${monoton.variable} ${fascinate.variable} font-sans antialiased bg-surface text-[#111] min-h-screen selection:bg-black selection:text-white relative`}
         suppressHydrationWarning
       >
-        {children}
+        <StoreProvider>
+          {children}
+        </StoreProvider>
         <Toaster position="top-center" toastOptions={{
           style: {
             background: 'white',
