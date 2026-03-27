@@ -15,7 +15,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <DashboardShell user={user}>
+    <DashboardShell role="user" user={user}>
       {children}
     </DashboardShell>
   );

@@ -10,9 +10,17 @@ if (!connectionString) {
 // Configure connection pool for better production performance
 const pool = new Pool({
   connectionString,
-  max: process.env.NODE_ENV === 'production' ? 10 : 5, // Limit connections in production
+  max: process.env.NODE_ENV === 'production' ? 20 : 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000, // Increased timeout
+  ssl: {
+    rejectUnauthorized: false // Required for some Supabase connections
+  }
+});
+
+// Add error listener to catch connection issues
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
 });
 
 export const db = drizzle(pool);

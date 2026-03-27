@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import FactoryLayout from "./factory-layout";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { createServerClient } from "@/lib/supabase/server-client";
 import { getUserRole } from "@/lib/queries/userRole";
 
@@ -19,5 +19,10 @@ export default async function Layout({
 
   if (role !== "factory") redirect(`/dashboard/${role}`);
 
-  return <FactoryLayout>{children}</FactoryLayout>;
+  return (
+    <DashboardShell role="factory" user={user}>
+      {children}
+    </DashboardShell>
+  );
 }
+
