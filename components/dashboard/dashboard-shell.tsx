@@ -63,7 +63,8 @@ export function DashboardShell({ children, role, user }: DashboardShellProps) {
   const SideNav = ({ mobile = false }) => (
     <nav className={`space-y-1 ${mobile ? "px-2" : "px-4"}`}>
       {navItems.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const isHome = item.href === `/dashboard/${role}`;
+        const isActive = isHome ? pathname === item.href : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}
