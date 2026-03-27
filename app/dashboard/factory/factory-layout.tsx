@@ -3,34 +3,30 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, FolderTree, LayoutDashboard, Settings, X, Menu, ChevronLeft, Factory } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, User, X, Menu, ChevronLeft, Factory } from "lucide-react";
 import Image from "next/image";
 import Breadcrumb from "@/components/Breadcrumb";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function FactoryLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Load sidebar state from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('admin-sidebar-collapsed');
+    const saved = localStorage.getItem('factory-sidebar-collapsed');
     if (saved !== null) {
       setSidebarCollapsed(JSON.parse(saved));
     }
   }, []);
 
-  // Save sidebar state to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('admin-sidebar-collapsed', JSON.stringify(sidebarCollapsed));
+    localStorage.setItem('factory-sidebar-collapsed', JSON.stringify(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
   const navItems = [
-    { label: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
-    { label: "Products", href: "/dashboard/admin/products", icon: Package },
-    { label: "Collections", href: "/dashboard/admin/collections", icon: FolderTree },
-    { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
-    { label: "Factory", href: "/dashboard/admin/factory", icon: Factory },
+    { label: "Overview", href: "/dashboard/factory", icon: LayoutDashboard },
+    { label: "Orders", href: "/dashboard/factory/orders", icon: ShoppingCart },
+    { label: "Factory Profile", href: "/dashboard/factory/profile", icon: Factory },
   ];
 
   const SideNav = ({ mobile = false }) => (
@@ -43,8 +39,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             href={item.href}
             onClick={() => mobile && setMobileMenuOpen(false)}
             className={`flex items-center gap-3 p-2 rounded-md text-sm font-medium transition-all duration-200 ${isActive
-              ? "bg-linear-to-r from-black to-gray-900 text-white shadow-lg"
-              : "text-muted hover:text-black hover:bg-linear-to-r hover:from-black/5 hover:to-gray-50"
+              ? "bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg"
+              : "text-muted hover:text-black hover:bg-gradient-to-r hover:from-black/5 hover:to-gray-50"
               } ${sidebarCollapsed && !mobile ? "justify-center px-2" : ""}`}
           >
             <item.icon className="w-4 h-4 shrink-0" />
@@ -56,14 +52,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="flex min-h-screen bg-linear-to-br from-surface to-[#f5f5f5]">
+    <div className="flex min-h-screen bg-gradient-to-br from-surface to-[#f8f9fa]">
       {/* Sidebar Desktop */}
       <aside className={`fixed left-0 top-0 h-full bg-white border-r border-black/10 shadow-premium z-40 transition-all duration-300 ${sidebarCollapsed ? "w-16" : "w-64"
         } hidden lg:block`}>
         <div className={`p-6 border-b border-black/5 ${sidebarCollapsed ? "px-3" : ""}`}>
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
-              <Link href="/" className="text-xl font-sora font-bold tracking-tight text-black flex items-center gap-2">
+              <Link href="/" className="text-xl font-sora font-bold tracking-tight text-blue-950 flex items-center gap-2">
                 <Image src="/logo.png" alt="Logo" width={28} height={28} />
                 HIGHLINE
               </Link>
@@ -78,13 +74,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
         <div className="py-4">
+          <span className={`px-6 text-xs font-bold text-muted uppercase tracking-wider mb-2 block ${sidebarCollapsed ? "hidden" : ""}`}>Factory Portal</span>
           <SideNav />
         </div>
       </aside>
 
       {/* Mobile Header */}
       <header className="fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-xl border-b border-black/10 shadow-premium z-50 flex lg:hidden items-center justify-between px-6">
-        <Link href="/" className="text-lg font-sora font-bold tracking-tight text-black flex items-center gap-2">
+        <Link href="/" className="text-lg font-sora font-bold tracking-tight text-blue-950 flex items-center gap-2">
           <Image src="/logo.png" alt="Logo" width={24} height={24} />
           HIGHLINE
         </Link>
@@ -101,7 +98,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-60 lg:hidden" onClick={() => setMobileMenuOpen(false)}>
           <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-elevated p-6" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-8">
-              <span className="text-xs font-bold text-muted uppercase tracking-wider">Navigation</span>
+              <span className="text-xs font-bold text-muted uppercase tracking-wider">Factory Menu</span>
               <button onClick={() => setMobileMenuOpen(false)}><X className="w-5 h-5" /></button>
             </div>
             <SideNav mobile />
@@ -112,9 +109,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main Content */}
       <main className={`flex-1 min-w-0 overflow-x-hidden transition-all duration-300 ${sidebarCollapsed ? "lg:pl-16" : "lg:pl-64"
         }`}>
-        <div className="min-h-screen pt-24 lg:pt-8 pb-20 px-2 max-w-7xl mx-auto w-full">
+        <div className="min-h-screen pt-24 lg:pt-8 pb-20 px-4 max-w-7xl mx-auto w-full">
           <Breadcrumb />
-          <div className="bg-white rounded-2xl shadow-premium border border-black/5 p-3 min-h-[calc(100vh-12rem)]">
+          <div className="bg-white rounded-2xl shadow-premium border border-black/5 p-6 min-h-[calc(100vh-12rem)] shadow-inner">
             {children}
           </div>
         </div>
