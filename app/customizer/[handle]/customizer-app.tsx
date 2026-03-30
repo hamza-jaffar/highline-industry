@@ -27,7 +27,7 @@ import CustomizerHeader from "./header";
 import CenterCanvas from "./canvas";
 import MobileNav from "./mobile-nav";
 
-export default function CustomizerApp({ product, configResult }: { product: any, configResult: any }) {
+export default function CustomizerApp({ product, configResult, initialDesign }: { product: any, configResult: any, initialDesign?: any }) {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -43,50 +43,37 @@ export default function CustomizerApp({ product, configResult }: { product: any,
         if (configResult.success && configResult.data && product) {
             dispatch(initCustomizer({ config: configResult.data, product }));
 
-            // Recovery logic
-            // Recovery / Loading logic
-            const pendingDesign = sessionStorage.getItem('pending_design');
-
-            if (designId) {
-                // Fetch design from API
-                fetch(`/api/user-designs?id=${designId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success && data.design) {
-                            try {
-                                const elements = JSON.parse(data.design.elements);
-                                dispatch(loadDesign(elements));
-                                dispatch(setCurrentDesignId(data.design.id));
-                                if (data.design.color) {
-                                    // Optionally set color if different
-                                }
-                                toast.success("Design loaded successfully");
-                            } catch (e) {
-                                console.error("Error parsing design elements:", e);
-                                toast.error("Corrupted design data");
-                            }
-                        } else {
-                            toast.error("Failed to load design");
-                        }
-                    })
-                    .catch(e => {
-                        console.error("Error loading design:", e);
-                        toast.error("Error loading design");
-                    });
-            } else if (pendingDesign) {
+            // Initial loading from server or recovery logic
+            if (initialDesign) {
                 try {
-                    const parsed = JSON.parse(pendingDesign);
-                    if (parsed.productId === product.id) {
-                        dispatch(loadDesign(parsed.elements));
-                        sessionStorage.removeItem('pending_design');
-                        toast.success("Unsaved design restored");
-                    }
+                    const elements = typeof initialDesign.elements === 'string' 
+                        ? JSON.parse(initialDesign.elements) 
+                        : initialDesign.elements;
+                    dispatch(loadDesign(elements));
+                    dispatch(setCurrentDesignId(initialDesign.id));
+                    toast.success("Design loaded successfully");
                 } catch (e) {
-                    console.error("Failed to recover design", e);
+                    console.error("Error parsing initial design elements:", e);
+                    toast.error("Corrupted design data");
+                }
+            } else {
+                // Recovery logic for guest/unsaved designs
+                const pendingDesign = sessionStorage.getItem('pending_design');
+                if (pendingDesign) {
+                    try {
+                        const parsed = JSON.parse(pendingDesign);
+                        if (parsed.productId === product.id) {
+                            dispatch(loadDesign(parsed.elements));
+                            sessionStorage.removeItem('pending_design');
+                            toast.success("Unsaved design restored");
+                        }
+                    } catch (e) {
+                        console.error("Failed to recover design", e);
+                    }
                 }
             }
         }
-    }, [configResult, product, dispatch, designId]);
+    }, [configResult, product, dispatch, initialDesign]);
 
     // Keyboard shortcuts
     useEffect(() => {
