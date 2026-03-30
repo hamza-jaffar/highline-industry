@@ -13,6 +13,7 @@ import { signout } from "@/app/actions/signup.actions";
 
 const adminNav = [
   { label: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+  { label: "Orders", href: "/dashboard/admin/orders", icon: ShoppingCart },
   { label: "Products", href: "/dashboard/admin/products", icon: Package },
   { label: "Collections", href: "/dashboard/admin/collections", icon: FolderTree },
   { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
@@ -27,6 +28,7 @@ const factoryNav = [
 
 const userNav = [
   { label: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
+  { label: "Orders", href: "/dashboard/user/orders", icon: ShoppingCart },
 ];
 
 const portalNames = {

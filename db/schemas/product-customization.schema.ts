@@ -1,4 +1,5 @@
 import { boolean, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const ProductViews = pgTable("product_views", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -52,3 +53,49 @@ export const cartItems = pgTable("cart_items", {
   size: text("size"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const orders = pgTable("orders", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  shopifyOrderId: text("shopify_order_id").unique(),
+  shopifyOrderNumber: text("shopify_order_number"),
+  totalPrice: integer("total_price").notNull(), // in cents
+  currency: text("currency").default("USD"),
+  status: text("status").default("Pending").notNull(), // Pending, Confirmed, Cancelled, Completed
+  customerEmail: text("customer_email"),
+  customerName: text("customer_name"),
+  shippingAddress: text("shipping_address"), // Simplified JSON or string
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id").notNull().references(() => orders.id, { onDelete: 'cascade' }),
+  productId: text("product_id").notNull(),
+  variantId: text("variant_id").notNull(),
+  designId: uuid("design_id").references(() => userDesigns.id),
+  quantity: integer("quantity").notNull().default(1),
+  price: integer("price").notNull(), // unit price in cents
+  isDesigned: boolean("is_designed").default(false),
+  customizationDetails: text("customization_details"), // JSON string if needed additionally
+  productTitle: text("product_title"),
+  variantTitle: text("variant_title"),
+  color: text("color"),
+  size: text("size"),
+});
+
+export const orderRelations = relations(orders, ({ many }) => ({
+  items: many(orderItems),
+}));
+
+export const orderItemRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  design: one(userDesigns, {
+    fields: [orderItems.designId],
+    references: [userDesigns.id],
+  }),
+}));
