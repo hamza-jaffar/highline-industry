@@ -1,11 +1,20 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+import * as productCustomizationSchema from './schemas/product-customization.schema';
+import * as factorySchema from './schemas/factory.schema';
+import * as userRolesSchema from './schemas/user-roles.schema';
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error('DATABASE_URL is not set in the environment variables.');
 }
+
+const schema = {
+  ...productCustomizationSchema,
+  ...factorySchema,
+  ...userRolesSchema,
+};
 
 // Configure connection pool for better production performance
 const pool = new Pool({
@@ -23,4 +32,4 @@ pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
 });
 
-export const db = drizzle(pool);
+export const db = drizzle(pool, { schema });
