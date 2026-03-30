@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       shippingAddress: shippingAddress,
     }).onConflictDoNothing({ target: orders.shopifyOrderId }).returning();
 
-    let orderIdToUse = insertedOrder?.id;
+    let orderIdToUse: string | undefined = insertedOrder?.id;
     if (!orderIdToUse) {
       const existing = await db.query.orders.findFirst({
         where: eq(orders.shopifyOrderId, shopifyOrderId)
