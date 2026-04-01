@@ -9,7 +9,7 @@ export default async function CollectionsPage() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Page Header */}
-      <div className="pt-32 px-6 md:px-16 max-w-screen-xl mx-auto">
+      <div className="pt-12 px-6 md:px-16 max-w-screen-xl mx-auto">
         <div className="border-b border-black/10 pb-8 mb-14">
           <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted mb-2">
             Highline Industry

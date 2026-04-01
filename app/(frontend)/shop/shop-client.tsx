@@ -214,9 +214,9 @@ function ShopClientInner({
 
   return (
     <>
-      <div className="flex flex-col w-full min-h-screen pt-24 pb-20 px-6 max-w-7xl mx-auto">
+      <div className="flex flex-col w-full min-h-screen pb-20 px-6 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 mt-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 mt-6">
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#c0c0c0]">
               <Link href="/shop" className="hover:text-black transition-colors">

@@ -4,36 +4,36 @@ import { CheckCircle2, Award, Sparkles, Zap, Globe } from "lucide-react";
 const FEATURES = [
   {
     icon: Award,
-    title: "Premium Blanks",
-    desc: "We exclusively source and manufacture high-GSM, luxury-grade blanks that feel expensive and last longer."
+    title: "Pro-Level Performance",
+    desc: "Engineered with advanced materials to keep you cool, dry, and focused during your toughest workouts."
   },
   {
     icon: Sparkles,
-    title: "Eco-Friendly Tech",
-    desc: "Our printing and dyeing processes use 70% less water and OEKO-TEX certified sustainable inks."
+    title: "Durable Materials",
+    desc: "Built to withstand the most intense training sessions. Our gear lasts longer and performs better."
   },
   {
     icon: Zap,
-    title: "Rapid Fulfillment",
-    desc: "From order placement to worldwide shipping in under 72 hours. Speed that keeps your customers coming back."
+    title: "Fast Shipping",
+    desc: "Quick processing and expedited delivery options so you never have to wait for your next game."
   },
   {
     icon: Globe,
-    title: "Global Supply Chain",
-    desc: "Manage production across multiple international hubs from a single, unified digital dashboard."
+    title: "Worldwide Delivery",
+    desc: "We ship our premium sports gear to athletes everywhere, ensuring you stay equipped wherever you are."
   }
 ];
 
 export default function Features() {
   return (
-    <section className="py-24 px-6 md:px-12 bg-white">
+    <section className="py-12 px-6 md:px-12 bg-white">
       <div className="max-w-7xl mx-auto space-y-24">
         <div className="max-w-3xl space-y-6">
           <h2 className="text-4xl md:text-6xl font-sora font-semibold tracking-tight text-[#111]">
-            We bring your designs to life <br /><span className="text-black/30">with care and innovation</span>
+            Unleash your true potential <br /><span className="text-black/30">with elite equipment</span>
           </h2>
           <p className="text-lg text-black/60 font-inter leading-relaxed">
-            Highline isn't just a platform; it's your personal factory infrastructure. We've removed the complexity from apparel manufacturing so you can focus on building your brand.
+            Highline provides gear that works as hard as you do. We've optimized every detail so you can focus entirely on achieving peak athletic performance.
           </p>
         </div>
 
@@ -64,11 +64,11 @@ export default function Features() {
                <div className="p-8 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 space-y-4">
                   <h4 className="text-2xl font-bold text-white">Quality worth wearing</h4>
                   <p className="text-white/80 text-sm leading-relaxed">
-                    Every garment undergoes a 12-point inspection before it leaves our facility. No loose threads, no alignment issues, just perfection.
+                    Every piece of gear undergoes rigorous testing before it makes it to you. Designed for champions, tested for the long run.
                   </p>
                   <div className="flex items-center gap-2 pt-2">
-                     <CheckCircle2 className="w-5 h-5 text-green-400" />
-                     <span className="text-xs font-bold text-white uppercase tracking-widest">Certified Premium Facility</span>
+                     <CheckCircle2 className="w-5 h-5 text-white" />
+                     <span className="text-xs font-bold text-white uppercase tracking-widest">Certified Pro Gear</span>
                   </div>
                </div>
             </div>

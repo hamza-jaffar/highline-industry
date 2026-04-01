@@ -42,9 +42,8 @@ export default function NavBar({ user }: { user?: any }) {
 
   const links = [
     { name: "New Arrivals", href: "/shop?sort=new" },
-    { name: "Shop", href: "/shop" },
-    { name: "Collection", href: "/collections" },
-    { name: "About", href: "/about" },
+    { name: "Equipment", href: "/shop" },
+    { name: "Apparel", href: "/collections" },
   ];
 
   return (
@@ -199,7 +198,7 @@ export default function NavBar({ user }: { user?: any }) {
             <span className="text-xs font-semibold text-black/40 uppercase tracking-wider">
               Suggestions:
             </span>
-            {["T-Shirts", "Outerwear", "Heavyweight", "Accessories"].map(
+            {["Footwear", "Apparel", "Equipment", "Accessories"].map(
               (term) => (
                 <button
                   key={term}

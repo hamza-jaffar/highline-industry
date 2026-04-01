@@ -49,15 +49,15 @@ const FALLBACK_PRODUCTS: Product[] = [
 
 export default function ProductShowcase({ products = FALLBACK_PRODUCTS }: { products?: Product[] }) {
   return (
-    <section className="py-24 px-6 md:px-12 bg-[#fcfcfc]">
+    <section className="py-12 px-6 md:px-12 bg-[#fcfcfc]">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
           <div className="space-y-4">
             <h2 className="text-3xl md:text-5xl font-sora font-semibold tracking-tight text-[#111]">
-              Beautiful bestselling blanks, <br /><span className="text-black/30">ready for your vision</span>
+              Top performance gear, <br /><span className="text-black/30">ready for action</span>
             </h2>
             <p className="text-black/50 font-inter max-w-xl">
-              Curated essentials engineered for high-performance printing and maximum comfort. Tested to retail standards.
+              Engineered for maximum athletic performance and durability. Built to elite standards for serious athletes.
             </p>
           </div>
           <Link 
@@ -69,9 +69,9 @@ export default function ProductShowcase({ products = FALLBACK_PRODUCTS }: { prod
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="flex overflow-x-auto gap-6 sm:gap-8 pb-8 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {products.map((product) => (
-            <Link key={product.id} href={`/product/${product.handle}`} className="group relative">
+            <Link key={product.id} href={`/product/${product.handle}`} className="group relative flex-none w-[280px] sm:w-[320px] lg:w-[calc(25%-1.5rem)] snap-start">
               <div className="aspect-3/4 rounded-2xl overflow-hidden bg-white border border-black/5 shadow-sm group-hover:shadow-premium transition-all relative">
                 <Image
                   src={product.image}
@@ -101,7 +101,7 @@ export default function ProductShowcase({ products = FALLBACK_PRODUCTS }: { prod
                 </h3>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-black/50">From ${product.price}</p>
-                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">#H-00{product.id}</p>
+                  {/* <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">#H-00{product.id}</p> */}
                 </div>
               </div>
             </Link>
