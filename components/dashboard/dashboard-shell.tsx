@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   X, Menu, ChevronLeft, LogOut, 
-  LayoutDashboard, Package, FolderTree, Settings, Factory as FactoryIcon, ShoppingCart 
+  LayoutDashboard, Package, FolderTree, Settings, Factory as FactoryIcon, ShoppingCart, Users, DollarSign 
 } from "lucide-react";
 import Image from "next/image";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -16,6 +16,7 @@ const adminNav = [
   { label: "Orders", href: "/dashboard/admin/orders", icon: ShoppingCart },
   { label: "Products", href: "/dashboard/admin/products", icon: Package },
   { label: "Collections", href: "/dashboard/admin/collections", icon: FolderTree },
+  { label: "Affiliates", href: "/dashboard/admin/affiliates", icon: Users },
   { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
   { label: "Factory", href: "/dashboard/admin/factory", icon: FactoryIcon },
 ];
@@ -29,17 +30,26 @@ const factoryNav = [
 const userNav = [
   { label: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
   { label: "Orders", href: "/dashboard/user/orders", icon: ShoppingCart },
+  { label: "Affiliate Portal", href: "/dashboard/affiliate", icon: Users },
+];
+
+const affiliateNav = [
+  { label: "Dashboard", href: "/dashboard/affiliate", icon: LayoutDashboard },
+  { label: "Referrals", href: "/dashboard/affiliate/referrals", icon: Users },
+  { label: "Payouts", href: "/dashboard/affiliate/payouts", icon: DollarSign },
+  { label: "Assigned Products", href: "/dashboard/affiliate/products", icon: Package },
 ];
 
 const portalNames = {
   admin: "Admin Panel",
   factory: "Factory Portal",
   user: "User Account",
+  affiliate: "Affiliate Portal",
 };
 
 export interface DashboardShellProps {
   children: React.ReactNode;
-  role: "admin" | "factory" | "user";
+  role: "admin" | "factory" | "user" | "affiliate";
   user?: { email?: string };
 }
 
@@ -48,7 +58,11 @@ export function DashboardShell({ children, role, user }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const navItems = role === "admin" ? adminNav : role === "factory" ? factoryNav : userNav;
+  const navItems = 
+    role === "admin" ? adminNav : 
+    role === "factory" ? factoryNav : 
+    role === "affiliate" ? affiliateNav : 
+    userNav;
   const portalName = portalNames[role] || "Dashboard";
 
   useEffect(() => {
@@ -62,9 +76,9 @@ export function DashboardShell({ children, role, user }: DashboardShellProps) {
     localStorage.setItem(`${portalName}-sidebar-collapsed`, JSON.stringify(sidebarCollapsed));
   }, [sidebarCollapsed, portalName]);
 
-  const SideNav = ({ mobile = false }) => (
+  const SideNav = ({ mobile = false }: { mobile?: boolean }) => (
     <nav className={`space-y-1 ${mobile ? "px-2" : "px-4"}`}>
-      {navItems.map((item) => {
+      {navItems.map((item: any) => {
         const isHome = item.href === `/dashboard/${role}`;
         const isActive = isHome ? pathname === item.href : pathname.startsWith(item.href);
         return (

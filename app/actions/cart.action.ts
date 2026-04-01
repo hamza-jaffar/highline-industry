@@ -23,6 +23,7 @@ export async function addItemToCart(params: {
   try {
     const cookieStore = await cookies();
     let cartId = cookieStore.get(CART_ID_COOKIE)?.value;
+    const affiliateId = cookieStore.get("highline_affiliate_id")?.value;
 
     const supabase = await createServerClient();
     const { data: { session } } = await supabase.auth.getSession();
@@ -35,6 +36,7 @@ export async function addItemToCart(params: {
     }
     if (params.color) attributes.push({ key: "Color", value: params.color });
     if (params.size) attributes.push({ key: "Size", value: params.size });
+    if (affiliateId) attributes.push({ key: "_affiliate_id", value: affiliateId });
 
     const line = {
       variantId: params.variantId,

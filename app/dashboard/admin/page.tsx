@@ -93,6 +93,25 @@ export default async function AdminDashboard() {
             <div className="w-2 h-2 rounded-full bg-black/20 group-hover:bg-black/40 transition-colors" />
           </div>
         </Link>
+        
+        <Link href="/dashboard/admin/affiliates" className="group p-8 bg-linear-to-br from-white to-gray-50 border border-black/5 rounded-2xl shadow-premium hover:shadow-elevated transition-all duration-300 hover:-translate-y-1">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-14 h-14 bg-linear-to-br from-black to-gray-800 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+              <Users className="w-7 h-7 text-white" />
+            </div>
+            <Activity className="w-5 h-5 text-black/20 group-hover:text-black/40 transition-colors" />
+          </div>
+          <h3 className="text-2xl font-sora font-bold text-transparent mb-2 group-hover:text-black/80 transition-colors">
+            Affiliate Management
+          </h3>
+          <p className="text-muted text-base leading-relaxed">
+            Manage your partner network, approve applications, and track referral performance.
+          </p>
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted group-hover:text-black/70 transition-colors">
+            <span>Manage Network</span>
+            <div className="w-2 h-2 rounded-full bg-black/20 group-hover:bg-black/40 transition-colors" />
+          </div>
+        </Link>
       </div>
 
       {/* Recent Activity */}

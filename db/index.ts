@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import * as productCustomizationSchema from './schemas/product-customization.schema';
 import * as factorySchema from './schemas/factory.schema';
 import * as userRolesSchema from './schemas/user-roles.schema';
+import * as affiliateSchema from './schemas/affiliate.schema';
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -14,6 +15,7 @@ const schema = {
   ...productCustomizationSchema,
   ...factorySchema,
   ...userRolesSchema,
+  ...affiliateSchema,
 };
 
 // Configure connection pool for better production performance
