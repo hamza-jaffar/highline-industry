@@ -9,7 +9,6 @@ export default function ProductPageClient({ product, images }: { product: any; i
 
   useEffect(() => {
     if (!selectedVariant && product.variants?.edges?.length) {
-      // initialize with first variant if not set
       setSelectedVariant(product.variants.edges[0]?.node);
     }
   }, [selectedVariant, product.variants]);
