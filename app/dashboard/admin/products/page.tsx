@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import ConfirmDialog from "@/components/admin/confirm-dialog";
+import Heading from "@/components/ui/heading";
 
 function ProductsAdminPageInner() {
   const router = useRouter();
@@ -165,14 +166,11 @@ function ProductsAdminPageInner() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-sora font-semibold text-[#111]">
-            Products
-          </h1>
-          <p className="text-muted text-sm">
-            Manage your catalog and inventory.
-          </p>
-        </div>
+
+        <Heading
+          title="Products"
+          description="Manage your catalog and inventory."
+        />
 
         <Link
           href="/dashboard/admin/products/new"
@@ -366,8 +364,8 @@ function ProductsAdminPageInner() {
                         <td className="px-6 py-4 text-center">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${node.status === "ACTIVE"
-                                ? "bg-green-100 text-green-700 border border-green-200"
-                                : "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                              ? "bg-green-100 text-green-700 border border-green-200"
+                              : "bg-yellow-100 text-yellow-700 border border-yellow-200"
                               }`}
                           >
                             {node.status}

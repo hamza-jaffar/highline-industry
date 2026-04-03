@@ -4,10 +4,11 @@ import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { getAdminCollections, deleteCollection } from "@/app/actions/admin";
 import { toast } from "sonner";
-import { Plus, FolderOpen, ChevronRight, ChevronLeft, Loader2, Image as ImageIcon, X, Search, SlidersHorizontal, Trash2, Edit2 } from "lucide-react";
+import { Plus, FolderOpen, ChevronRight, ChevronLeft, X, Search, SlidersHorizontal, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import ConfirmDialog from "@/components/admin/confirm-dialog";
+import Heading from "@/components/ui/heading";
 
 function CollectionsAdminPageInner() {
   const router = useRouter();
@@ -122,10 +123,10 @@ function CollectionsAdminPageInner() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-sora font-semibold text-[#111]">Collections</h1>
-          <p className="text-muted text-sm">Organize your products into groups.</p>
-        </div>
+        <Heading
+          title="Collections"
+          description="Organize your products into groups."
+        />
 
         <Link
           href="/dashboard/admin/collections/new"

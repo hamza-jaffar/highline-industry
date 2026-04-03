@@ -44,6 +44,7 @@ export default function NavBar({ user }: { user?: any }) {
     { name: "New Arrivals", href: "/shop?sort=new" },
     { name: "Equipment", href: "/shop" },
     { name: "Apparel", href: "/collections" },
+    { name: "Affiliates", href: "/affiliate/register" },
   ];
 
   return (
