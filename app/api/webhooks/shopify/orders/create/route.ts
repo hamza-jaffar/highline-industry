@@ -76,14 +76,13 @@ export async function POST(req: Request) {
       const subTotal = itemPrice * quantity;
 
       // Extract Shopify product handle to check overrides (if any)
-      // Usually product tags or handle are not strictly available in raw webhook line items, but we can match via product_id if handle isn't present
       const overrideRecord = assignments.find(a => a.productHandle === item.product_id?.toString() || a.productHandle === item.handle);
       
-      const appliedRate = overrideRecord 
-        ? parseFloat(overrideRecord.overrideCommissionRate as string) / 100 
-        : defaultRate;
-
-      totalCommission += (subTotal * appliedRate);
+      if (overrideRecord) {
+        const appliedRate = parseFloat(overrideRecord.overrideCommissionRate as string) / 100;
+        totalCommission += (subTotal * appliedRate);
+      }
+      // If no override record found, commission for this item remains 0
     }
 
     // 5. Store Logic

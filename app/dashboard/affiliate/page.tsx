@@ -1,5 +1,6 @@
 import { db } from "@/db";
-import { affiliates, affiliateOrders, affiliateCommissions, affiliateClicks } from "@/db/schemas/affiliate.schema";
+import { affiliates, affiliateOrders, affiliateCommissions, affiliateClicks, affiliateProductAssignments } from "@/db/schemas/affiliate.schema";
+import { getProducts } from "@/lib/shopify/product.query";
 import { createServerClient } from "@/lib/supabase/server-client";
 import { eq, sum, count } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -51,7 +52,6 @@ export default async function AffiliateDashboardPage() {
   // Assuming 'paid' sum calculation is similar but needs exact where clauses
   const allCommissions = await db.select().from(affiliateCommissions).where(eq(affiliateCommissions.affiliateId, profile.id));
   const paidCommVal = allCommissions.filter(c => c.status === 'paid').reduce((a, b) => a + Number(b.amount), 0);
-  const totalCommVal = allCommissions.reduce((a, b) => a + Number(b.amount), 0);
 
   const referralLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}?ref=${profile.affiliateCode}`;
 
@@ -63,13 +63,13 @@ export default async function AffiliateDashboardPage() {
           title="Affiliate Portal"
           description={`Welcome back, ${profile.name}. Your base commission is ${profile.defaultCommissionRate}%`}
         />
-        <div className="bg-black/5 p-4 rounded-xl space-y-2 max-w-md w-full">
+        {/* <div className="bg-black/5 p-4 rounded-xl space-y-2 max-w-md w-full">
           <p className="text-xs font-black uppercase tracking-widest text-black/40">Your Referral Link</p>
           <div className="flex items-center gap-2 bg-white rounded-lg p-2 border border-black/10">
             <input type="text" readOnly value={referralLink} className="w-full bg-transparent text-sm font-mono text-black outline-none px-2" />
             <button className="px-4 py-2 bg-black text-white text-[10px] font-black uppercase rounded-md shadow hover:bg-black/80">Copy</button>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Stats Grid */}

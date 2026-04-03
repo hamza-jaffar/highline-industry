@@ -1,11 +1,12 @@
 "use server";
 
 import { db } from "@/db";
-import { affiliates } from "@/db/schemas/affiliate.schema";
+import { affiliates, affiliateClicks, affiliateProductAssignments } from "@/db/schemas/affiliate.schema";
 import { userRoles } from "@/db/schemas/user-roles.schema";
 import { createServerClient } from "@/lib/supabase/server-client";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
+import { cookies } from "next/headers";
 
 export async function registerAffiliateAction(formData: FormData) {
   try {
@@ -108,6 +109,118 @@ export async function updateCommissionAction(affiliateId: string, margin: string
       
     revalidatePath("/dashboard/admin/affiliates");
     return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function logAffiliateClickAction(affiliateCode: string) {
+  try {
+    const affiliateRecord = await db.select().from(affiliates).where(eq(affiliates.affiliateCode, affiliateCode));
+    if (affiliateRecord.length === 0) return { success: false, error: "Invalid affiliate code" };
+
+    const affiliate = affiliateRecord[0];
+    
+    // Log the click
+    await db.insert(affiliateClicks).values({
+      affiliateId: affiliate.id,
+    });
+
+    return { success: true, affiliateId: affiliate.id };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function assignProductToAffiliateAction(affiliateId: string, productHandle: string, rate: string) {
+  try {
+    // Check if assignment already exists
+    const existing = await db.select().from(affiliateProductAssignments)
+      .where(and(
+        eq(affiliateProductAssignments.affiliateId, affiliateId),
+        eq(affiliateProductAssignments.productHandle, productHandle)
+      ));
+    
+    if (existing.length > 0) {
+      return { success: false, error: "Product already assigned to this affiliate" };
+    }
+
+    await db.insert(affiliateProductAssignments).values({
+      affiliateId,
+      productHandle,
+      overrideCommissionRate: rate,
+    });
+
+    revalidatePath("/dashboard/admin/affiliates");
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function unassignProductFromAffiliateAction(assignmentId: string) {
+  try {
+    await db.delete(affiliateProductAssignments).where(eq(affiliateProductAssignments.id, assignmentId));
+    revalidatePath("/dashboard/admin/affiliates");
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function bulkAssignProductsToAffiliateAction(affiliateId: string, productHandles: string[], rate: string) {
+  try {
+    const valuesToInsert = productHandles.map(handle => ({
+      affiliateId,
+      productHandle: handle,
+      overrideCommissionRate: rate,
+    }));
+
+    // In Drizzle, we can do multiple inserts or check for existence first.
+    // For simplicity and since it's a batch, we'll iterate or use a batch insert 
+    // but we need to handle duplicates.
+    
+    for (const handle of productHandles) {
+        // Check if already exists to avoid redundant inserts
+        const existing = await db.select().from(affiliateProductAssignments)
+            .where(and(
+                eq(affiliateProductAssignments.affiliateId, affiliateId),
+                eq(affiliateProductAssignments.productHandle, handle)
+            ));
+        
+        if (existing.length === 0) {
+            await db.insert(affiliateProductAssignments).values({
+                affiliateId,
+                productHandle: handle,
+                overrideCommissionRate: rate,
+            });
+        } else {
+            // Update the rate if it already exists
+            await db.update(affiliateProductAssignments)
+                .set({ overrideCommissionRate: rate })
+                .where(and(
+                    eq(affiliateProductAssignments.affiliateId, affiliateId),
+                    eq(affiliateProductAssignments.productHandle, handle)
+                ));
+        }
+    }
+
+    revalidatePath(`/dashboard/admin/affiliates/${affiliateId}/products`);
+    revalidatePath("/dashboard/admin/affiliates");
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export async function getAffiliateAssignedProducts(affiliateId: string) {
+  try {
+    const assignments = await db.select()
+      .from(affiliateProductAssignments)
+      .where(eq(affiliateProductAssignments.affiliateId, affiliateId))
+      .orderBy(desc(affiliateProductAssignments.createdAt));
+    
+    return { success: true, assignments };
   } catch (err: any) {
     return { success: false, error: err.message };
   }

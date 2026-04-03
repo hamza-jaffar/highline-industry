@@ -3,7 +3,9 @@ import {
   affiliates,
   affiliateOrders,
   affiliateCommissions,
+  affiliateProductAssignments,
 } from "@/db/schemas/affiliate.schema";
+import { getProducts } from "@/lib/shopify/product.query";
 import { createServerClient } from "@/lib/supabase/server-client";
 import { eq, desc } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -12,6 +14,8 @@ import {
   approveAffiliateAction,
   updateCommissionAction,
 } from "@/app/actions/affiliate.action";
+import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 import Heading from "@/components/ui/heading";
 
 export default async function AdminAffiliatesPage() {
@@ -28,6 +32,14 @@ export default async function AdminAffiliatesPage() {
     .select()
     .from(affiliates)
     .orderBy(desc(affiliates.createdAt));
+
+  // Fetch all products for the assignment dropdown
+  const { edges: products } = await getProducts({ first: 100 });
+
+  // Fetch all assignments to match with affiliates
+  const allAssignments = await db
+    .select()
+    .from(affiliateProductAssignments);
 
   return (
     <div className="space-y-8">
@@ -115,33 +127,38 @@ export default async function AdminAffiliatesPage() {
                       </form>
                     )}
                     {aff.status === "approved" && (
-                      <form
-                        action={async (fd: FormData) => {
-                          "use server";
-                          const val = fd.get("margin") as string;
-                          await updateCommissionAction(aff.id, val);
-                        }}
-                        className="inline-flex items-center gap-2"
-                      >
-                        <input
-                          type="number"
-                          name="margin"
-                          defaultValue={parseFloat(
-                            aff.defaultCommissionRate as string,
-                          )}
-                          className="w-16 px-2 py-1 text-xs border border-black/10 rounded focus:outline-none"
-                        />
-                        <span className="text-xs font-bold text-black/50">
-                          %
-                        </span>
-                        <button
-                          type="submit"
-                          className="p-1.5 bg-black/5 text-black hover:bg-black/10 rounded"
-                          title="Update Rate"
+                      <div className="flex items-center gap-2 justify-end">
+                        <Link 
+                          href={`/dashboard/admin/affiliates/${aff.id}/products`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 text-black text-[10px] font-black uppercase rounded hover:bg-black/10"
                         >
-                          <Settings className="w-3 h-3" />
-                        </button>
-                      </form>
+                          <ExternalLink className="w-3 h-3" /> Manage Products
+                        </Link>
+                        <form
+                          action={async (fd: FormData) => {
+                            "use server";
+                            const val = fd.get("margin") as string;
+                            await updateCommissionAction(aff.id, val);
+                          }}
+                          className="inline-flex items-center gap-2"
+                        >
+                          <input
+                            type="number"
+                            name="margin"
+                            defaultValue={parseFloat(
+                              aff.defaultCommissionRate as string,
+                            )}
+                            className="w-16 px-2 py-1 text-xs border border-black/10 rounded focus:outline-none"
+                          />
+                          <button
+                            type="submit"
+                            className="p-1.5 bg-black/5 text-black hover:bg-black/10 rounded"
+                            title="Update Rate"
+                          >
+                            <Settings className="w-3 h-3" />
+                          </button>
+                        </form>
+                      </div>
                     )}
                   </td>
                 </tr>

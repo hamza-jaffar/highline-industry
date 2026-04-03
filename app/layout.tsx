@@ -13,6 +13,8 @@ import {
 import { Toaster } from "sonner";
 import "./globals.css";
 import StoreProvider from "@/lib/store/provider";
+import RefTracker from "@/components/affiliate/ref-tracker";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const sora = Sora({ subsets: ["latin"], variable: "--font-sora", display: "swap" });
@@ -41,6 +43,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <StoreProvider>
+          <Suspense fallback={null}>
+            <RefTracker />
+          </Suspense>
           {children}
         </StoreProvider>
         <Toaster position="top-center" toastOptions={{
