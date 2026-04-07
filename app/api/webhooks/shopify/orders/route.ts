@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { orders, orderItems, userDesigns } from "@/db/schemas/product-customization.schema";
 import { getSupabaseAdmin } from "@/lib/supabase/admin-client";
 import { eq, inArray } from "drizzle-orm";
+import { affiliates, affiliateOrders, affiliateCommissions } from "@/db/schemas/affiliate.schema";
 
 const SHOPIFY_WEBHOOK_SECRET = process.env.SHOPIFY_WEBHOOK_SECRET || "";
 
@@ -111,6 +112,35 @@ export async function POST(req: NextRequest) {
         color: color,
         size: size,
       });
+    }
+
+    // 4. Affiliate Attribution
+    const refCode = payload.note_attributes?.find((attr: any) => attr.name === "_ref")?.value;
+    if (refCode) {
+      const affiliateRecord = await db.select().from(affiliates).where(eq(affiliates.affiliateCode, refCode)).limit(1);
+      const affiliate = affiliateRecord[0];
+
+      if (affiliate && affiliate.status === 'approved') {
+        const orderSubtotal = parseFloat(payload.subtotal_price);
+        const commissionRate = parseFloat(affiliate.defaultCommissionRate as string) / 100;
+        const commissionAmount = (orderSubtotal * commissionRate).toFixed(2);
+
+        const [affOrder] = await db.insert(affiliateOrders).values({
+          affiliateId: affiliate.id,
+          shopifyOrderId: shopifyOrderId,
+          orderSubtotal: orderSubtotal.toString(),
+          customerEmail: customerEmail,
+        }).onConflictDoNothing({ target: affiliateOrders.shopifyOrderId }).returning();
+
+        if (affOrder) {
+          await db.insert(affiliateCommissions).values({
+            affiliateId: affiliate.id,
+            orderId: affOrder.id,
+            amount: commissionAmount,
+            status: 'pending',
+          });
+        }
+      }
     }
 
     return NextResponse.json({ success: true, orderId: orderIdToUse });

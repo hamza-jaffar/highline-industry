@@ -13,10 +13,12 @@ import { Settings, Shield, UserCheck, AlertOctagon } from "lucide-react";
 import {
   approveAffiliateAction,
   updateCommissionAction,
+  processPayoutAction,
 } from "@/app/actions/affiliate.action";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, DollarSign, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import Heading from "@/components/ui/heading";
+import { sum, and } from "drizzle-orm";
 
 export default async function AdminAffiliatesPage() {
   const supabase = await createServerClient();
@@ -40,6 +42,19 @@ export default async function AdminAffiliatesPage() {
   const allAssignments = await db
     .select()
     .from(affiliateProductAssignments);
+
+  // Fetch aggregated pending payouts
+  const pendingPayouts = await db
+    .select({
+      affiliateId: affiliateCommissions.affiliateId,
+      totalPending: sum(affiliateCommissions.amount),
+    })
+    .from(affiliateCommissions)
+    .where(eq(affiliateCommissions.status, "pending"))
+    .groupBy(affiliateCommissions.affiliateId);
+
+  // Map pending payouts for easier lookup
+  const payoutMap = new Map(pendingPayouts.map(p => [p.affiliateId, p.totalPending]));
 
   return (
     <div className="space-y-8">
@@ -163,6 +178,71 @@ export default async function AdminAffiliatesPage() {
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Payout Management */}
+      <section className="bg-white border border-black/10 rounded-xl overflow-hidden shadow-xl border-t-4 border-t-green-500">
+        <div className="bg-green-50/50 p-6 border-b border-black/10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+             <div className="p-2 bg-green-100 text-green-700 rounded-lg">
+                <DollarSign className="w-4 h-4" />
+             </div>
+             <h2 className="text-xs font-black text-black/60 uppercase tracking-widest">
+               Pending Payouts Queue
+             </h2>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-black/5 text-[10px] uppercase tracking-widest font-black text-black/40">
+              <tr>
+                <th className="px-6 py-4">Influencer</th>
+                <th className="px-6 py-4">Outstanding Payout</th>
+                <th className="px-6 py-4 text-right">Settlement</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5">
+              {allAffiliates.filter(a => Number(payoutMap.get(a.id) || 0) > 0).length === 0 && (
+                <tr>
+                  <td colSpan={3} className="px-6 py-12 text-center text-black/40 font-medium italic">
+                    All partner accounts are currently settled.
+                  </td>
+                </tr>
+              )}
+              {allAffiliates
+                .filter(a => Number(payoutMap.get(a.id) || 0) > 0)
+                .map((aff) => (
+                  <tr key={`payout-${aff.id}`} className="hover:bg-green-50/30 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-black">{aff.name}</p>
+                      <p className="text-xs text-black/50">{aff.affiliateCode}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-xl font-black text-green-700 tracking-tighter">
+                        ${Number(payoutMap.get(aff.id) || 0).toFixed(2)}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <form action={async () => {
+                        "use server";
+                        await processPayoutAction(aff.id);
+                      }}>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-green-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-green-700 transition-all flex items-center gap-2 ml-auto"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Mark as Paid
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>
