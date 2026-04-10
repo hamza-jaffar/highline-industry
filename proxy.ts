@@ -7,31 +7,42 @@ export async function proxy(request: NextRequest) {
   
   // Affiliate Referral Capture System
   const url = request.nextUrl;
-  const ref = url.searchParams.get('ref');
+  const pathname = url.pathname;
+  const refParam = url.searchParams.get('ref');
+  const storeHandle = pathname.startsWith('/store/') ? pathname.split('/')[2] : null;
+  const ref = refParam || storeHandle;
   
   if (ref) {
-    const newUrl = new URL(url.pathname, request.url);
-    url.searchParams.forEach((value, key) => {
-      if (key !== 'ref') newUrl.searchParams.append(key, value);
-    });
+    // If it was a ?ref= param, we want to redirect to a clean URL
+    if (refParam) {
+      const newUrl = new URL(url.pathname, request.url);
+      url.searchParams.forEach((value, key) => {
+        if (key !== 'ref') newUrl.searchParams.append(key, value);
+      });
 
-    // Create a new redirect response representing the cleaned URL
-    const redirectResponse = NextResponse.redirect(newUrl);
-    
-    // Merge any existing cookies setup by updateSession into this new redirect
-    response.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
-    });
-    
-    // Finally, plant the affiliate tracker cookie
-    redirectResponse.cookies.set('highline_affiliate_id', ref, { 
+      const redirectResponse = NextResponse.redirect(newUrl);
+      
+      response.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+      });
+      
+      redirectResponse.cookies.set('affiliate_ref', ref, { 
+        path: '/', 
+        maxAge: 30 * 24 * 60 * 60, 
+        httpOnly: true,
+        sameSite: 'lax',
+      });
+      
+      return redirectResponse;
+    }
+
+    // If it's a /store/ route or we just want to set the cookie without redirecting
+    response.cookies.set('affiliate_ref', ref, { 
       path: '/', 
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60, 
       httpOnly: true,
       sameSite: 'lax',
     });
-    
-    return redirectResponse;
   }
 
   return response;

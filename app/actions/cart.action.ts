@@ -23,7 +23,7 @@ export async function addItemToCart(params: {
   try {
     const cookieStore = await cookies();
     let cartId = cookieStore.get(CART_ID_COOKIE)?.value;
-    const affiliateId = cookieStore.get("highline_affiliate_id")?.value;
+    const affiliateRef = cookieStore.get("affiliate_ref")?.value;
 
     const supabase = await createServerClient();
     const { data: { session } } = await supabase.auth.getSession();
@@ -36,19 +36,19 @@ export async function addItemToCart(params: {
     }
     if (params.color) attributes.push({ key: "Color", value: params.color });
     if (params.size) attributes.push({ key: "Size", value: params.size });
-    if (affiliateId) attributes.push({ key: "_affiliate_id", value: affiliateId });
-
     const line = {
       variantId: params.variantId,
       quantity: params.quantity,
-      price: (params.price / 100).toFixed(2), // Pass as string "XX.XX"
+      price: (params.price / 100).toFixed(2),
       attributes: attributes.length > 0 ? attributes : undefined,
     };
+
+    const customAttributes = affiliateRef ? [{ key: "_ref", value: affiliateRef }] : [];
 
     // 2. Add to Shopify (Create if missing, else Add)
     let shopifyResult;
     if (!cartId) {
-      const cart = await createCart([line]);
+      const cart = await createCart([line], { customAttributes });
       if (!cart || !cart.id) throw new Error("Failed to create Shopify cart");
       const newCartId: string = cart.id;
       cartId = newCartId;
@@ -60,7 +60,7 @@ export async function addItemToCart(params: {
       });
       shopifyResult = { success: true, cart: cart, userErrors: [] };
     } else {
-      shopifyResult = await addToCart(cartId, [line]);
+      shopifyResult = await addToCart(cartId, [line], { customAttributes });
     }
 
     if (shopifyResult.userErrors && shopifyResult.userErrors.length > 0) {

@@ -5,7 +5,7 @@ import { shopifyFetch } from "./shopify";
  * to the Storefront API for cart management in this environment.
  */
 
-export async function createCart(lines: { variantId: string, quantity: number, price?: string, attributes?: { key: string, value: string }[] }[] = []) {
+export async function createCart(lines: { variantId: string, quantity: number, price?: string, attributes?: { key: string, value: string }[] }[] = [], options?: { customAttributes?: { key: string, value: string }[] }) {
   const query = `
     mutation draftOrderCreate($input: DraftOrderInput!) {
       draftOrderCreate(input: $input) {
@@ -22,8 +22,6 @@ export async function createCart(lines: { variantId: string, quantity: number, p
     }
   `;
   
-  // Note: For variants, we MUST used priceOverride (MoneyInput).
-  // For custom line items (without variantId), we use originalUnitPriceWithCurrency.
   const variables = {
     input: {
       lineItems: lines.map(line => ({
@@ -31,10 +29,11 @@ export async function createCart(lines: { variantId: string, quantity: number, p
         quantity: line.quantity,
         priceOverride: line.price ? {
           amount: line.price,
-          currencyCode: "USD" // Default to USD for now, or we could fetch it
+          currencyCode: "USD"
         } : undefined,
         customAttributes: line.attributes
-      }))
+      })),
+      customAttributes: options?.customAttributes
     }
   };
   const response = await shopifyFetch(query, variables);
@@ -129,7 +128,7 @@ export async function getCart(cartId: string) {
   };
 }
 
-export async function addToCart(cartId: string, lines: { variantId: string, quantity: number, price?: string, attributes?: { key: string, value: string }[] }[]) {
+export async function addToCart(cartId: string, lines: { variantId: string, quantity: number, price?: string, attributes?: { key: string, value: string }[] }[], options?: { customAttributes?: { key: string, value: string }[] }) {
   const currentCart = await getCart(cartId);
   if (!currentCart) throw new Error("Cart not found");
 
@@ -174,7 +173,10 @@ export async function addToCart(cartId: string, lines: { variantId: string, quan
 
   const response = await shopifyFetch(query, {
     id: cartId,
-    input: { lineItems: combinedLines }
+    input: { 
+      lineItems: combinedLines,
+      customAttributes: options?.customAttributes
+    }
   });
 
   const updatedCart = await getCart(cartId);
